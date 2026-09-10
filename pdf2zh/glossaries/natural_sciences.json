@@ -1,0 +1,12 @@
+{
+  "conduction": "dẫn nhiệt",
+  "convection": "đối lưu",
+  "eigenvalue": "trị riêng",
+  "eigenvector": "vector riêng",
+  "eigenfrequency": "tần số riêng",
+  "momentum": "động lượng",
+  "torque": "mô-men xoắn",
+  "boundary condition": "điều kiện biên",
+  "angular momentum": "mô-men động lượng",
+  "wave function": "hàm sóng"
+}

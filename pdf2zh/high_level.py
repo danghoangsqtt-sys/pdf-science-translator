@@ -247,6 +247,7 @@ def translate_patch(
     synthetic_styles: set[int] | None = None,
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: Dict | None = None,
+    domain: str | None = None,
     **kwarg: Any,
 ) -> None:
     rsrcmgr = PDFResourceManager()
@@ -281,6 +282,7 @@ def translate_patch(
         synthetic_styles,
         class_bounds,
         ocr_paragraph_classes,
+        domain=domain,
     )
 
     assert device is not None
@@ -616,6 +618,7 @@ def translate_stream(
     ignore_cache: bool = False,
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: Dict | None = None,
+    domain: str | None = None,
     **kwarg: Any,
 ):
     source_size = len(stream)
@@ -780,6 +783,7 @@ def translate(
     ignore_cache: bool = False,
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: Dict | None = None,
+    domain: str | None = None,
     **kwarg: Any,
 ):
     if not files:

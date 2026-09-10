@@ -41,6 +41,10 @@ TARGET_LANGUAGES = frozenset(
 
 ENGINES = ("google", "handoff")
 OCR_MODES = ("off", "standard", "enhanced")
+# Mirrors pdf2zh.translator.SUPPORTED_DOMAINS as a plain tuple, the same way
+# ENGINES/OCR_MODES above duplicate pdf2zh values instead of importing the
+# heavy core before _require_core() has validated the environment.
+DOMAINS = ("natural_sciences", "technology", "medicine")
 
 # Measured on an eight-page sample: 2 threads 48s, 4 threads 30s, 8 threads 27s,
 # 12 threads 29s. Past four, the layout pass rather than the network is the floor,
@@ -206,6 +210,12 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--ignore-cache", action="store_true")
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument(
+        "--domain",
+        default=None,
+        choices=DOMAINS,
+        help="force preferred terminology for a subject domain over the engine's own wording",
+    )
     return parser
 
 
@@ -379,6 +389,7 @@ def _run_engine(
     on_progress: Callable[[int, int], None] | None = None,
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: dict | None = None,
+    domain: str | None = None,
 ) -> "TranslationReport":
     """Run the core and return what it could not translate, and why."""
     from pdf2zh.high_level import translate
@@ -409,6 +420,8 @@ def _run_engine(
         arguments["skip_backing_pages"] = skip_backing_pages
     if ocr_regions_by_page:
         arguments["ocr_regions_by_page"] = ocr_regions_by_page
+    if domain:
+        arguments["domain"] = domain
     result = translate(**arguments)
     if len(result) != 1:
         raise TranslationError("PDF core did not report one translated result")
@@ -429,12 +442,16 @@ def translate_pdf(
     segments: Path | None = None,
     emit_segments: Path | None = None,
     ocr: str = "off",
+    domain: str | None = None,
     on_progress: Callable[[int, int], None] | None = None,
 ) -> Translation:
     """Translate one PDF, reporting any segments the engine could not translate."""
     _require_core()
     if ocr not in OCR_MODES:
         raise TranslationError(f"Unsupported OCR mode: {ocr}")
+    if domain is not None and domain not in DOMAINS:
+        supported = ", ".join(sorted(DOMAINS))
+        raise TranslationError(f"Unsupported domain: {domain!r}. Supported: {supported}")
     source = _validate_input(input_pdf)
     envs = _segment_envs(segments, emit_segments)
 
@@ -479,6 +496,8 @@ def translate_pdf(
                 engine_arguments["ocr_regions_by_page"] = (
                     ocr_preparation.reflow_regions_by_page
                 )
+            if domain:
+                engine_arguments["domain"] = domain
             report = _run_engine(
                 processing_source,
                 temp_output,
@@ -607,6 +626,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             segments=args.segments,
             emit_segments=args.emit_segments,
             ocr=args.ocr,
+            domain=args.domain,
         )
     except TranslationError as error:
         print(f"error: {error}", file=sys.stderr)

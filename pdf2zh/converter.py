@@ -28,6 +28,9 @@ from pdf2zh.translator import (
     ENGINES,
     BaseTranslator,
     encode_formula_placeholders,
+    load_domain_glossary,
+    mask_domain_terms,
+    restore_domain_terms,
     restore_formula_placeholders,
 )
 
@@ -773,8 +776,13 @@ class TranslateConverter(PDFConverterEx):
         synthetic_styles: set[int] | None = None,
         class_bounds: Dict | None = None,
         ocr_paragraph_classes: Dict | None = None,
+        domain: str | None = None,
     ) -> None:
         super().__init__(rsrcmgr)
+        # Empty when no domain was requested, so mask_domain_terms() below is
+        # a no-op and translate_segment's behaviour is unchanged from before
+        # this parameter existed.
+        self.domain_glossary = load_domain_glossary(domain) if domain else {}
         self.vfont = vfont
         self.vchar = vchar
         self.thread = thread
@@ -1204,7 +1212,16 @@ class TranslateConverter(PDFConverterEx):
             if preferred is not None:
                 return preferred
             encoded = encode_formula_placeholders(s)
-            translated = request_translation(encoded)
+            to_send, domain_terms = mask_domain_terms(encoded, self.domain_glossary)
+            translated = request_translation(to_send)
+            if domain_terms:
+                with_terms = restore_domain_terms(translated, domain_terms)
+                # A mismatched <tN> tag must never reach restore_formula_placeholders:
+                # it has no idea what that tag means and would reject the whole
+                # segment. Re-translate the formula-only text instead - the same
+                # "fall back to a safe result, not a damaged one" rule already
+                # governing formula placeholders below.
+                translated = with_terms if with_terms is not None else request_translation(encoded)
             return restore_formula_placeholders(s, translated)
 
         def worker(s: str) -> str:

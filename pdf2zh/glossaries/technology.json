@@ -1,0 +1,12 @@
+{
+  "neural network": "mạng nơ-ron",
+  "machine learning": "học máy",
+  "deep learning": "học sâu",
+  "overfitting": "quá khớp",
+  "gradient descent": "hạ gradient",
+  "backpropagation": "lan truyền ngược",
+  "reinforcement learning": "học tăng cường",
+  "fine-tuning": "tinh chỉnh",
+  "supervised learning": "học có giám sát",
+  "unsupervised learning": "học không giám sát"
+}

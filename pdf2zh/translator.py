@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import html
 import json
 import logging
@@ -9,6 +10,7 @@ import re
 import threading
 import unicodedata
 from collections import Counter
+from pathlib import Path
 from typing import Any, ClassVar
 
 import requests
@@ -21,6 +23,14 @@ PLACEHOLDER_PATTERN = re.compile(r"</?b\d+>")
 INTERNAL_PLACEHOLDER_PATTERN = re.compile(r"\{\s*v([\d\s]+)\}", re.IGNORECASE)
 PAIRED_PLACEHOLDER_PATTERN = re.compile(r"<b(\d+)></b\1>")
 STYLE_TAG_PATTERN = re.compile(r"<(/?)s([123])>", re.IGNORECASE)
+DOMAIN_TERM_PATTERN = re.compile(r"</?t\d+>")
+PAIRED_DOMAIN_TERM_PATTERN = re.compile(r"<t(\d+)></t\1>")
+GLOSSARY_DIR = Path(__file__).resolve().parent / "glossaries"
+# Domain names a caller may pass to translate_pdf(domain=...) / --domain. Kept
+# as a frozenset (like translator.py's own TARGET_LANGUAGES-style constants)
+# so an unknown domain fails at the CLI/API boundary, not deep inside a
+# translation loop.
+SUPPORTED_DOMAINS = frozenset({"natural_sciences", "technology", "medicine"})
 COMMON_PUNCTUATION_MOJIBAKE = (
     ("\u00e2\u20ac\u201c", "\u2013"),  # UTF-8 en dash decoded as Windows-1252
     ("\u00e2\u20ac\u201d", "\u2014"),  # UTF-8 em dash decoded as Windows-1252
@@ -259,6 +269,81 @@ def restore_formula_placeholders(source: str, translated: str) -> str:
     )
     if PLACEHOLDER_PATTERN.search(restored):
         raise FormulaPlaceholderError("formula placeholder pair is malformed")
+    return restored
+
+
+@functools.lru_cache(maxsize=len(SUPPORTED_DOMAINS))
+def load_domain_glossary(domain: str) -> dict[str, str]:
+    """Load the English -> Vietnamese preferred-term table for one domain.
+
+    Cached: the table is read from disk once per domain per process, not once
+    per segment. An unknown domain returns an empty table rather than raising,
+    so a caller that already validated ``domain in SUPPORTED_DOMAINS`` (the
+    CLI/API boundary) never has to catch an exception here too.
+    """
+    if domain not in SUPPORTED_DOMAINS:
+        return {}
+    path = GLOSSARY_DIR / f"{domain}.json"
+    try:
+        with path.open(encoding="utf-8") as stream:
+            table = json.load(stream)
+    except (OSError, ValueError):
+        logger.warning("Could not load domain glossary %r from %s", domain, path)
+        return {}
+    return {str(term): str(preferred) for term, preferred in table.items()}
+
+
+def mask_domain_terms(text: str, glossary: dict[str, str]) -> tuple[str, list[str]]:
+    """Replace glossary term occurrences with ``<tN></tN>`` placeholders.
+
+    Matches whole words/phrases only (case-insensitive), longest term first so
+    a multi-word entry such as "boundary condition" is not cut short by a
+    shorter entry it happens to contain. Returns the masked text and the
+    preferred Vietnamese translation for each placeholder, in the order the
+    placeholders appear - restore_domain_terms uses that order, not a second
+    dictionary lookup, so it never depends on glossary contents at restore time.
+    """
+    if not glossary:
+        return text, []
+    terms_by_length = sorted(glossary, key=len, reverse=True)
+    pattern = re.compile(
+        r"\b(?:" + "|".join(re.escape(term) for term in terms_by_length) + r")\b",
+        re.IGNORECASE,
+    )
+    lookup = {term.lower(): preferred for term, preferred in glossary.items()}
+    preferred_in_order: list[str] = []
+
+    def substitute(match: re.Match) -> str:
+        index = len(preferred_in_order)
+        preferred_in_order.append(lookup[match.group(0).lower()])
+        return f"<t{index}></t{index}>"
+
+    masked = pattern.sub(substitute, text)
+    return masked, preferred_in_order
+
+
+def restore_domain_terms(translated: str, preferred_in_order: list[str]) -> str | None:
+    """Substitute ``<tN></tN>`` placeholders with their glossary translations.
+
+    Returns None - never a string containing a raw ``<tN>``/``</tN>`` tag or a
+    dropped/reordered term - if the placeholders did not survive translation
+    exactly as sent (right count, right order, properly paired). The caller
+    is expected to re-translate the unmasked original text in that case,
+    the same "prefer a safe fallback over a damaged result" rule the formula
+    placeholder check above already enforces.
+    """
+    if not preferred_in_order:
+        return translated
+    matches = PAIRED_DOMAIN_TERM_PATTERN.findall(translated)
+    if [int(index) for index in matches] != list(range(len(preferred_in_order))):
+        return None
+
+    def substitute(match: re.Match) -> str:
+        return preferred_in_order[int(match.group(1))]
+
+    restored = PAIRED_DOMAIN_TERM_PATTERN.sub(substitute, translated)
+    if DOMAIN_TERM_PATTERN.search(restored):
+        return None
     return restored
 
 

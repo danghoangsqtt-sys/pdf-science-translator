@@ -135,18 +135,83 @@ Phase D (preview theo trang trong GUI)
 
 ---
 
-## Phase C — Nhận diện lĩnh vực trước khi dịch (phụ thuộc Phase B)
+## Phase C (v2) — Từ điển thuật ngữ theo lĩnh vực do người dùng chọn
 
-- [ ] Chỉ kích hoạt khi `--engine llm` (Google không nhận custom prompt).
-- [ ] Lấy văn bản từ 1–2 trang đầu (tiêu đề + đoạn mở đầu/abstract nếu có).
-- [ ] Gọi `LlmTranslator` (hoặc client riêng) với prompt phân loại lĩnh vực
-      (vật lý, y khoa, luật, CNTT...) — 1 lần cho cả tài liệu.
-- [ ] Nạp kết quả vào system prompt dùng chung cho mọi đoạn dịch sau đó.
-- [ ] Cờ tắt để người dùng bỏ qua bước này nếu muốn (tài liệu ngắn, đa lĩnh
-      vực, hoặc muốn tự viết prompt qua Phase B).
-- **Acceptance:** thuật ngữ dịch cho cùng một khái niệm nhất quán xuyên suốt
-  tài liệu dài nhiều trang khi dùng engine LLM (so sánh trước/sau khi bật
-  tính năng trên tài liệu 06/07 trong `test_samples/`).
+**Thay thế bản Phase C cũ** (LLM tự nhận diện lĩnh vực, phụ thuộc Phase B).
+Quyết định brainstorm 2026-09-10 (tiếp): người dùng tự xác định lĩnh vực tài
+liệu và chọn trong app trước khi dịch — tất định hơn, không cần LLM, hoạt
+động ngay với engine Google hiện có. **Không phụ thuộc Phase B.**
+
+**3 lĩnh vực khởi điểm** (khớp đúng loại tài liệu đã benchmark thật):
+1. Khoa học tự nhiên (Vật lý/Toán/Hóa)
+2. Kỹ thuật/Công nghệ (CNTT, AI/ML, kỹ thuật)
+3. Y khoa/Sinh học
+
+Đọc trước: `pdf2zh/converter.py` (hàm `preferred_translation`, dòng ~515),
+`pdf2zh/translator.py` (hàm `encode_formula_placeholders`/
+`restore_formula_placeholders` — dùng làm mẫu thiết kế cho cơ chế che/khôi
+phục thuật ngữ bên dưới).
+
+### Phát hiện kiến trúc quan trọng — vì sao không thể chỉ mở rộng `preferred_translation()`
+
+`preferred_translation(text, language)` hiện tại chỉ khớp khi **toàn bộ**
+`strip_style_tags(text).strip()` bằng đúng 1 chuỗi trong bảng tra cứu (dùng
+đúng cho tiêu đề bảng đơn lẻ như "Unit" — cả đoạn chỉ có đúng 1 từ đó). Thuật
+ngữ chuyên ngành thực tế hầu như luôn nằm **giữa một câu dài** (ví dụ
+"conduction" trong "Conduction occurs when two objects...") — so khớp toàn bộ
+đoạn sẽ không bao giờ trúng. Mở rộng bảng tra cứu theo cách cũ sẽ không giải
+quyết được vấn đề thật.
+
+**Thiết kế đúng** (giống hệt cơ chế `{vN}` che công thức đã có, và giống cách
+`dhsystem_mdconverter` che `TERM0`/`FORMULA0` trước khi dịch, xem
+`docs/electron-ui-research-2026-09-10.md` mục 1):
+
+1. Trước khi gửi đoạn cho Google: quét đoạn văn tìm các thuật ngữ khớp từ
+   điển của lĩnh vực đã chọn (so khớp theo ranh giới từ, ưu tiên cụm dài nhất
+   trước để "conduction heat transfer" không bị cắt thành "conduction" +
+   "heat transfer" riêng lẻ). Thay mỗi thuật ngữ khớp bằng 1 placeholder mới
+   dạng `{tN}` (namespace riêng, không trùng `{vN}` công thức hay `<sN>` kiểu
+   chữ).
+2. Gửi đoạn đã che cho Google như bình thường.
+3. Sau khi dịch về: đếm số lượng `{tN}` còn nguyên và đúng thứ tự (giống
+   `restore_formula_placeholders` đã làm với `{vN}`) — nếu khớp, thay từng
+   `{tN}` bằng **bản dịch tiếng Việt ưu tiên của từ điển** (không dùng bản
+   Google tự dịch từ đó, vì mục đích chính là ép đúng thuật ngữ chuẩn).
+4. Nếu số lượng/thứ tự `{tN}` không khớp sau khi dịch (Google làm rơi/xáo
+   trộn nhãn) → **gửi lại nguyên đoạn gốc không che** để dịch, không trả về
+   kết quả có nhãn `{tN}` bị lộ — đúng triết lý "thà thiếu còn hơn hỏng" đã
+   áp dụng nhất quán trong dự án.
+
+### Việc cần làm
+
+- [ ] Tạo `pdf2zh/glossaries/` — 3 file dữ liệu (JSON hoặc Python dict), mỗi
+      file là bảng `{"thuật ngữ tiếng Anh": "bản dịch tiếng Việt ưu tiên"}`.
+      **Nội dung 3 bảng cần người có chuyên môn từng lĩnh vực rà lại trước
+      khi coi là đáng tin** — bản đầu chỉ là khung để cắm cơ chế vào, không
+      phải bản thuật ngữ đã thẩm định.
+- [ ] Thêm hàm `mask_domain_terms(text, domain)` /
+      `restore_domain_terms(text, domain)` trong `pdf2zh/translator.py`,
+      theo đúng thiết kế 4 bước ở trên.
+- [ ] Nối vào `translate_segment()` trong `converter.py` (bọc quanh bước
+      `encode_formula_placeholders`/`restore_formula_placeholders` đã có,
+      không thay thế).
+- [ ] Thêm tham số `domain: str | None = None` xuyên suốt: `translate_pdf()`
+      → `TranslateConverter` → nơi gọi `translate_segment`. Thêm `--domain`
+      vào `scripts/translate_pdf.py` (giá trị hợp lệ: tên 3 lĩnh vực hoặc bỏ
+      trống = không áp dụng từ điển).
+- [ ] Nối vào `webui/frontend` — thêm dropdown "Lĩnh vực" cạnh dropdown ngôn
+      ngữ đã có trong `App.tsx`, gửi kèm `domain` trong `POST /api/jobs`,
+      backend truyền xuống `translate_pdf(domain=...)`.
+- [ ] Test hồi quy: khớp thuật ngữ giữa câu, ưu tiên cụm dài nhất, dịch lại
+      an toàn khi nhãn `{tN}` bị hỏng, không áp dụng khi `domain=None`.
+- **Acceptance:** đoạn có từ "conduction" trong ngữ cảnh nhiệt học, chọn lĩnh
+  vực Khoa học tự nhiên, dịch bằng Google, ra "dẫn nhiệt" thay vì "dẫn điện".
+  Không chọn lĩnh vực → hành vi giữ nguyên như hiện tại, không ảnh hưởng gì.
+
+**Verify:**
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
 
 ---
 
