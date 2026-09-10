@@ -17,6 +17,7 @@ try:
         OCR_NAMES,
         collect_pdfs,
         ensure_writable_streams,
+        largest_document_advisory,
         main,
         verify_engine,
         translation_outcome,
@@ -131,6 +132,11 @@ class TranslationOutcomeTests(unittest.TestCase):
         status = next(event for event in events if event[0] == "status" and event[2] != "running")
         self.assertEqual(status[2], "partial")
         self.assertIn("OCR", status[3])
+
+
+class LargestDocumentAdvisoryTests(unittest.TestCase):
+    def test_an_unreadable_batch_never_raises(self):
+        self.assertIsNone(largest_document_advisory([Path("does-not-exist.pdf")]))
 
 
 @unittest.skipIf(collect_pdfs is None, "desktop app dependencies are not installed")

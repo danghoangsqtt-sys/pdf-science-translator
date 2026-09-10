@@ -48,6 +48,29 @@ OCR_MODES = ("off", "standard", "enhanced")
 DEFAULT_THREADS = 4
 MAX_THREADS = 8
 
+# Short articles and single-chapter documents up to this length have been
+# translated clean in regression benchmarking (8, 22, 36 pages, Google
+# engine). Longer documents are a supported use case, not rejected here, but
+# a 144-page survey PDF in that same benchmark hit a crash and a silent
+# formula-adjacent text-splitting defect that a shorter run never exercised,
+# so past this length the odds of hitting an edge case the fit/placeholder
+# gates do not yet fully cover go up. This is a nudge toward the workflow
+# agent-knowledge/validation.md already recommends - validate a --pages
+# range first - not a hard limit.
+PAGE_COUNT_ADVISORY_LIMIT = 50
+
+
+def page_count_advisory(page_count: int) -> str | None:
+    """Return a validation nudge for a document past PAGE_COUNT_ADVISORY_LIMIT."""
+    if page_count <= PAGE_COUNT_ADVISORY_LIMIT:
+        return None
+    return (
+        f"{page_count} pages is beyond the length this build has been checked "
+        f"against directly (clean up to {PAGE_COUNT_ADVISORY_LIMIT} pages). "
+        "Consider validating a --pages range first, then translate the whole "
+        "document, and review formula- and table-dense pages in the result."
+    )
+
 
 class TranslationError(RuntimeError):
     """Raised when input validation or the translation engine fails."""
@@ -222,6 +245,21 @@ def _require_core() -> None:
     module_path = Path(pdf2zh.__file__).resolve()
     if not module_path.is_relative_to(BUNDLED_CORE):
         raise TranslationError(f"Refusing external PDF core: {module_path}")
+
+
+def _peek_page_count(path: Path) -> int | None:
+    """Best-effort page count read before translation starts.
+
+    A nicer heads-up is never worth failing the run over, so any error here
+    is swallowed the same way app/gui.py's count_pages already does.
+    """
+    try:
+        import fitz
+
+        with fitz.open(path) as document:
+            return document.page_count
+    except Exception:  # noqa: BLE001
+        return None
 
 
 def _validate_input(path: Path) -> Path:
@@ -550,6 +588,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
         _validate_arguments(args)
+        if args.pages is None:
+            page_count = _peek_page_count(args.input_pdf)
+            if page_count is not None:
+                advisory = page_count_advisory(page_count)
+                if advisory is not None:
+                    print(f"notice: {advisory}")
         result = translate_pdf(
             args.input_pdf,
             args.output_dir,

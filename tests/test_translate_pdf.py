@@ -40,6 +40,24 @@ class FailureReportingTests(unittest.TestCase):
         )
 
 
+class PageCountAdvisoryTests(unittest.TestCase):
+    def test_a_document_at_or_under_the_limit_gets_no_advisory(self):
+        self.assertIsNone(
+            translate_pdf.page_count_advisory(translate_pdf.PAGE_COUNT_ADVISORY_LIMIT)
+        )
+        self.assertIsNone(translate_pdf.page_count_advisory(1))
+
+    def test_a_document_past_the_limit_names_its_own_page_count(self):
+        over = translate_pdf.PAGE_COUNT_ADVISORY_LIMIT + 1
+        advisory = translate_pdf.page_count_advisory(over)
+        self.assertIsNotNone(advisory)
+        self.assertIn(str(over), advisory)
+        self.assertIn("--pages", advisory)
+
+    def test_peeking_a_missing_file_never_raises(self):
+        self.assertIsNone(translate_pdf._peek_page_count(Path("does-not-exist.pdf")))
+
+
 class TranslatePdfTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_directory = tempfile.TemporaryDirectory()

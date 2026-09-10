@@ -48,6 +48,7 @@ from scripts.translate_pdf import (  # noqa: E402
     OCR_MODES,
     TARGET_LANGUAGES,
     load_layout_model,
+    page_count_advisory,
     preload_layout_model,
     translate_pdf,
 )
@@ -162,6 +163,26 @@ def count_pages(paths: list[Path]) -> int:
         return total
     except Exception:  # noqa: BLE001 - a nicer status line is never worth a crash
         return 0
+
+
+def largest_document_advisory(paths: list[Path]) -> str | None:
+    """The validation nudge for whichever queued file is longest on its own.
+
+    A batch of many short files sums to a large page_count total in
+    count_pages() above, but that is a time estimate, not a risk signal -
+    what predicts hitting an edge case this build has not been checked
+    against directly is one document's own length, not the queue's.
+    """
+    try:
+        import pymupdf
+
+        longest = 0
+        for path in paths:
+            with pymupdf.open(path) as document:
+                longest = max(longest, document.page_count)
+        return page_count_advisory(longest)
+    except Exception:  # noqa: BLE001 - a nicer status line is never worth a crash
+        return None
 
 
 def collect_pdfs(paths: list[Path]) -> list[Path]:
@@ -780,9 +801,10 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         self.progress.configure(mode="indeterminate")
         self.progress.start()
         pages = count_pages(pending)
-        self.status.configure(
-            text=f"Đang chuẩn bị {pages} trang…" if pages else "Đang chuẩn bị…"
-        )
+        status_text = f"Đang chuẩn bị {pages} trang…" if pages else "Đang chuẩn bị…"
+        if largest_document_advisory(pending) is not None:
+            status_text += " Tài liệu dài — nên kiểm tra kỹ các trang có công thức sau khi dịch."
+        self.status.configure(text=status_text)
         self.batch_done, self.batch_total = 0, len(pending)
         self.worker = threading.Thread(
             target=self._run, args=(pending, language, overwrite, ocr), daemon=True
