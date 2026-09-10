@@ -200,10 +200,12 @@ function startPythonBackend() {
 function createWindow() {
   const preloadPath = path.join(__dirname, 'preload.mjs');
   fileLog('createWindow start, preload =', preloadPath, 'exists =', fs.existsSync(preloadPath));
+  const windowIconPath = path.join(process.env.VITE_PUBLIC as string, 'icon.png');
   win = new BrowserWindow({
     width: 1360,
     height: 880,
     title: 'PDF Translate',
+    icon: windowIconPath,
     webPreferences: {
       preload: preloadPath,
       nodeIntegration: false,

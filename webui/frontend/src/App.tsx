@@ -216,6 +216,7 @@ export const App: React.FC = () => {
               {backendReady ? 'Backend sẵn sàng' : 'Đang kết nối backend...'}
             </span>
           </div>
+          <img src="/icon.png" alt="PDF Translate" className="w-8 h-8 rounded-md object-cover" />
         </div>
       </header>
 

@@ -15,10 +15,12 @@
     "appId": "com.vitranslate.pdf",
     "productName": "PDF Translate",
     "asar": true,
+    "icon": "../icon.png",
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "../icon.png"
     },
     "files": [
       "dist/**/*",
