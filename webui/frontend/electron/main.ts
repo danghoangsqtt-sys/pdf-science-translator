@@ -3,12 +3,31 @@ import path from 'node:path';
 import { spawn, ChildProcess } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
+
+// Diagnostic-only file log: console output from a windowed (non-console)
+// Electron build is not reliably captured by a parent shell even when its
+// stdout/stderr are redirected, which made an earlier silent-exit crash
+// impossible to diagnose from outside the process. Written before anything
+// else so it survives a failure during module load itself, not only inside
+// app.whenReady().
+const CRASH_LOG_PATH = path.join(os.tmpdir(), 'pdftranslate-main.log');
+function fileLog(...args: unknown[]) {
+  try {
+    const line = `[${new Date().toISOString()}] ${args.map((a) => (a instanceof Error ? `${a.name}: ${a.message}\n${a.stack}` : String(a))).join(' ')}\n`;
+    fs.appendFileSync(CRASH_LOG_PATH, line);
+  } catch {
+    // logging must never be the thing that crashes the app
+  }
+}
+fileLog('main.ts module loading, pid', process.pid, 'argv', process.argv.join(' '));
 
 const API_TOKEN = randomBytes(32).toString('base64url');
 process.env.PDFTRANSLATE_API_TOKEN = API_TOKEN;
 
 // Global EPIPE Guard
 process.on('uncaughtException', (err) => {
+  fileLog('uncaughtException', err);
   if ((err as NodeJS.ErrnoException).code === 'EPIPE') {
     return;
   }
@@ -20,6 +39,10 @@ process.on('uncaughtException', (err) => {
   } catch {
     // dialog might not be ready yet
   }
+});
+
+process.on('unhandledRejection', (reason) => {
+  fileLog('unhandledRejection', reason);
 });
 
 process.stdout?.on('error', () => {});
@@ -61,6 +84,7 @@ function safeLog(...args: unknown[]) {
   } catch {
     // ignore
   }
+  fileLog(...args);
 }
 
 function startPythonBackend() {
@@ -174,28 +198,39 @@ function startPythonBackend() {
 }
 
 function createWindow() {
+  const preloadPath = path.join(__dirname, 'preload.mjs');
+  fileLog('createWindow start, preload =', preloadPath, 'exists =', fs.existsSync(preloadPath));
   win = new BrowserWindow({
     width: 1360,
     height: 880,
     title: 'PDF Translate',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
+      preload: preloadPath,
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: true,
       additionalArguments: [`--pdftranslate-api-token=${API_TOKEN}`],
     },
   });
+  fileLog('BrowserWindow constructed');
 
+  win.on('closed', () => fileLog('window closed event'));
+  win.webContents.on('render-process-gone', (_event, details) => {
+    fileLog('render-process-gone', JSON.stringify(details));
+  });
   win.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
     safeLog(`[Renderer] Failed to load: ${validatedURL} - ${errorCode} ${errorDescription}`);
   });
+  win.webContents.on('did-finish-load', () => fileLog('did-finish-load'));
 
+  const target = VITE_DEV_SERVER_URL ?? path.join(RENDERER_DIST, 'index.html');
+  fileLog('loading renderer from', target, 'RENDERER_DIST exists =', fs.existsSync(RENDERER_DIST));
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL);
+    win.loadURL(VITE_DEV_SERVER_URL).catch((err) => fileLog('loadURL rejected', err));
   } else {
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'));
+    win.loadFile(path.join(RENDERER_DIST, 'index.html')).catch((err) => fileLog('loadFile rejected', err));
   }
+  fileLog('createWindow end (load call issued)');
 }
 
 ipcMain.handle('open-external', async (_event, url: string) => {
@@ -205,6 +240,7 @@ ipcMain.handle('open-external', async (_event, url: string) => {
 });
 
 app.on('window-all-closed', () => {
+  fileLog('window-all-closed fired');
   intentionalShutdown = true;
   if (pythonProcess) {
     safeLog('Killing python backend process...');
@@ -231,6 +267,9 @@ app.on('activate', () => {
 });
 
 app.whenReady().then(() => {
+  fileLog('app ready, isPackaged =', app.isPackaged, 'resourcesPath =', process.resourcesPath);
   startPythonBackend();
   createWindow();
+}).catch((err) => {
+  fileLog('app.whenReady chain rejected', err);
 });

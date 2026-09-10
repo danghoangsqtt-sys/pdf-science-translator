@@ -6,3 +6,10 @@ frontend/*.tsbuildinfo
 
 # Runtime data written by the backend while running (uploads, job output).
 backend/data/
+
+# Portable Python runtime bundled into the packaged app (extraResources in
+# frontend/package.json). Built locally by scripts/build-python-runtime.ps1,
+# not source - matches how the PyInstaller build's dist/ and build/ are
+# already gitignored at the repo root.
+python_runtime_build/
+python_runtime/

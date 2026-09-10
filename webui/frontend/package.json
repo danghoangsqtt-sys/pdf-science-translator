@@ -24,6 +24,35 @@
       "dist/**/*",
       "dist-electron/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "../python_runtime",
+        "to": "python_runtime",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../../pdf2zh",
+        "to": "pdf2zh",
+        "filter": ["**/*", "!__pycache__", "!**/__pycache__"]
+      },
+      {
+        "from": "../../scripts/translate_pdf.py",
+        "to": "scripts/translate_pdf.py"
+      },
+      {
+        "from": "../backend",
+        "to": "webui/backend",
+        "filter": ["**/*", "!data", "!__pycache__", "!**/__pycache__"]
+      },
+      {
+        "from": "../../app/assets/doclayout.onnx",
+        "to": "app/assets/doclayout.onnx"
+      },
+      {
+        "from": "../../app/assets/GoNotoKurrent-Regular.ttf",
+        "to": "app/assets/GoNotoKurrent-Regular.ttf"
+      }
+    ],
     "directories": {
       "output": "release"
     }
