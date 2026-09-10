@@ -1,0 +1,7 @@
+# Frontend build/dependency artifacts.
+frontend/node_modules/
+frontend/dist-electron/
+frontend/release/
+
+# Runtime data written by the backend while running (uploads, job output).
+backend/data/

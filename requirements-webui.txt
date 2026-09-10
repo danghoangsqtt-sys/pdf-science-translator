@@ -1,0 +1,8 @@
+fastapi>=0.115.0
+uvicorn>=0.30.0
+# Required by FastAPI's own File()/Form()/UploadFile handling - hand-rolling a
+# multipart parser instead (split on the boundary string) risks corrupting a
+# PDF whose own bytes happen to contain the boundary sequence. This is the
+# one exception to "no other packages": it's the dependency FastAPI's docs
+# themselves say File()/UploadFile requires.
+python-multipart>=0.0.9
