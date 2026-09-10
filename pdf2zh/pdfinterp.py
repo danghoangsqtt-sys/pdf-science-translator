@@ -228,7 +228,14 @@ class PDFPageInterpreterEx(PDFPageInterpreter):
             else:
                 name = literal_name(spec)
             if name == "ICCBased" and isinstance(spec, list) and len(spec) >= 2:
-                return PDFColorSpace(name, stream_value(spec[1])["N"])
+                # A damaged or non-stream ICC object (stream_value falls back
+                # to an empty PDFStream rather than raising) has no /N to
+                # report; treat it as unexplained rather than crashing, the
+                # same way an unrecognised colour space name already is.
+                components = stream_value(spec[1]).get("N")
+                if not isinstance(components, int):
+                    return None
+                return PDFColorSpace(name, components)
             elif name == "DeviceN" and isinstance(spec, list) and len(spec) >= 2:
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
