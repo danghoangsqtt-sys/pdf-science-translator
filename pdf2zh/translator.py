@@ -192,6 +192,10 @@ class BaseTranslator:
         """Translate one engine-sized text segment."""
         raise NotImplementedError
 
+    def prefetch(self, texts: list[str]) -> None:
+        """Optionally translate a page's segments together ahead of the
+        per-segment calls. Engines without a batch API do nothing."""
+
     def get_rich_text_left_placeholder(self, identifier: int) -> str:
         return f"<b{identifier}>"
 
@@ -200,6 +204,35 @@ class BaseTranslator:
 
     def get_formular_placeholder(self, identifier: int) -> str:
         return self.get_rich_text_left_placeholder(identifier) + self.get_rich_text_right_placeholder(identifier)
+
+
+GOOGLE_BLOCKED_MESSAGE = (
+    "Google đã tạm chặn máy này vì nhận quá nhiều yêu cầu dịch (lỗi 429 / trang "
+    "xác minh CAPTCHA). Hãy dịch bằng bộ dịch Ngoại tuyến (Ollama) hoặc Azure, "
+    "hoặc thử lại Google sau vài giờ."
+)
+GOOGLE_BLOCK_MARKERS = ("unusual traffic", "/sorry/", "captcha-form", "g-recaptcha")
+GOOGLE_RESULT_PATTERN = re.compile(r'(?s)class="(?:t0|result-container)">(.*?)<')
+
+
+def google_blocked(response: Any) -> bool:
+    """Whether Google refused the machine rather than the text.
+
+    The 26/10/2026 incident: once Google flags an IP it answers 429 or
+    redirects to its /sorry CAPTCHA page, and does so for every request until
+    the block lifts. Retrying each of thousands of segments only prolongs it.
+    """
+    if response.status_code == 429:
+        return True
+    if "/sorry" in str(getattr(response, "url", "") or ""):
+        return True
+    body = getattr(response, "text", "") or ""
+    # A real result page echoes the source text, which may itself mention
+    # "unusual traffic"; only a page without a result is read as a block.
+    if GOOGLE_RESULT_PATTERN.search(body):
+        return False
+    lowered = body[:20000].lower()
+    return any(marker in lowered for marker in GOOGLE_BLOCK_MARKERS)
 
 
 class GoogleTranslator(BaseTranslator):
@@ -249,13 +282,12 @@ class GoogleTranslator(BaseTranslator):
             headers=self.headers,
             timeout=30,
         )
+        if google_blocked(response):
+            raise TranslationServiceUnavailable(GOOGLE_BLOCKED_MESSAGE)
         if response.status_code == 400:
             raise RuntimeError("Google Translate rejected the text segment")
         response.raise_for_status()
-        match = re.search(
-            r'(?s)class="(?:t0|result-container)">(.*?)<',
-            response.text,
-        )
+        match = GOOGLE_RESULT_PATTERN.search(response.text)
         if match is None:
             raise RuntimeError("Google Translate response did not contain a translation result")
         return remove_control_characters(html.unescape(match.group(1)))
@@ -563,6 +595,274 @@ class _RetryableOllamaError(RuntimeError):
     """A server-side hiccup worth another attempt."""
 
 
+DEFAULT_AZURE_ENDPOINT = "https://api.cognitive.microsofttranslator.com"
+AZURE_KEY_ENV = "AZURE_TRANSLATOR_KEY"
+AZURE_REGION_ENV = "AZURE_TRANSLATOR_REGION"
+AZURE_ENDPOINT_ENV = "AZURE_TRANSLATOR_ENDPOINT"
+CONFIG_PATH_ENV = "PDF_TRANSLATE_CONFIG"
+
+
+def user_config_path() -> Path:
+    """Per-user settings file, outside any repository checkout."""
+    configured = os.environ.get(CONFIG_PATH_ENV)
+    if configured:
+        return Path(configured).expanduser()
+    appdata = os.environ.get("APPDATA")
+    if appdata:
+        return Path(appdata) / "PDFTranslate" / "engines.json"
+    return Path.home() / ".config" / "pdftranslate" / "engines.json"
+
+
+@dataclass(frozen=True)
+class AzureSettings:
+    key: str
+    region: str | None
+    endpoint: str
+    source: str  # "environment" or the settings file path, never the key
+
+    def __repr__(self) -> str:  # keep the key out of logs and tracebacks
+        return (
+            f"AzureSettings(region={self.region!r}, endpoint={self.endpoint!r}, "
+            f"source={self.source!r})"
+        )
+
+
+def azure_settings() -> AzureSettings | None:
+    """The Azure Translator key, region and endpoint, or None if not configured.
+
+    Environment variables win over the per-user settings file
+    (``{"azure": {"key": ..., "region": ..., "endpoint": ...}}``). Neither is
+    ever inside the repository.
+    """
+    key = os.environ.get(AZURE_KEY_ENV, "").strip()
+    if key:
+        return AzureSettings(
+            key,
+            os.environ.get(AZURE_REGION_ENV, "").strip() or None,
+            (os.environ.get(AZURE_ENDPOINT_ENV) or DEFAULT_AZURE_ENDPOINT).rstrip("/"),
+            "environment",
+        )
+    path = user_config_path()
+    try:
+        with path.open(encoding="utf-8") as stream:
+            section = json.load(stream).get("azure") or {}
+    except (OSError, ValueError, AttributeError):
+        return None
+    key = str(section.get("key") or "").strip()
+    if not key:
+        return None
+    return AzureSettings(
+        key,
+        str(section.get("region") or "").strip() or None,
+        str(section.get("endpoint") or DEFAULT_AZURE_ENDPOINT).rstrip("/"),
+        str(path),
+    )
+
+
+def azure_not_configured_message() -> str:
+    return (
+        "Chưa cấu hình khóa Azure Translator. Đặt biến môi trường "
+        f"{AZURE_KEY_ENV} và {AZURE_REGION_ENV}, hoặc tạo tệp {user_config_path()} "
+        'với nội dung {"azure": {"key": "...", "region": "..."}}.'
+    )
+
+
+# Markers the converter puts into a segment, which Azure must treat as markup.
+AZURE_MARKUP_PATTERN = re.compile(r"</?[bst]\d+>")
+
+
+def _escape_for_azure(text: str) -> str:
+    """Escape prose for textType=html while leaving the marker tags as tags."""
+    parts: list[str] = []
+    position = 0
+    for match in AZURE_MARKUP_PATTERN.finditer(text):
+        parts.append(html.escape(text[position:match.start()], quote=False))
+        parts.append(match.group(0))
+        position = match.end()
+    parts.append(html.escape(text[position:], quote=False))
+    return "".join(parts)
+
+
+class AzureTranslator(BaseTranslator):
+    """Azure Translator Text API v3, with the user's own key.
+
+    Segments go as HTML so formula and style markers come back as tags rather
+    than translated words. A page's segments are sent together in batches
+    within the service's limits (``prefetch``), then served one at a time.
+    """
+
+    name = "azure"
+    lang_map: ClassVar[dict[str, str]] = {"zh": "zh-Hans", "no": "nb", "tl": "fil"}
+    handles_retries = True
+    MAXIMUM_ELEMENTS = 1000
+    MAXIMUM_REQUEST_CHARACTERS = 50000
+    ATTEMPTS = 3
+    BACKOFF_SECONDS = 2.0
+
+    def __init__(
+        self,
+        lang_in: str,
+        lang_out: str,
+        model: str | None = None,
+        *,
+        ignore_cache: bool = False,
+        settings: AzureSettings | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(lang_in, lang_out, model, ignore_cache=ignore_cache, **kwargs)
+        self.settings = settings or azure_settings()
+        self.session = requests.Session()
+        self._prefetched: dict[str, str] = {}
+        self._prefetch_lock = threading.Lock()
+
+    def prefetch(self, texts: list[str]) -> None:
+        """Translate a page's segments in as few requests as the limits allow.
+
+        Best effort: a batch that fails is left for the per-segment path,
+        which raises and reports the same error against each segment.
+        """
+        wanted: list[str] = []
+        seen: set[str] = set()
+        for text in texts:
+            text = normalise_number_abbreviation(text)
+            if text in seen or len(_escape_for_azure(text)) > self.MAXIMUM_REQUEST_CHARACTERS:
+                continue
+            seen.add(text)
+            if not self.ignore_cache and self.cache.get(text) is not None:
+                continue
+            wanted.append(text)
+        for batch in self.batches(wanted):
+            try:
+                translations = self._request(batch)
+            except Exception as error:  # noqa: BLE001 - the per-segment path reports it
+                logger.debug("Azure batch of %d segments failed: %s", len(batch), error)
+                return
+            with self._prefetch_lock:
+                self._prefetched.update(zip(batch, translations))
+
+    def batches(self, texts: list[str]) -> list[list[str]]:
+        """Split into requests of at most 1,000 elements and 50,000 characters."""
+        batches: list[list[str]] = []
+        current: list[str] = []
+        size = 0
+        for text in texts:
+            length = len(_escape_for_azure(text))
+            if current and (
+                len(current) >= self.MAXIMUM_ELEMENTS
+                or size + length > self.MAXIMUM_REQUEST_CHARACTERS
+            ):
+                batches.append(current)
+                current, size = [], 0
+            current.append(text)
+            size += length
+        if current:
+            batches.append(current)
+        return batches
+
+    def do_translate(self, text: str) -> str:
+        if len(_escape_for_azure(text)) > self.MAXIMUM_REQUEST_CHARACTERS:
+            raise SegmentTooLongError(
+                f"segment of {len(text)} characters exceeds the "
+                f"{self.MAXIMUM_REQUEST_CHARACTERS} the service accepts"
+            )
+        with self._prefetch_lock:
+            prefetched = self._prefetched.pop(text, None)
+        if prefetched is not None:
+            return prefetched
+        return self._request([text])[0]
+
+    def _request(self, texts: list[str]) -> list[str]:
+        if self.settings is None:
+            raise TranslationServiceUnavailable(azure_not_configured_message())
+        params: dict[str, str] = {
+            "api-version": "3.0",
+            "to": self.lang_out,
+            "textType": "html",
+        }
+        if self.lang_in and self.lang_in != "auto":
+            params["from"] = self.lang_in
+        headers = {
+            "Ocp-Apim-Subscription-Key": self.settings.key,
+            "Content-Type": "application/json; charset=UTF-8",
+        }
+        if self.settings.region:
+            headers["Ocp-Apim-Subscription-Region"] = self.settings.region
+        body = [{"Text": _escape_for_azure(text)} for text in texts]
+
+        last_error: Exception | None = None
+        for attempt in range(self.ATTEMPTS):
+            if attempt:
+                time.sleep(self.BACKOFF_SECONDS * 2 ** (attempt - 1))
+            try:
+                response = self.session.post(
+                    f"{self.settings.endpoint}/translate",
+                    params=params,
+                    headers=headers,
+                    json=body,
+                    timeout=30,
+                )
+            except requests.ConnectionError as error:
+                last_error = error
+                continue
+            except requests.Timeout as error:
+                last_error = error
+                continue
+            if response.status_code == 200:
+                return self._parse(response, len(texts))
+            detail = _azure_error_detail(response)
+            if response.status_code == 401:
+                raise TranslationServiceUnavailable(
+                    "Azure từ chối khóa dịch (lỗi 401). Kiểm tra lại khóa "
+                    f"{AZURE_KEY_ENV} và vùng {AZURE_REGION_ENV}. {detail}".strip()
+                )
+            if response.status_code == 403:
+                raise TranslationServiceUnavailable(
+                    "Azure không cho phép yêu cầu này (lỗi 403) – thường do đã dùng "
+                    f"hết hạn mức miễn phí hoặc sai vùng. {detail}".strip()
+                )
+            if response.status_code == 400:
+                raise RuntimeError(f"Azure rejected the request: {detail}")
+            last_error = RuntimeError(f"Azure returned HTTP {response.status_code}: {detail}")
+            if response.status_code == 429:
+                retry_after = response.headers.get("Retry-After", "")
+                if retry_after.isdigit():
+                    time.sleep(min(int(retry_after), 60))
+        if isinstance(last_error, requests.ConnectionError):
+            raise TranslationServiceUnavailable(
+                f"Không kết nối được Azure Translator tại {self.settings.endpoint}. "
+                "Kiểm tra kết nối Internet."
+            ) from last_error
+        if isinstance(last_error, RuntimeError) and "HTTP 429" in str(last_error):
+            raise TranslationServiceUnavailable(
+                "Azure đang giới hạn tốc độ (lỗi 429): gói miễn phí cho 2 triệu ký tự "
+                "mỗi giờ. Hãy thử lại sau ít phút hoặc dùng bộ dịch Ngoại tuyến (Ollama)."
+            ) from last_error
+        assert last_error is not None
+        raise last_error
+
+    @staticmethod
+    def _parse(response: Any, expected: int) -> list[str]:
+        try:
+            results = response.json()
+            texts = [str(item["translations"][0]["text"]) for item in results]
+        except (ValueError, KeyError, IndexError, TypeError) as error:
+            raise RuntimeError("Azure response did not contain translations") from error
+        if len(texts) != expected:
+            raise RuntimeError(
+                f"Azure returned {len(texts)} translations for {expected} segments"
+            )
+        return [remove_control_characters(html.unescape(text)) for text in texts]
+
+
+def _azure_error_detail(response: Any) -> str:
+    """Azure's own error message, which never contains the key."""
+    try:
+        error = response.json().get("error", {})
+        return f"({error.get('code', '')}: {error.get('message', '')})"
+    except (ValueError, AttributeError):
+        return ""
+
+
 def placeholders(text: str) -> list[str]:
     """Return the formula placeholder tags in order, e.g. ['<b0>', '</b0>']."""
     return PLACEHOLDER_PATTERN.findall(text)
@@ -802,5 +1102,5 @@ class HandoffTranslator(BaseTranslator):
 
 ENGINES: dict[str, type[BaseTranslator]] = {
     engine.name: engine
-    for engine in (OllamaTranslator, GoogleTranslator, HandoffTranslator)
+    for engine in (OllamaTranslator, AzureTranslator, GoogleTranslator, HandoffTranslator)
 }
