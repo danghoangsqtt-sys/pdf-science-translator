@@ -123,8 +123,12 @@ carries no soft mask, transfer function or partial alpha. A paragraph takes the
 colour most of its own ink uses, because a colour change cannot travel through
 the translator the way a style marker can.
 
-Emphasis comes from the font descriptor's own flags before the font name, since
-the Adobe Pro families abbreviate the slanted face as `-It`.
+Emphasis is the union of what the font descriptor declares and what the font
+name says. A descriptor that declares bold or italic wins over the name, since
+the Adobe Pro families abbreviate the slanted face as `-It`; a descriptor that
+is merely silent proves nothing, because ForceBold is rarely set (LaTeX's
+`NimbusRomNo9L-Medi` declares only `Flags=4`). A space never opens a styled run
+of its own: `<s2> </s2>` carries no ink and makes local models drop markers.
 
 ## Large Documents
 

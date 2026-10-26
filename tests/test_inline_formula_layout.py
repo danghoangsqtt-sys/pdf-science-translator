@@ -42,6 +42,7 @@ from pdf2zh.converter import (
     text_orientation,
     text_style_from_descriptor,
     text_style_from_font,
+    text_style_of,
     uses_synthetic_bold,
     vertical_ink_extent,
     vertical_shift_to_bounds,
@@ -394,6 +395,12 @@ class OrientationAndStyleTests(unittest.TestCase):
             "MyriadPro-Semibold": TextStyle.BOLD,
             "TimesNewRomanPS-ItalicMT": TextStyle.ITALIC,
             "TimesNewRomanPS-BoldItalicMT": TextStyle.BOLD_ITALIC,
+            # URW Nimbus, as embedded by LaTeX's times package.
+            "TNCEFI+NimbusRomNo9L-Medi": TextStyle.BOLD,
+            "NimbusRomNo9L-MediItal": TextStyle.BOLD_ITALIC,
+            "NimbusRomNo9L-ReguItal": TextStyle.ITALIC,
+            "NimbusRomNo9L-Regu": TextStyle.REGULAR,
+            "Roboto-Medium": TextStyle.REGULAR,
         }
         for face, expected in cases.items():
             with self.subTest(face=face):
@@ -406,6 +413,19 @@ class OrientationAndStyleTests(unittest.TestCase):
             SimpleNamespace(fontname="Italic", get_text=lambda: "C"),
         ]
         self.assertEqual(styled_character_text(chars), "A<s1>B</s1><s2>C</s2>")
+
+    def test_a_styled_space_never_opens_a_run_of_its_own(self):
+        """An italic space before a formula became <s2> </s2>; translategemma
+        then dropped every marker in the paragraph."""
+        chars = [
+            SimpleNamespace(fontname="Regular", get_text=lambda: "p"),
+            SimpleNamespace(fontname="Italic", get_text=lambda: " "),
+            SimpleNamespace(fontname="Regular", get_text=lambda: "q"),
+            SimpleNamespace(fontname="Italic", get_text=lambda: "x"),
+            SimpleNamespace(fontname="Regular", get_text=lambda: " "),
+            SimpleNamespace(fontname="Italic", get_text=lambda: "y"),
+        ]
+        self.assertEqual(styled_character_text(chars), "p q<s2>x y</s2>")
 
     def test_rotated_vietnamese_headers_have_stable_terminology_and_style(self):
         self.assertEqual(
@@ -572,6 +592,27 @@ class OrientationAndStyleTests(unittest.TestCase):
         self.assertEqual(text_style_from_descriptor({"Flags": 4}), TextStyle.REGULAR)
         self.assertIsNone(text_style_from_descriptor({}))
         self.assertIsNone(text_style_from_descriptor(None))
+
+    def test_a_silent_descriptor_does_not_overrule_a_bold_name(self):
+        """NimbusRomNo9L-Medi declares Flags=4 only; its headings lost bold."""
+        def glyph(name: str, descriptor: dict) -> SimpleNamespace:
+            return SimpleNamespace(
+                fontname=name, font=SimpleNamespace(descriptor=descriptor)
+            )
+
+        cases = {
+            ("TNCEFI+NimbusRomNo9L-Medi", 4, 0): TextStyle.BOLD,
+            ("NimbusRomNo9L-Regu", 4, 0): TextStyle.REGULAR,
+            ("NimbusRomNo9L-Medi", 4, -15): TextStyle.BOLD_ITALIC,
+            ("MinionPro-Regular", 68, -11): TextStyle.ITALIC,
+            ("MinionPro-Regular", 262148, 0): TextStyle.BOLD,
+        }
+        for (name, flags, angle), expected in cases.items():
+            with self.subTest(name=name, flags=flags, angle=angle):
+                self.assertEqual(
+                    text_style_of(glyph(name, {"Flags": flags, "ItalicAngle": angle})),
+                    expected,
+                )
 
     def test_only_the_newest_colour_of_each_kind_is_replayed(self):
         """`rg` and `g` write the same slot, so replaying both lets the older win."""

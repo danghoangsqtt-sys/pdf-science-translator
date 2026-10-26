@@ -41,8 +41,10 @@ These classifications preserve the complete page layout instead of reflowing num
 - Translated text keeps the colour the source drew it in. A paragraph takes the
   colour most of its own text uses; a colour that cannot be replayed safely
   falls back to black rather than to a guess.
-- Bold and italic are read from the font descriptor before the font name, so the
-  abbreviated Adobe Pro faces keep their slant.
+- Bold and italic are read from the font descriptor and the font name together:
+  a declared style wins, so the abbreviated Adobe Pro faces keep their slant, and
+  a silent descriptor does not erase the bold that a name such as
+  `NimbusRomNo9L-Medi` states.
 - A line that stops well short of its column ends its paragraph, so indents and
   the break between paragraphs survive translation.
 - A segment longer than the translation service accepts is refused and reported,

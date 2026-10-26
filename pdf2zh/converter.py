@@ -66,7 +66,11 @@ def text_style_from_font(font_name: str | bytes) -> TextStyle:
     if isinstance(font_name, bytes):
         font_name = font_name.decode("utf-8", errors="ignore")
     face = font_name.split("+")[-1]
-    bold = re.search(r"bold|semibold|demi|black|heavy", face, re.IGNORECASE)
+    # URW's Nimbus clones of Times/Helvetica, common in LaTeX papers, spell the
+    # bold face "Medi" (NimbusRomNo9L-Medi, -MediItal).
+    bold = re.search(r"bold|semibold|demi|black|heavy", face, re.IGNORECASE) or re.search(
+        r"-Medi(?:Ital)?$", face
+    )
     italic = re.search(r"italic|oblique|slanted", face, re.IGNORECASE) or re.search(
         r"(?:^|[^A-Za-z])(?:It|Ital)$|[a-z](?:It|Ital)$", face
     )
@@ -120,12 +124,17 @@ def text_style_from_descriptor(descriptor: Dict | None) -> TextStyle | None:
 
 
 def text_style_of(character: LTChar) -> TextStyle:
-    """Emphasis for one glyph: what the font declares, else what it is called."""
+    """Emphasis for one glyph: what the font declares, plus what it is called.
+
+    A descriptor that says bold or italic is believed over the name, which is
+    how the abbreviated Adobe Pro faces keep their slant. A descriptor that is
+    merely silent proves nothing: ForceBold is rarely set, and LaTeX's
+    NimbusRomNo9L-Medi declares only Flags=4, so its headings came out regular.
+    """
     descriptor = getattr(getattr(character, "font", None), "descriptor", None)
-    style = text_style_from_descriptor(descriptor)
-    if style is not None:
-        return style
-    return text_style_from_font(character.fontname)
+    declared = text_style_from_descriptor(descriptor) or TextStyle.REGULAR
+    named = text_style_from_font(character.fontname)
+    return TextStyle(int(declared) | int(named))
 
 
 def text_orientation(matrix) -> tuple[float, float, float, float] | None:
@@ -491,7 +500,8 @@ def styled_character_text(characters: list[LTChar]) -> str:
     parts: list[str] = []
     active = TextStyle.REGULAR
     for character in characters:
-        style = text_style_of(character)
+        # Like append_styled: a space never opens or closes a styled run.
+        style = active if character.get_text().isspace() else text_style_of(character)
         if style != active:
             if active:
                 parts.append(f"</s{int(active)}>")
@@ -946,6 +956,11 @@ class TranslateConverter(PDFConverterEx):
 
         def append_styled(index: int, text: str, style: TextStyle) -> None:
             paragraph = pstk[index]
+            if text.isspace():
+                # A space draws no ink, so it never opens a run of its own. An
+                # italic space before a formula became "<s2> </s2>", and
+                # translategemma dropped every marker around such noise.
+                style = paragraph.open_style
             if style != paragraph.open_style:
                 close_style(index)
                 if style:
