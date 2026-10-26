@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import secrets
@@ -18,7 +19,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from scripts.translate_pdf import DOMAINS, TARGET_LANGUAGES
-from webui.backend.services.job_service import TranslationJobManager
+from webui.backend.services.engine_service import (
+    ENGINE_LABELS,
+    allowed_ollama_models,
+    describe_engines,
+)
+from webui.backend.services.job_service import FINISHED_WITH_RESULT, TranslationJobManager
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("pdf_translate.backend")
@@ -113,15 +119,43 @@ async def health_check():
     return {"status": "ready"}
 
 
+@app.get("/api/engines")
+async def list_engines(
+    model: str = "",
+    x_pdftranslate_token: str | None = Header(default=None, alias=API_TOKEN_HEADER),
+):
+    """The engines on offer and whether Ollama can translate right now."""
+    _require_api_token(x_pdftranslate_token)
+    # Asks the local Ollama server over HTTP; keep it off the event loop.
+    return await asyncio.to_thread(describe_engines, model or None)
+
+
 @app.post("/api/jobs", status_code=status.HTTP_202_ACCEPTED)
 async def create_translation_job(
     file: UploadFile = File(...),
     target_language: str = Form("vi"),
     domain: str = Form(""),
+    engine: str = Form("ollama"),
+    model: str = Form(""),
     x_pdftranslate_token: str | None = Header(default=None, alias=API_TOKEN_HEADER),
 ):
     """Receive PDF upload and enqueue a translation job."""
     _require_api_token(x_pdftranslate_token)
+
+    if engine not in ENGINE_LABELS:
+        supported_engines = ", ".join(ENGINE_LABELS)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Bộ dịch không được hỗ trợ: {engine!r}. Hỗ trợ: {supported_engines}",
+        )
+    model_value: str | None = model or None
+    if model_value is not None and (
+        engine != "ollama" or model_value not in allowed_ollama_models()
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Mô hình không được hỗ trợ cho bộ dịch {engine}: {model_value!r}",
+        )
 
     # Reject rather than silently substitute: a client offering a language
     # this build cannot render (e.g. a non-Latin script) needs to see why
@@ -169,6 +203,8 @@ async def create_translation_job(
         output_dir=job_output_dir,
         target_language=target_language,
         domain=domain_value,
+        engine=engine,
+        model=model_value,
     )
 
     return {"job_id": job_id}
@@ -182,6 +218,22 @@ async def get_job_status(
     """Query the status and progress of a translation job."""
     _require_api_token(x_pdftranslate_token)
     job = job_manager.get(job_id)
+    if job is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Không tìm thấy tác vụ có mã {job_id}.",
+        )
+    return job.to_dict()
+
+
+@app.post("/api/jobs/{job_id}/cancel")
+async def cancel_job(
+    job_id: str,
+    x_pdftranslate_token: str | None = Header(default=None, alias=API_TOKEN_HEADER),
+):
+    """Stop a queued or running job. A running job stops before its next page."""
+    _require_api_token(x_pdftranslate_token)
+    job = job_manager.cancel(job_id)
     if job is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -204,7 +256,7 @@ async def get_job_result(
             detail=f"Không tìm thấy tác vụ có mã {job_id}.",
         )
 
-    if job.status != "complete":
+    if job.status not in FINISHED_WITH_RESULT:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Tác vụ chưa hoàn thành hoặc đã gặp lỗi.",
