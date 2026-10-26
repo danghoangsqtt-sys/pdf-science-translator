@@ -829,6 +829,7 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
                     overwrite=overwrite,
                     on_progress=report,
                     ocr=ocr,
+                    engine="google",
                 )
                 state, detail = translation_outcome(result)
                 self.events.put(("status", path, state, detail, result.path))
