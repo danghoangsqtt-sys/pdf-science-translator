@@ -39,7 +39,10 @@ TARGET_LANGUAGES = frozenset(
     }
 )
 
-ENGINES = ("google", "handoff")
+# Ollama runs on this machine and needs no account; Google's free web endpoint
+# blocks an IP that sends it a whole book, so it is a fallback, not the default.
+ENGINES = ("ollama", "google", "handoff")
+DEFAULT_ENGINE = "ollama"
 OCR_MODES = ("off", "standard", "enhanced")
 # Mirrors pdf2zh.translator.SUPPORTED_DOMAINS as a plain tuple, the same way
 # ENGINES/OCR_MODES above duplicate pdf2zh values instead of importing the
@@ -50,7 +53,15 @@ DOMAINS = ("natural_sciences", "technology", "medicine")
 # 12 threads 29s. Past four, the layout pass rather than the network is the floor,
 # and more concurrency only raises the odds of the service throttling a long run.
 DEFAULT_THREADS = 4
+# One GPU serves Ollama's requests largely one after another: two keep it busy
+# while the converter prepares the next segment, and four only queue up and
+# risk running a 12 GB card out of memory.
+DEFAULT_OLLAMA_THREADS = 2
 MAX_THREADS = 8
+
+
+def default_threads(engine: str) -> int:
+    return DEFAULT_OLLAMA_THREADS if engine == "ollama" else DEFAULT_THREADS
 
 # Short articles and single-chapter documents up to this length have been
 # translated clean in regression benchmarking (8, 22, 36 pages, Google
@@ -90,6 +101,28 @@ class Translation(NamedTuple):
     ocr_pages: tuple[int, ...] = ()
     ocr_profile: str = "off"
     ocr_warnings: tuple[str, ...] = ()
+    # Segments the engine was asked for; untranslated is the part of these
+    # that stayed in the source language.
+    total_segments: int = 0
+    engine: str = ""
+    model: str | None = None
+    # Set when the engine stopped answering altogether, in words for the user.
+    service_failure: str | None = None
+
+    @property
+    def translated_segments(self) -> int:
+        return max(0, self.total_segments - self.untranslated)
+
+    @property
+    def translated_ratio(self) -> float:
+        """Share of translatable segments that came back translated, 0..1."""
+        if self.total_segments <= 0:
+            return 0.0
+        return self.translated_segments / self.total_segments
+
+    @property
+    def kept_by_reason(self) -> dict[str, int]:
+        return classify_failures(self.reasons)
 
 
 # record_translation_failure passes up either an exception class name or one of
@@ -104,11 +137,28 @@ def _count_of_segments(count: int) -> str:
     return f"{count} segment" if count == 1 else f"{count} segments"
 
 
+def _is_fit_reason(reason: str) -> bool:
+    return any(marker in reason for marker in _FIT_MARKERS)
+
+
+def classify_failures(reasons: Mapping[str, int]) -> dict[str, int]:
+    """Count kept-source segments by what the user would do about them.
+
+    ``service``: the engine failed or was unreachable; ``formula``: the
+    translation damaged formula or style markers; ``fit``: the translation did
+    not fit its region at the smallest allowed size; ``too_long``: the
+    paragraph was longer than one request may carry.
+    """
+    fit = sum(count for reason, count in reasons.items() if _is_fit_reason(reason))
+    formula = reasons.get(_FORMULA_REASON, 0)
+    too_long = reasons.get(_TOO_LONG_REASON, 0)
+    service = sum(reasons.values()) - fit - formula - too_long
+    return {"service": service, "formula": formula, "fit": fit, "too_long": too_long}
+
+
 def _describe_failures(reasons: Mapping[str, int]) -> list[str]:
     """Turn raw skip reasons into lines that say what the user can do."""
-    def is_fit(reason: str) -> bool:
-        return any(marker in reason for marker in _FIT_MARKERS)
-
+    is_fit = _is_fit_reason
     fit = sum(count for reason, count in reasons.items() if is_fit(reason))
     formula = reasons.get(_FORMULA_REASON, 0)
     too_long = reasons.get(_TOO_LONG_REASON, 0)
@@ -190,8 +240,19 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--source-language", default="auto", type=_source_language)
     parser.add_argument("--pages", type=_page_selection)
-    parser.add_argument("--threads", default=DEFAULT_THREADS, type=_positive_threads)
-    parser.add_argument("--engine", default="google", choices=ENGINES)
+    parser.add_argument(
+        "--threads",
+        default=None,
+        type=_positive_threads,
+        help=f"default {DEFAULT_OLLAMA_THREADS} for ollama, {DEFAULT_THREADS} otherwise",
+    )
+    parser.add_argument("--engine", default=DEFAULT_ENGINE, choices=ENGINES)
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="ollama engine: model name (default translategemma:12b, "
+        "or PDF_TRANSLATE_OLLAMA_MODEL)",
+    )
     parser.add_argument(
         "--ocr",
         default="off",
@@ -227,6 +288,8 @@ def _validate_arguments(args: argparse.Namespace) -> None:
             raise TranslationError("--engine handoff needs --segments, --emit-segments, or both")
     elif args.segments is not None or args.emit_segments is not None:
         raise TranslationError("--segments and --emit-segments require --engine handoff")
+    if args.model is not None and args.engine != "ollama":
+        raise TranslationError("--model applies only to --engine ollama")
 
 
 def _require_core() -> None:
@@ -255,6 +318,16 @@ def _require_core() -> None:
     module_path = Path(pdf2zh.__file__).resolve()
     if not module_path.is_relative_to(BUNDLED_CORE):
         raise TranslationError(f"Refusing external PDF core: {module_path}")
+
+
+def _require_ollama(model: str | None) -> str:
+    """Fail before any page is read when the offline engine cannot answer."""
+    from pdf2zh.translator import ollama_status
+
+    status = ollama_status(model)
+    if not status.ready:
+        raise TranslationError(status.message)
+    return status.model
 
 
 def _peek_page_count(path: Path) -> int | None:
@@ -435,10 +508,11 @@ def translate_pdf(
     target_language: str = DEFAULT_TARGET_LANGUAGE,
     source_language: str = "auto",
     pages: str | None = None,
-    threads: int = DEFAULT_THREADS,
+    threads: int | None = None,
     ignore_cache: bool = False,
     overwrite: bool = False,
-    engine: str = "google",
+    engine: str = DEFAULT_ENGINE,
+    model: str | None = None,
     segments: Path | None = None,
     emit_segments: Path | None = None,
     ocr: str = "off",
@@ -452,9 +526,12 @@ def translate_pdf(
     if domain is not None and domain not in DOMAINS:
         supported = ", ".join(sorted(DOMAINS))
         raise TranslationError(f"Unsupported domain: {domain!r}. Supported: {supported}")
+    if engine not in ENGINES:
+        raise TranslationError(f"Unsupported engine: {engine!r}")
+    if threads is None:
+        threads = default_threads(engine)
     source = _validate_input(input_pdf)
     envs = _segment_envs(segments, emit_segments)
-
     destination: Path | None = None
     destination_dir: Path | None = None
     if output_dir is not None:
@@ -466,6 +543,9 @@ def translate_pdf(
                 f"Output already exists: {destination}. "
                 "Pass --overwrite only with replacement authorization."
             )
+    if engine == "ollama":
+        model = _require_ollama(model)
+    service = f"{engine}:{model}" if model else engine
 
     with tempfile.TemporaryDirectory(prefix="pdf-translate-", dir=destination_dir) as temp:
         temp_output = Path(temp)
@@ -506,7 +586,7 @@ def translate_pdf(
                 pages,
                 threads,
                 ignore_cache,
-                engine,
+                service,
                 envs,
                 on_progress,
                 **engine_arguments,
@@ -535,6 +615,25 @@ def translate_pdf(
             )
 
         untranslated = len(report.failures)
+        service_failure = getattr(report, "service_failure", None)
+        total = report.translatable_segments
+        # Every segment stayed in the source language: the file would be a copy
+        # of the source handed over as a translation, which is what the IP
+        # block on 26/10/2026 produced while the app said it had finished.
+        if destination is not None and untranslated >= total:
+            if service_failure:
+                raise TranslationError(service_failure)
+            causes = "; ".join(_describe_failures(report.reasons))
+            raise TranslationError(
+                f"Không dịch được đoạn nào trong {source.name}"
+                + (f": {causes}" if causes else "")
+            )
+        details = {
+            "total_segments": total,
+            "engine": engine,
+            "model": model,
+            "service_failure": service_failure,
+        }
         image_only = tuple(sorted(report.image_only_pages))
         ocr_pages = ocr_preparation.pages if ocr_preparation else ()
         ocr_warnings = ocr_preparation.warnings if ocr_preparation else ()
@@ -547,6 +646,7 @@ def translate_pdf(
                 ocr_pages,
                 ocr,
                 ocr_warnings,
+                **details,
             )
 
         generated = temp_output / f"{source.stem}-mono.pdf"
@@ -588,6 +688,7 @@ def translate_pdf(
         ocr_pages,
         ocr,
         ocr_warnings,
+        **details,
     )
 
 
@@ -623,6 +724,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             ignore_cache=args.ignore_cache,
             overwrite=args.overwrite,
             engine=args.engine,
+            model=args.model,
             segments=args.segments,
             emit_segments=args.emit_segments,
             ocr=args.ocr,
@@ -633,6 +735,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     if result.path is not None:
         print(f"Translated PDF: {result.path}")
+    if result.total_segments:
+        engine = f"{result.engine}:{result.model}" if result.model else result.engine
+        print(
+            f"Translated {result.translated_segments}/{result.total_segments} segments "
+            f"({result.translated_ratio:.0%}) with {engine}"
+        )
+    if result.service_failure:
+        print(f"warning: {result.service_failure}", file=sys.stderr)
     if result.ocr_pages:
         numbers = ", ".join(str(page + 1) for page in result.ocr_pages)
         print(f"OCR ({result.ocr_profile}): pages {numbers}")

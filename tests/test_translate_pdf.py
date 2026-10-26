@@ -10,6 +10,7 @@ from unittest import mock
 from pdf2zh.high_level import TranslationReport
 from scripts import translate_pdf
 
+MODEL = "translategemma:12b"
 
 class FailureReportingTests(unittest.TestCase):
     def test_an_over_long_segment_is_reported_as_its_own_reason(self):
@@ -65,6 +66,13 @@ class TranslatePdfTests(unittest.TestCase):
         self.source = self.root / "guide.pdf"
         self.source.write_bytes(b"%PDF-1.7\nsource")
         self.output = self.root / "output"
+        # The default engine asks the local Ollama server first; these tests
+        # run the converter as a mock, so no server is consulted.
+        ollama = mock.patch.object(
+            translate_pdf, "_require_ollama", side_effect=lambda model: model or MODEL
+        )
+        ollama.start()
+        self.addCleanup(ollama.stop)
 
     def tearDown(self) -> None:
         self.temp_directory.cleanup()
@@ -88,7 +96,8 @@ class TranslatePdfTests(unittest.TestCase):
         self.assertEqual(result.untranslated, 0)
         self.assertEqual(result.path.read_bytes(), b"%PDF-1.7\ntranslated")
         run.assert_called_once_with(
-            self.source, mock.ANY, "vi", "auto", None, translate_pdf.DEFAULT_THREADS, False, "google", {}, None
+            self.source, mock.ANY, "vi", "auto", None,
+            translate_pdf.DEFAULT_OLLAMA_THREADS, False, f"ollama:{MODEL}", {}, None,
         )
 
     @mock.patch.object(translate_pdf, "_require_core")
@@ -193,6 +202,118 @@ class TranslatePdfTests(unittest.TestCase):
         # A document that lost some segments must still be delivered, and say so.
         self.assertEqual(result.path, self.output / "guide-vi.pdf")
         self.assertEqual(result.untranslated, 7)
+        self.assertEqual(result.total_segments, 40)
+        self.assertEqual(result.translated_segments, 33)
+        self.assertAlmostEqual(result.translated_ratio, 33 / 40)
+        self.assertEqual(result.engine, "ollama")
+        self.assertEqual(result.model, MODEL)
+
+    def test_kept_segments_are_counted_by_what_the_user_would_do(self):
+        def partial(source, temp_output, *_args):
+            (Path(temp_output) / f"{Path(source).stem}-mono.pdf").write_bytes(b"%PDF-1.7\n")
+            return TranslationReport(
+                failures=["a"] * 9,
+                reasons=Counter({
+                    "TranslationServiceUnavailable": 2,
+                    "ReadTimeout": 1,
+                    "FormulaPlaceholderError": 3,
+                    "table cell cannot fit at 50% font size": 2,
+                    "SegmentTooLongError": 1,
+                }),
+                translatable_segments=20,
+            )
+
+        with (
+            mock.patch.object(translate_pdf, "_require_core"),
+            mock.patch.object(translate_pdf, "_run_engine", side_effect=partial),
+        ):
+            result = translate_pdf.translate_pdf(self.source, self.output)
+
+        self.assertEqual(
+            result.kept_by_reason,
+            {"service": 3, "formula": 3, "fit": 2, "too_long": 1},
+        )
+
+    def test_nothing_translated_is_an_error_not_a_finished_file(self):
+        """The 26/10/2026 IP block: a source copy was reported as complete."""
+        def blocked(source, temp_output, *_args):
+            (Path(temp_output) / f"{Path(source).stem}-mono.pdf").write_bytes(b"%PDF-1.7\n")
+            return TranslationReport(
+                failures=["a"] * 12,
+                reasons=Counter({"TranslationServiceUnavailable": 12}),
+                translatable_segments=12,
+                service_failure="Không kết nối được Ollama tại http://127.0.0.1:11434.",
+            )
+
+        with (
+            mock.patch.object(translate_pdf, "_require_core"),
+            mock.patch.object(translate_pdf, "_run_engine", side_effect=blocked),
+        ):
+            with self.assertRaisesRegex(translate_pdf.TranslationError, "Không kết nối"):
+                translate_pdf.translate_pdf(self.source, self.output)
+
+        self.assertFalse((self.output / "guide-vi.pdf").exists())
+
+    def test_nothing_translated_without_a_service_message_names_the_causes(self):
+        def unfit(source, temp_output, *_args):
+            (Path(temp_output) / f"{Path(source).stem}-mono.pdf").write_bytes(b"%PDF-1.7\n")
+            return TranslationReport(
+                failures=["a"] * 2,
+                reasons=Counter({"FormulaPlaceholderError": 2}),
+                translatable_segments=2,
+            )
+
+        with (
+            mock.patch.object(translate_pdf, "_require_core"),
+            mock.patch.object(translate_pdf, "_run_engine", side_effect=unfit),
+        ):
+            with self.assertRaisesRegex(translate_pdf.TranslationError, "formula markers"):
+                translate_pdf.translate_pdf(self.source, self.output)
+
+    def test_ollama_is_checked_before_any_page_is_read(self):
+        with (
+            mock.patch.object(translate_pdf, "_require_core"),
+            mock.patch.object(
+                translate_pdf,
+                "_require_ollama",
+                side_effect=translate_pdf.TranslationError("chưa tải mô hình"),
+            ),
+            mock.patch.object(translate_pdf, "_run_engine") as run,
+        ):
+            with self.assertRaisesRegex(translate_pdf.TranslationError, "chưa tải"):
+                translate_pdf.translate_pdf(self.source, self.output)
+        run.assert_not_called()
+
+    def test_each_engine_gets_its_own_default_thread_count(self):
+        for engine, threads in (
+            ("ollama", translate_pdf.DEFAULT_OLLAMA_THREADS),
+            ("google", translate_pdf.DEFAULT_THREADS),
+        ):
+            with (
+                self.subTest(engine=engine),
+                mock.patch.object(translate_pdf, "_require_core"),
+                mock.patch.object(translate_pdf, "_run_engine") as run,
+            ):
+                run.side_effect = self._engine_side_effect
+                translate_pdf.translate_pdf(
+                    self.source, self.output, engine=engine, overwrite=True
+                )
+                self.assertEqual(run.call_args.args[5], threads)
+                self.assertEqual(run.call_args.args[7].split(":")[0], engine)
+        self.assertLessEqual(translate_pdf.DEFAULT_OLLAMA_THREADS, 2)
+
+    def test_the_default_engine_is_the_offline_one(self):
+        args = translate_pdf._parser().parse_args([str(self.source), "--output-dir", "out"])
+        self.assertEqual(args.engine, "ollama")
+        self.assertIsNone(args.threads)
+
+    def test_model_applies_only_to_ollama(self):
+        args = translate_pdf._parser().parse_args(
+            [str(self.source), "--output-dir", "out", "--engine", "google",
+             "--model", "translategemma:4b"]
+        )
+        with self.assertRaisesRegex(translate_pdf.TranslationError, "--model"):
+            translate_pdf._validate_arguments(args)
 
     def test_refuses_a_document_with_no_extractable_text(self):
         """An image-only scan must not be handed over as a finished translation."""
