@@ -7,16 +7,27 @@ import {
   FileText,
   CheckCircle2,
   RefreshCw,
+  XCircle,
 } from 'lucide-react';
 import { PdfViewerBox } from './components/PdfViewerBox.tsx';
+import { EnginePicker, OllamaStatusNotice } from './components/EnginePicker.tsx';
+import { TranslationWarningBanner } from './components/TranslationWarningBanner.tsx';
 import {
   createTranslationJob,
+  cancelTranslationJob,
+  fetchEngines,
   fetchJobStatus,
   fetchJobResultBlob,
   checkHealth,
   POLL_INTERVAL_MS,
+  type EnginesResponse,
   type JobProgress,
+  type JobStatusResponse,
 } from './services/api.ts';
+
+// How often to re-ask Ollama while it is not ready, so starting it or
+// finishing `ollama pull` shows up without a click.
+const ENGINE_RECHECK_MS = 10000;
 
 const TARGET_LANGUAGES = [
   { code: 'vi', name: 'Tiếng Việt (vi)' },
@@ -77,9 +88,51 @@ export const App: React.FC = () => {
   const [errorText, setErrorText] = useState<string | null>(null);
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [engine, setEngine] = useState<string>('ollama');
+  const [ollamaModel, setOllamaModel] = useState<string>('translategemma:12b');
+  const [engineInfo, setEngineInfo] = useState<EnginesResponse | null>(null);
+  const [checkingEngines, setCheckingEngines] = useState<boolean>(false);
+  const [finishedJob, setFinishedJob] = useState<JobStatusResponse | null>(null);
+  const [isCancelling, setIsCancelling] = useState<boolean>(false);
+  const [noticeText, setNoticeText] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pollingTimerRef = useRef<number | null>(null);
+  const jobIdRef = useRef<string | null>(null);
+  const modelChosenRef = useRef<boolean>(false);
+
+  const refreshEngines = async (model: string = ollamaModel) => {
+    setCheckingEngines(true);
+    try {
+      const info = await fetchEngines(model);
+      setEngineInfo(info);
+      // Until the user picks one, prefer a model that is already downloaded:
+      // a weak machine that only pulled the 4B should not be told to pull 12B.
+      const installed = info.ollama.installed_models;
+      if (!modelChosenRef.current && installed.length > 0 && !installed.includes(model)) {
+        setOllamaModel(installed[0]);
+      }
+    } catch {
+      setEngineInfo(null);
+    } finally {
+      setCheckingEngines(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!backendReady) return;
+    refreshEngines(ollamaModel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backendReady, ollamaModel]);
+
+  const ollamaReady = engineInfo?.ollama.ready ?? false;
+
+  useEffect(() => {
+    if (!backendReady || engine !== 'ollama' || ollamaReady || isTranslating) return;
+    const timer = window.setInterval(() => refreshEngines(ollamaModel), ENGINE_RECHECK_MS);
+    return () => window.clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backendReady, engine, ollamaReady, ollamaModel, isTranslating]);
 
   // Poll backend health until ready
   useEffect(() => {
@@ -120,6 +173,8 @@ export const App: React.FC = () => {
       return;
     }
     setErrorText(null);
+    setNoticeText(null);
+    setFinishedJob(null);
     setSelectedFile(file);
     setResultBlob(null);
     setProgress({ done: 0, total: 0 });
@@ -137,25 +192,43 @@ export const App: React.FC = () => {
     if (!selectedFile || isTranslating) return;
 
     setErrorText(null);
+    setNoticeText(null);
+    setFinishedJob(null);
     setResultBlob(null);
     setIsTranslating(true);
+    setIsCancelling(false);
     setProgress({ done: 0, total: 0 });
 
     try {
-      const { job_id } = await createTranslationJob(selectedFile, targetLanguage, domain);
+      const { job_id } = await createTranslationJob(
+        selectedFile,
+        targetLanguage,
+        domain,
+        engine,
+        ollamaModel,
+      );
+      jobIdRef.current = job_id;
 
       const poll = async () => {
         try {
           const statusRes = await fetchJobStatus(job_id);
           setProgress(statusRes.progress);
 
-          if (statusRes.status === 'complete') {
+          if (statusRes.status === 'complete' || statusRes.status === 'complete_with_warnings') {
             const blob = await fetchJobResultBlob(job_id);
             setResultBlob(blob);
+            setFinishedJob(statusRes);
             setIsTranslating(false);
+            jobIdRef.current = null;
           } else if (statusRes.status === 'error') {
             setErrorText(statusRes.error || 'Dịch tài liệu thất bại.');
             setIsTranslating(false);
+            jobIdRef.current = null;
+          } else if (statusRes.status === 'cancelled') {
+            setNoticeText('Đã hủy tác vụ dịch. Không có tệp kết quả nào được tạo.');
+            setIsTranslating(false);
+            setIsCancelling(false);
+            jobIdRef.current = null;
           } else {
             pollingTimerRef.current = window.setTimeout(poll, POLL_INTERVAL_MS);
           }
@@ -173,6 +246,20 @@ export const App: React.FC = () => {
       setIsTranslating(false);
     }
   };
+
+  const cancelTranslation = async () => {
+    const jobId = jobIdRef.current;
+    if (!jobId || isCancelling) return;
+    setIsCancelling(true);
+    try {
+      await cancelTranslationJob(jobId);
+    } catch (err: any) {
+      setErrorText(err.response?.data?.detail || err.message || 'Không thể hủy tác vụ.');
+      setIsCancelling(false);
+    }
+  };
+
+  const engineBlocked = engine === 'ollama' && engineInfo !== null && !ollamaReady;
 
   const handleDownload = () => {
     if (!resultBlob || !selectedFile) return;
@@ -255,7 +342,7 @@ export const App: React.FC = () => {
           </div>
 
           {/* Language Selection & Translate Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <label htmlFor="target-lang" className="text-xs font-semibold text-gray-600">
                 Ngôn ngữ đích:
@@ -295,9 +382,24 @@ export const App: React.FC = () => {
               </select>
             </div>
 
+            <EnginePicker
+              engine={engine}
+              model={ollamaModel}
+              info={engineInfo}
+              checking={checkingEngines}
+              disabled={isTranslating}
+              onEngineChange={setEngine}
+              onModelChange={(model) => {
+                modelChosenRef.current = true;
+                setOllamaModel(model);
+              }}
+              onRefresh={() => refreshEngines(ollamaModel)}
+            />
+
             <button
               onClick={startTranslation}
-              disabled={!selectedFile || isTranslating || !backendReady}
+              disabled={!selectedFile || isTranslating || !backendReady || engineBlocked}
+              title={engineBlocked ? 'Ollama chưa sẵn sàng – xem hướng dẫn bên dưới' : undefined}
               className="flex items-center gap-2 bg-[#14452F] hover:bg-[#0f3624] text-white text-sm font-medium px-6 py-2 rounded-md shadow transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isTranslating ? (
@@ -328,6 +430,15 @@ export const App: React.FC = () => {
                   ? `Đã dịch ${progress.done} / ${progress.total} trang (${progressPercent}%)`
                   : 'Đang chuẩn bị mô hình...'}
               </span>
+              <button
+                onClick={cancelTranslation}
+                disabled={isCancelling}
+                title="Dừng sau trang đang dịch; không tạo tệp kết quả"
+                className="flex items-center gap-1 text-red-700 hover:bg-red-50 border border-red-200 rounded px-2 py-0.5 disabled:opacity-50"
+              >
+                <XCircle size={13} />
+                {isCancelling ? 'Đang hủy...' : 'Hủy'}
+              </button>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
@@ -337,6 +448,16 @@ export const App: React.FC = () => {
                 }}
               />
             </div>
+          </div>
+        )}
+
+        {engine === 'ollama' && !isTranslating && <OllamaStatusNotice info={engineInfo} />}
+
+        {finishedJob && <TranslationWarningBanner result={finishedJob} />}
+
+        {noticeText && (
+          <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md text-xs text-gray-700">
+            {noticeText}
           </div>
         )}
 

@@ -9,10 +9,51 @@ export interface JobProgress {
   total: number;
 }
 
+export type JobStatus =
+  | 'queued'
+  | 'running'
+  | 'complete'
+  | 'complete_with_warnings'
+  | 'cancelled'
+  | 'error';
+
+export interface JobSegments {
+  total: number;
+  translated: number;
+  // service: engine failed; formula: markers damaged; fit: did not fit its
+  // region; too_long: longer than one request may carry.
+  kept: { service: number; formula: number; fit: number; too_long: number };
+}
+
 export interface JobStatusResponse {
-  status: 'queued' | 'running' | 'complete' | 'error';
+  status: JobStatus;
   progress: JobProgress;
   error?: string | null;
+  engine?: string;
+  model?: string | null;
+  translated_ratio?: number | null;
+  segments?: JobSegments | null;
+  warnings?: string[];
+}
+
+export type OllamaState = 'ready' | 'not_installed' | 'not_running' | 'model_missing';
+
+export interface OllamaInfo {
+  state: OllamaState;
+  ready: boolean;
+  model: string;
+  base_url: string;
+  message: string;
+  pull_command: string;
+  download_url: string;
+  models: string[];
+  installed_models: string[];
+}
+
+export interface EnginesResponse {
+  default: string;
+  engines: { id: string; label: string }[];
+  ollama: OllamaInfo;
 }
 
 const getApiToken = (): string => {
@@ -30,10 +71,21 @@ export const checkHealth = async (): Promise<{ status: string }> => {
   return res.data;
 };
 
+export const fetchEngines = async (model: string = ''): Promise<EnginesResponse> => {
+  const res = await axios.get<EnginesResponse>(`${API_BASE_URL}/engines`, {
+    headers: authHeaders(),
+    params: model ? { model } : undefined,
+    timeout: 10000,
+  });
+  return res.data;
+};
+
 export const createTranslationJob = async (
   file: File,
   targetLanguage: string = 'vi',
   domain: string = '',
+  engine: string = 'ollama',
+  model: string = '',
 ): Promise<{ job_id: string }> => {
   const formData = new FormData();
   formData.append('file', file);
@@ -42,6 +94,11 @@ export const createTranslationJob = async (
   // same as omitting the field entirely (see webui/backend/main.py).
   if (domain) {
     formData.append('domain', domain);
+  }
+  formData.append('engine', engine);
+  // Only Ollama has a model choice; the backend refuses one for other engines.
+  if (engine === 'ollama' && model) {
+    formData.append('model', model);
   }
 
   const res = await axios.post<{ job_id: string }>(`${API_BASE_URL}/jobs`, formData, {
@@ -60,6 +117,15 @@ export const fetchJobStatus = async (jobId: string): Promise<JobStatusResponse> 
     headers: authHeaders(),
     timeout: 10000,
   });
+  return res.data;
+};
+
+export const cancelTranslationJob = async (jobId: string): Promise<JobStatusResponse> => {
+  const res = await axios.post<JobStatusResponse>(
+    `${API_BASE_URL}/jobs/${jobId}/cancel`,
+    null,
+    { headers: authHeaders(), timeout: 10000 },
+  );
   return res.data;
 };
 
