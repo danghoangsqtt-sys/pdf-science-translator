@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import importlib
 import os
 import re
@@ -89,6 +90,14 @@ def page_count_advisory(page_count: int) -> str | None:
 
 class TranslationError(RuntimeError):
     """Raised when input validation or the translation engine fails."""
+
+
+class TranslationCancelled(TranslationError):
+    """Raised when the caller's cancel event stopped the run between pages.
+
+    Nothing is written: the half-made output lives only in the temporary
+    directory, which is removed on the way out.
+    """
 
 
 class Translation(NamedTuple):
@@ -463,6 +472,7 @@ def _run_engine(
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: dict | None = None,
     domain: str | None = None,
+    cancel_event: object | None = None,
 ) -> "TranslationReport":
     """Run the core and return what it could not translate, and why."""
     from pdf2zh.high_level import translate
@@ -495,6 +505,9 @@ def _run_engine(
         arguments["ocr_regions_by_page"] = ocr_regions_by_page
     if domain:
         arguments["domain"] = domain
+    if cancel_event is not None:
+        # The core checks it before each page; anything with is_set() will do.
+        arguments["cancellation_event"] = cancel_event
     result = translate(**arguments)
     if len(result) != 1:
         raise TranslationError("PDF core did not report one translated result")
@@ -518,6 +531,7 @@ def translate_pdf(
     ocr: str = "off",
     domain: str | None = None,
     on_progress: Callable[[int, int], None] | None = None,
+    cancel_event: object | None = None,
 ) -> Translation:
     """Translate one PDF, reporting any segments the engine could not translate."""
     _require_core()
@@ -578,6 +592,10 @@ def translate_pdf(
                 )
             if domain:
                 engine_arguments["domain"] = domain
+            if cancel_event is not None:
+                if cancel_event.is_set():
+                    raise TranslationCancelled("Đã hủy tác vụ dịch.")
+                engine_arguments["cancel_event"] = cancel_event
             report = _run_engine(
                 processing_source,
                 temp_output,
@@ -593,6 +611,8 @@ def translate_pdf(
             )
         except TranslationError:
             raise
+        except asyncio.CancelledError as error:
+            raise TranslationCancelled("Đã hủy tác vụ dịch.") from error
         except Exception as error:
             raise TranslationError(f"PDF translation core failed: {_describe(error)}") from error
 
