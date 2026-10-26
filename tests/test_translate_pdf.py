@@ -284,6 +284,16 @@ class TranslatePdfTests(unittest.TestCase):
                 translate_pdf.translate_pdf(self.source, self.output)
         run.assert_not_called()
 
+    def test_azure_without_a_key_is_refused_before_any_page_is_read(self):
+        with (
+            mock.patch.object(translate_pdf, "_require_core"),
+            mock.patch("pdf2zh.translator.azure_settings", return_value=None),
+            mock.patch.object(translate_pdf, "_run_engine") as run,
+        ):
+            with self.assertRaisesRegex(translate_pdf.TranslationError, "AZURE_TRANSLATOR_KEY"):
+                translate_pdf.translate_pdf(self.source, self.output, engine="azure")
+        run.assert_not_called()
+
     def test_each_engine_gets_its_own_default_thread_count(self):
         for engine, threads in (
             ("ollama", translate_pdf.DEFAULT_OLLAMA_THREADS),

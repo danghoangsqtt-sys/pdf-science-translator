@@ -196,7 +196,7 @@ class BackendApiTests(unittest.TestCase):
 
         self.assertEqual(body["default"], "ollama")
         self.assertEqual(
-            [engine["id"] for engine in body["engines"]], ["ollama", "google"]
+            [engine["id"] for engine in body["engines"]], ["ollama", "azure", "google"]
         )
         self.assertEqual(body["ollama"]["state"], "model_missing")
         self.assertEqual(body["ollama"]["pull_command"], "ollama pull translategemma:12b")

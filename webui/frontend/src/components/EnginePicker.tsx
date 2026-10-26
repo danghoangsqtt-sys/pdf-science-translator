@@ -4,6 +4,7 @@ import type { EnginesResponse, OllamaState } from '../services/api.ts';
 
 const FALLBACK_ENGINES = [
   { id: 'ollama', label: 'Ngoại tuyến (Ollama)' },
+  { id: 'azure', label: 'Azure' },
   { id: 'google', label: 'Google (dự phòng)' },
 ];
 
@@ -93,6 +94,59 @@ export const EnginePicker: React.FC<EnginePickerProps> = ({
           <RefreshCw size={14} className={checking ? 'animate-spin' : ''} />
         </button>
       )}
+    </div>
+  );
+};
+
+interface RemoteEngineNoticeProps {
+  engine: string;
+  info: EnginesResponse | null;
+}
+
+/** Azure: configured or how to configure it. Google: what the fallback risks. */
+export const RemoteEngineNotice: React.FC<RemoteEngineNoticeProps> = ({ engine, info }) => {
+  if (engine === 'google') {
+    return (
+      <div className="mt-3 flex items-start gap-2 text-xs text-amber-800">
+        <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+        <span>
+          Google là dịch vụ web miễn phí, dùng làm dự phòng: tài liệu được gửi qua Internet và
+          Google có thể tạm chặn máy khi dịch nhiều trang. Khi bị chặn, ứng dụng dừng ngay và báo
+          lỗi.
+        </span>
+      </div>
+    );
+  }
+  if (engine !== 'azure' || !info) return null;
+  const azure = info.azure;
+  if (azure.configured) {
+    return (
+      <div className="mt-3 flex items-center gap-2 text-xs text-emerald-700">
+        <CheckCircle2 size={14} />
+        <span>
+          {azure.message}
+          {azure.region ? ` Vùng: ${azure.region}.` : ''} Tài liệu được gửi tới Azure qua
+          Internet.
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className="mt-3 p-3 bg-amber-50 border border-amber-300 rounded-md text-xs text-amber-900">
+      <div className="flex items-center gap-2 font-semibold">
+        <AlertTriangle size={14} className="text-amber-600" />
+        <span>Chưa cấu hình khóa Azure Translator</span>
+      </div>
+      <ol className="mt-2 ml-5 list-decimal space-y-1 leading-relaxed">
+        <li>Tạo tài nguyên Translator trên Azure Portal và lấy khóa (Key) cùng vùng (Region).</li>
+        <li>
+          Đặt biến môi trường <code className="font-mono">{azure.key_env}</code> và{' '}
+          <code className="font-mono">{azure.region_env}</code>, hoặc tạo tệp{' '}
+          <code className="font-mono break-all">{azure.config_path}</code> với nội dung{' '}
+          <code className="font-mono">{'{"azure": {"key": "...", "region": "..."}}'}</code>.
+        </li>
+        <li>Khởi động lại ứng dụng.</li>
+      </ol>
     </div>
   );
 };

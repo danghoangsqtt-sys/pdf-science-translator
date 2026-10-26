@@ -50,10 +50,21 @@ export interface OllamaInfo {
   installed_models: string[];
 }
 
+export interface AzureInfo {
+  configured: boolean;
+  region: string | null;
+  source: string | null;
+  message: string;
+  key_env: string;
+  region_env: string;
+  config_path: string;
+}
+
 export interface EnginesResponse {
   default: string;
   engines: { id: string; label: string }[];
   ollama: OllamaInfo;
+  azure: AzureInfo;
 }
 
 const getApiToken = (): string => {

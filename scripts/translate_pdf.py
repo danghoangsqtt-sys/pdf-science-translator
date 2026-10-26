@@ -40,9 +40,10 @@ TARGET_LANGUAGES = frozenset(
     }
 )
 
-# Ollama runs on this machine and needs no account; Google's free web endpoint
-# blocks an IP that sends it a whole book, so it is a fallback, not the default.
-ENGINES = ("ollama", "google", "handoff")
+# Ollama runs on this machine and needs no account; Azure is the official API
+# with the user's own key; Google's free web endpoint blocks an IP that sends
+# it a whole book, so it is a fallback, not the default.
+ENGINES = ("ollama", "azure", "google", "handoff")
 DEFAULT_ENGINE = "ollama"
 OCR_MODES = ("off", "standard", "enhanced")
 # Mirrors pdf2zh.translator.SUPPORTED_DOMAINS as a plain tuple, the same way
@@ -339,6 +340,14 @@ def _require_ollama(model: str | None) -> str:
     return status.model
 
 
+def _require_azure() -> None:
+    """Fail before any page is read when no Azure key is configured."""
+    from pdf2zh.translator import azure_not_configured_message, azure_settings
+
+    if azure_settings() is None:
+        raise TranslationError(azure_not_configured_message())
+
+
 def _peek_page_count(path: Path) -> int | None:
     """Best-effort page count read before translation starts.
 
@@ -559,6 +568,8 @@ def translate_pdf(
             )
     if engine == "ollama":
         model = _require_ollama(model)
+    elif engine == "azure":
+        _require_azure()
     service = f"{engine}:{model}" if model else engine
 
     with tempfile.TemporaryDirectory(prefix="pdf-translate-", dir=destination_dir) as temp:

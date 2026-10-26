@@ -7,18 +7,24 @@ import shutil
 from pathlib import Path
 
 from pdf2zh.translator import (
+    AZURE_KEY_ENV,
+    AZURE_REGION_ENV,
     DEFAULT_OLLAMA_MODEL,
     LIGHT_OLLAMA_MODEL,
     _same_model,
     ollama_model_name,
     ollama_pull_command,
+    azure_not_configured_message,
+    azure_settings,
     ollama_status,
+    user_config_path,
 )
 
 DEFAULT_ENGINE = "ollama"
 # Engines the app offers. "handoff" is an agent workflow, not a user choice.
 ENGINE_LABELS = {
     "ollama": "Ngoại tuyến (Ollama)",
+    "azure": "Azure",
     "google": "Google (dự phòng)",
 }
 OLLAMA_MODELS = (DEFAULT_OLLAMA_MODEL, LIGHT_OLLAMA_MODEL)
@@ -76,6 +82,31 @@ def describe_ollama(model: str | None = None) -> dict[str, object]:
     }
 
 
+def describe_azure() -> dict[str, object]:
+    """Whether an Azure key is configured, and where from. Never the key."""
+    settings = azure_settings()
+    if settings is None:
+        return {
+            "configured": False,
+            "region": None,
+            "source": None,
+            "message": azure_not_configured_message(),
+            "key_env": AZURE_KEY_ENV,
+            "region_env": AZURE_REGION_ENV,
+            "config_path": str(user_config_path()),
+        }
+    source = "biến môi trường" if settings.source == "environment" else settings.source
+    return {
+        "configured": True,
+        "region": settings.region,
+        "source": settings.source,
+        "message": f"Đã cấu hình khóa Azure (từ {source}).",
+        "key_env": AZURE_KEY_ENV,
+        "region_env": AZURE_REGION_ENV,
+        "config_path": str(user_config_path()),
+    }
+
+
 def describe_engines(model: str | None = None) -> dict[str, object]:
     return {
         "default": DEFAULT_ENGINE,
@@ -83,4 +114,5 @@ def describe_engines(model: str | None = None) -> dict[str, object]:
             {"id": engine, "label": label} for engine, label in ENGINE_LABELS.items()
         ],
         "ollama": describe_ollama(model),
+        "azure": describe_azure(),
     }

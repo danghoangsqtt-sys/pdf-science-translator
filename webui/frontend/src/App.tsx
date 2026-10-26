@@ -10,7 +10,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { PdfViewerBox } from './components/PdfViewerBox.tsx';
-import { EnginePicker, OllamaStatusNotice } from './components/EnginePicker.tsx';
+import {
+  EnginePicker,
+  OllamaStatusNotice,
+  RemoteEngineNotice,
+} from './components/EnginePicker.tsx';
 import { TranslationWarningBanner } from './components/TranslationWarningBanner.tsx';
 import {
   createTranslationJob,
@@ -259,7 +263,10 @@ export const App: React.FC = () => {
     }
   };
 
-  const engineBlocked = engine === 'ollama' && engineInfo !== null && !ollamaReady;
+  const engineBlocked =
+    engineInfo !== null &&
+    ((engine === 'ollama' && !ollamaReady) ||
+      (engine === 'azure' && !engineInfo.azure.configured));
 
   const handleDownload = () => {
     if (!resultBlob || !selectedFile) return;
@@ -399,7 +406,7 @@ export const App: React.FC = () => {
             <button
               onClick={startTranslation}
               disabled={!selectedFile || isTranslating || !backendReady || engineBlocked}
-              title={engineBlocked ? 'Ollama chưa sẵn sàng – xem hướng dẫn bên dưới' : undefined}
+              title={engineBlocked ? 'Bộ dịch chưa sẵn sàng – xem hướng dẫn bên dưới' : undefined}
               className="flex items-center gap-2 bg-[#14452F] hover:bg-[#0f3624] text-white text-sm font-medium px-6 py-2 rounded-md shadow transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isTranslating ? (
@@ -452,6 +459,7 @@ export const App: React.FC = () => {
         )}
 
         {engine === 'ollama' && !isTranslating && <OllamaStatusNotice info={engineInfo} />}
+        {!isTranslating && <RemoteEngineNotice engine={engine} info={engineInfo} />}
 
         {finishedJob && <TranslationWarningBanner result={finishedJob} />}
 

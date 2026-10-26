@@ -1287,6 +1287,18 @@ class TranslateConverter(PDFConverterEx):
         self.translatable_segments += translatable
         self.segments_by_page[ltpage.pageid] += translatable
 
+        # Engines with a batch API (Azure) translate the whole page in a few
+        # requests here; the per-segment calls below then find it ready.
+        if self.service_failure is None:
+            outgoing = [
+                mask_domain_terms(encode_formula_placeholders(s), self.domain_glossary)[0]
+                for s in sstk
+                if is_translatable_segment(s, preserved_segments)
+                and preferred_translation(s, self.translator.lang_out) is None
+            ]
+            if outgoing:
+                self.translator.prefetch(outgoing)
+
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.thread
         ) as executor:
