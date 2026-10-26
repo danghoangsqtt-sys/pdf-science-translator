@@ -508,10 +508,55 @@ class OllamaTranslator(BaseTranslator):
             translated = str(response.json()["response"])
         except (ValueError, KeyError, TypeError) as error:
             raise RuntimeError("Ollama response did not contain a translation") from error
-        translated = remove_control_characters(translated.strip())
+        translated = close_lone_formula_tags(remove_control_characters(translated.strip()))
+        translated = drop_added_final_period(text, translated)
         if not translated:
             raise RuntimeError("Ollama returned an empty translation")
         return translated
+
+
+TRAILING_TAGS_PATTERN = re.compile(r"(?:\s*</?[bst]\d+>)*\s*$")
+
+
+def drop_added_final_period(source: str, translated: str) -> str:
+    """Remove the full stop the model puts after a heading that had none.
+
+    translategemma turns "1. Introduction" into "1. Giới thiệu." and the title
+    into a sentence. Only a single final period is removed, and only when the
+    source ends without sentence punctuation; closing tags after it stay.
+    """
+    def body(text: str) -> str:
+        return text[: TRAILING_TAGS_PATTERN.search(text).start()]
+
+    source_body = body(source)
+    if not source_body or source_body[-1] in ".!?:;…":
+        return translated
+    translated_body = body(translated)
+    if not translated_body.endswith(".") or translated_body.endswith(".."):
+        return translated
+    return translated_body[:-1] + translated[len(translated_body):]
+
+
+LONE_FORMULA_TAG_PATTERN = re.compile(r"<b(\d+)\s*/?>")
+
+
+def close_lone_formula_tags(text: str) -> str:
+    """Complete a formula tag the model wrote as ``<b0>`` or ``<b0/>``.
+
+    TranslateGemma sometimes drops the closing half of an empty pair. The
+    opening half still marks the formula's position unambiguously, so the pair
+    is completed - but only when no ``</bN>`` for that number appears anywhere;
+    a tag that wraps words instead stays malformed and the segment is rejected
+    by the usual placeholder check.
+    """
+    def complete(match: re.Match) -> str:
+        identifier = match.group(1)
+        following = text[match.end():]
+        if following.startswith(f"</b{identifier}>") or f"</b{identifier}>" in text:
+            return match.group(0)
+        return f"<b{identifier}></b{identifier}>"
+
+    return LONE_FORMULA_TAG_PATTERN.sub(complete, text)
 
 
 class _RetryableOllamaError(RuntimeError):

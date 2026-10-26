@@ -153,6 +153,52 @@ class OllamaTranslatorTests(unittest.TestCase):
         with self.assertRaises(FormulaPlaceholderError):
             restore_formula_placeholders(source, translated)
 
+    def test_a_formula_tag_missing_its_closing_half_is_completed(self):
+        """Seen from translategemma:12b on 'Equation {v0} shows ...'."""
+        source = "Equation {v0} shows the bound {v1}."
+        self.post.return_value = _reply("Phương trình <b0> cho thấy giới hạn <b1></b1>.")
+
+        translated = self.translator.translate(encode_formula_placeholders(source))
+
+        self.assertEqual(
+            restore_formula_placeholders(source, translated),
+            "Phương trình {v0} cho thấy giới hạn {v1}.",
+        )
+
+    def test_a_heading_does_not_gain_a_full_stop(self):
+        cases = {
+            ("1. Introduction", "1. Giới thiệu."): "1. Giới thiệu",
+            ("<s1>Abstract</s1>", "<s1>Tóm tắt.</s1>"): "<s1>Tóm tắt</s1>",
+            ("Results hold.", "Kết quả đúng."): "Kết quả đúng.",
+            ("Wait for it", "Hãy chờ..."): "Hãy chờ...",
+            ("the bound {v0}", "giới hạn <b0></b0>."): "giới hạn <b0></b0>",
+        }
+        for (source, reply), expected in cases.items():
+            with self.subTest(source=source):
+                self.post.return_value = _reply(reply)
+                self.assertEqual(
+                    self.translator.translate(encode_formula_placeholders(source)), expected
+                )
+
+    def test_a_formula_tag_wrapping_words_is_not_repaired(self):
+        source = "Equation {v0} shows the bound."
+        self.post.return_value = _reply("Phương trình <b0>cho thấy</b0> giới hạn.")
+
+        translated = self.translator.translate(encode_formula_placeholders(source))
+
+        with self.assertRaises(FormulaPlaceholderError):
+            restore_formula_placeholders(source, translated)
+
+    def test_a_dropped_style_run_keeps_the_segment_in_the_source(self):
+        """Seen from translategemma:12b; losing bold silently is a regression."""
+        source = "Higher scores indicate <s1>better</s1> quality."
+        self.post.return_value = _reply("Điểm cao hơn cho thấy chất lượng tốt hơn.")
+
+        translated = self.translator.translate(source)
+
+        with self.assertRaises(FormulaPlaceholderError):
+            restore_formula_placeholders(source, translated)
+
     def test_a_server_that_is_not_running_is_unavailable_at_once(self):
         self.post.side_effect = requests.ConnectionError("refused")
 
