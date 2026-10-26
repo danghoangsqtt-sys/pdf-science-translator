@@ -16,7 +16,12 @@ from pdfminer.pdffont import PDFCIDFont, PDFUnicodeNotDefined
 from pdfminer.pdfinterp import PDFGraphicState, PDFResourceManager
 from pdfminer.utils import apply_matrix_pt, mult_matrix
 from pymupdf import Font
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry,
+    retry_if_not_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from pdf2zh.rules import (
     is_bullet_character,
@@ -27,6 +32,8 @@ from pdf2zh.rules import (
 from pdf2zh.translator import (
     ENGINES,
     BaseTranslator,
+    SegmentTooLongError,
+    TranslationServiceUnavailable,
     encode_formula_placeholders,
     load_domain_glossary,
     mask_domain_terms,
@@ -816,6 +823,11 @@ class TranslateConverter(PDFConverterEx):
         # document means there was no text to translate, not that translation
         # failed - the difference between "run OCR first" and "try again".
         self.translatable_segments: int = 0
+        # Set by the first TranslationServiceUnavailable. Every later segment
+        # would fail the same way, so they are kept in the source language
+        # without asking, and this message - written for the user - is what
+        # the report says instead of a count of identical errors.
+        self.service_failure: str | None = None
         # Pages carrying a raster image, filled in by the caller.
         self.pages_with_images: set[int] = set()
         self.segments_by_page: Counter[int] = Counter()
@@ -1199,9 +1211,13 @@ class TranslateConverter(PDFConverterEx):
         # Google throttles a long document, so back off instead of hammering it.
         # Roughly two minutes of patience per segment, then give up rather than
         # hang the run forever the way an unbounded retry used to.
+        # A refused segment or a dead service is never worth a second try.
         @retry(
             wait=wait_exponential(multiplier=1, min=1, max=60),
-            stop=stop_after_attempt(8),
+            stop=stop_after_attempt(1 if self.translator.handles_retries else 8),
+            retry=retry_if_not_exception_type(
+                (SegmentTooLongError, TranslationServiceUnavailable)
+            ),
             reraise=True,
         )
         def request_translation(s: str) -> str:
@@ -1227,8 +1243,17 @@ class TranslateConverter(PDFConverterEx):
         def worker(s: str) -> str:
             if not is_translatable_segment(s, preserved_segments):
                 return s
+            if self.service_failure is not None:
+                self.record_translation_failure(s, TranslationServiceUnavailable.__name__)
+                return s
             try:
                 return translate_segment(s)
+            except TranslationServiceUnavailable as e:
+                if self.service_failure is None:
+                    self.service_failure = str(e)
+                    log.error("Translation service unavailable: %s", e)
+                self.record_translation_failure(s, type(e).__name__)
+                return s
             except BaseException as e:
                 # A book is thousands of segments over tens of minutes, so one
                 # dead connection must not throw the whole document away. Keep

@@ -6,10 +6,13 @@ import functools
 import html
 import json
 import logging
+import os
 import re
 import threading
+import time
 import unicodedata
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, ClassVar
 
@@ -54,6 +57,16 @@ class SegmentTooLongError(ValueError):
     nothing said. A segment carrying formula or style markers is caught later
     by the marker check, but plain prose is silently cut in half. Refusing the
     segment keeps the source text and lets the caller say what happened.
+    """
+
+
+class TranslationServiceUnavailable(RuntimeError):
+    """Raised when the engine cannot serve any request at all.
+
+    Ollama not running, its model not downloaded, or a service refusing the
+    machine outright: retrying one segment cannot help, and every later segment
+    would fail the same way. The converter stops asking after the first one and
+    the message, written for the user, travels up to the report.
     """
 
 
@@ -137,6 +150,9 @@ class BaseTranslator:
 
     name = "base"
     lang_map: ClassVar[dict[str, str]] = {}
+    # True when do_translate already retries what is worth retrying, so the
+    # converter must not multiply its attempts by its own.
+    handles_retries = False
 
     def __init__(
         self,
@@ -243,6 +259,263 @@ class GoogleTranslator(BaseTranslator):
         if match is None:
             raise RuntimeError("Google Translate response did not contain a translation result")
         return remove_control_characters(html.unescape(match.group(1)))
+
+
+# English names TranslateGemma's prompt expects beside each code. A code with
+# no entry is still sent, as its own name, rather than refused here.
+LANGUAGE_NAMES = {
+    "af": "Afrikaans", "ca": "Catalan", "cs": "Czech", "cy": "Welsh",
+    "da": "Danish", "de": "German", "en": "English", "es": "Spanish",
+    "et": "Estonian", "eu": "Basque", "fi": "Finnish", "fr": "French",
+    "ga": "Irish", "gl": "Galician", "hr": "Croatian", "hu": "Hungarian",
+    "id": "Indonesian", "is": "Icelandic", "it": "Italian", "ja": "Japanese",
+    "ko": "Korean", "lt": "Lithuanian", "lv": "Latvian", "ms": "Malay",
+    "mt": "Maltese", "nl": "Dutch", "no": "Norwegian", "pl": "Polish",
+    "pt": "Portuguese", "ro": "Romanian", "ru": "Russian", "sk": "Slovak",
+    "sl": "Slovenian", "sq": "Albanian", "sv": "Swedish", "sw": "Swahili",
+    "tl": "Tagalog", "tr": "Turkish", "vi": "Vietnamese", "zh": "Chinese",
+}
+DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434"
+DEFAULT_OLLAMA_MODEL = "translategemma:12b"
+LIGHT_OLLAMA_MODEL = "translategemma:4b"
+
+
+def ollama_base_url() -> str:
+    """Where Ollama listens: our own setting, then Ollama's, then its default.
+
+    ``OLLAMA_HOST`` is what the server itself reads, so it is often written
+    without a scheme ("127.0.0.1:11434") or as the bind-all address, which a
+    client cannot connect to.
+    """
+    value = (
+        os.environ.get("PDF_TRANSLATE_OLLAMA_URL")
+        or os.environ.get("OLLAMA_HOST")
+        or DEFAULT_OLLAMA_URL
+    ).strip()
+    if "://" not in value:
+        value = f"http://{value}"
+    value = value.replace("://0.0.0.0", "://127.0.0.1").rstrip("/")
+    if value.count(":") < 2:
+        value += ":11434"
+    return value
+
+
+def ollama_model_name() -> str:
+    return os.environ.get("PDF_TRANSLATE_OLLAMA_MODEL") or DEFAULT_OLLAMA_MODEL
+
+
+def _same_model(wanted: str, installed: str) -> bool:
+    """Ollama lists ``name:tag``; a bare name means ``:latest``."""
+    def full(name: str) -> str:
+        return name if ":" in name else f"{name}:latest"
+
+    return full(wanted.strip().lower()) == full(installed.strip().lower())
+
+
+def ollama_pull_command(model: str) -> str:
+    return f"ollama pull {model}"
+
+
+def ollama_not_running_message(base_url: str) -> str:
+    return (
+        f"Không kết nối được Ollama tại {base_url}. Hãy cài Ollama từ "
+        "https://ollama.com/download và mở ứng dụng Ollama, rồi dịch lại."
+    )
+
+
+def ollama_model_missing_message(model: str) -> str:
+    return (
+        f"Ollama đang chạy nhưng chưa tải mô hình {model}. "
+        f"Mở cửa sổ dòng lệnh và chạy: {ollama_pull_command(model)}"
+    )
+
+
+@dataclass(frozen=True)
+class OllamaStatus:
+    """Whether the offline engine can translate right now, and if not, why."""
+
+    state: str  # "ready", "not_running" or "model_missing"
+    base_url: str
+    model: str
+    installed_models: tuple[str, ...] = ()
+    message: str = ""
+
+    @property
+    def ready(self) -> bool:
+        return self.state == "ready"
+
+
+def ollama_status(
+    model: str | None = None,
+    base_url: str | None = None,
+    timeout: float = 3.0,
+) -> OllamaStatus:
+    """Ask Ollama which models it has, without loading any of them."""
+    model = model or ollama_model_name()
+    base_url = base_url or ollama_base_url()
+    try:
+        response = requests.get(f"{base_url}/api/tags", timeout=timeout)
+        response.raise_for_status()
+        installed = tuple(
+            str(entry.get("name", "")) for entry in response.json().get("models", [])
+        )
+    except (requests.RequestException, ValueError, AttributeError):
+        return OllamaStatus(
+            "not_running", base_url, model, message=ollama_not_running_message(base_url)
+        )
+    if not any(_same_model(model, name) for name in installed):
+        return OllamaStatus(
+            "model_missing",
+            base_url,
+            model,
+            installed,
+            ollama_model_missing_message(model),
+        )
+    return OllamaStatus("ready", base_url, model, installed, f"Ollama sẵn sàng với {model}.")
+
+
+class OllamaTranslator(BaseTranslator):
+    """Translate offline through a local Ollama server running TranslateGemma.
+
+    The prompt is TranslateGemma's own, word for word: the model was trained on
+    it, and it has no slot for a glossary, so domain terms keep travelling as
+    masked ``<tN>`` placeholders the way they do for every other engine.
+    """
+
+    name = "ollama"
+    # The converter's own retry is for flaky web endpoints. This one already
+    # retries what is worth retrying, and a dead server must fail at once.
+    handles_retries = True
+    MAXIMUM_SEGMENT_CHARACTERS = 5000
+    ATTEMPTS = 3
+    BACKOFF_SECONDS = 2.0
+    # A run of segments that all exhausted their attempts means the server is
+    # wedged or far too slow for this machine, not that one paragraph is hard.
+    CONSECUTIVE_FAILURE_LIMIT = 5
+
+    def __init__(
+        self,
+        lang_in: str,
+        lang_out: str,
+        model: str | None = None,
+        *,
+        ignore_cache: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            lang_in,
+            lang_out,
+            model or ollama_model_name(),
+            ignore_cache=ignore_cache,
+            **kwargs,
+        )
+        self.base_url = ollama_base_url()
+        self.timeout = float(os.environ.get("PDF_TRANSLATE_OLLAMA_TIMEOUT", "180"))
+        self.session = requests.Session()
+        self._failure_lock = threading.Lock()
+        self._consecutive_failures = 0
+
+    def prompt(self, text: str) -> str:
+        """TranslateGemma's documented prompt, including the two blank lines."""
+        # "auto" has no meaning to the model; the documents this app sees are
+        # overwhelmingly English, and --source-language overrides it.
+        source_code = "en" if self.lang_in in ("", "auto") else self.lang_in
+        source = LANGUAGE_NAMES.get(source_code, source_code)
+        target = LANGUAGE_NAMES.get(self.lang_out, self.lang_out)
+        return (
+            f"You are a professional {source} ({source_code}) to {target} "
+            f"({self.lang_out}) translator. Your goal is to accurately convey the "
+            f"meaning and nuances of the original {source} text while adhering to "
+            f"{target} grammar, vocabulary, and cultural sensitivities.\n"
+            f"Produce only the {target} translation, without any additional "
+            f"explanations or commentary. Please translate the following {source} "
+            f"text into {target}:\n\n\n{text}"
+        )
+
+    def do_translate(self, text: str) -> str:
+        if len(text) > self.MAXIMUM_SEGMENT_CHARACTERS:
+            raise SegmentTooLongError(
+                f"segment of {len(text)} characters exceeds the "
+                f"{self.MAXIMUM_SEGMENT_CHARACTERS} sent in one request"
+            )
+        try:
+            translated = self._request_with_retries(text)
+        except TranslationServiceUnavailable:
+            raise
+        except Exception:
+            with self._failure_lock:
+                self._consecutive_failures += 1
+                wedged = self._consecutive_failures >= self.CONSECUTIVE_FAILURE_LIMIT
+            if wedged:
+                raise TranslationServiceUnavailable(
+                    f"Ollama tại {self.base_url} liên tục không trả lời "
+                    f"({self.CONSECUTIVE_FAILURE_LIMIT} đoạn liền nhau lỗi). Máy có thể "
+                    f"thiếu bộ nhớ GPU cho {self.model}; thử mô hình nhẹ hơn "
+                    f"{LIGHT_OLLAMA_MODEL}."
+                ) from None
+            raise
+        with self._failure_lock:
+            self._consecutive_failures = 0
+        return translated
+
+    def _request_with_retries(self, text: str) -> str:
+        last_error: Exception | None = None
+        for attempt in range(self.ATTEMPTS):
+            if attempt:
+                time.sleep(self.BACKOFF_SECONDS * 2 ** (attempt - 1))
+            try:
+                return self._request(text)
+            except (requests.Timeout, _RetryableOllamaError) as error:
+                last_error = error
+        assert last_error is not None
+        raise last_error
+
+    def _request(self, text: str) -> str:
+        try:
+            response = self.session.post(
+                f"{self.base_url}/api/generate",
+                json={
+                    "model": self.model,
+                    "prompt": self.prompt(text),
+                    "stream": False,
+                    "keep_alive": "15m",
+                    "options": {
+                        "temperature": 0,
+                        "num_ctx": 8192,
+                        # Room for Vietnamese to run longer than its source,
+                        # while a model that starts looping still stops.
+                        "num_predict": max(256, len(text)),
+                    },
+                },
+                timeout=self.timeout,
+            )
+        except requests.ConnectionError as error:
+            raise TranslationServiceUnavailable(
+                ollama_not_running_message(self.base_url)
+            ) from error
+        if response.status_code == 404:
+            raise TranslationServiceUnavailable(ollama_model_missing_message(self.model))
+        if response.status_code >= 500:
+            detail = response.text[:300].lower()
+            if "memory" in detail:
+                raise TranslationServiceUnavailable(
+                    f"Không đủ bộ nhớ để chạy {self.model}. Hãy đóng bớt ứng dụng "
+                    f"dùng GPU hoặc chọn mô hình nhẹ hơn {LIGHT_OLLAMA_MODEL}."
+                )
+            raise _RetryableOllamaError(f"Ollama returned HTTP {response.status_code}")
+        response.raise_for_status()
+        try:
+            translated = str(response.json()["response"])
+        except (ValueError, KeyError, TypeError) as error:
+            raise RuntimeError("Ollama response did not contain a translation") from error
+        translated = remove_control_characters(translated.strip())
+        if not translated:
+            raise RuntimeError("Ollama returned an empty translation")
+        return translated
+
+
+class _RetryableOllamaError(RuntimeError):
+    """A server-side hiccup worth another attempt."""
 
 
 def placeholders(text: str) -> list[str]:
@@ -483,5 +756,6 @@ class HandoffTranslator(BaseTranslator):
 
 
 ENGINES: dict[str, type[BaseTranslator]] = {
-    engine.name: engine for engine in (GoogleTranslator, HandoffTranslator)
+    engine.name: engine
+    for engine in (OllamaTranslator, GoogleTranslator, HandoffTranslator)
 }

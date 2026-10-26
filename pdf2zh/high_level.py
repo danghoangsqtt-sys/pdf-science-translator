@@ -55,6 +55,9 @@ class TranslationReport:
     image_only_pages: set[int] = field(default_factory=set)
     translatable_segments: int = 0
     pages_processed: int = 0
+    # The user-facing message of the first TranslationServiceUnavailable, when
+    # the engine stopped answering altogether.
+    service_failure: str | None = None
 
     def __len__(self) -> int:
         return len(self.failures)
@@ -596,6 +599,7 @@ def translate_patch(
         image_only_pages=device.image_only_pages,
         translatable_segments=device.translatable_segments,
         pages_processed=total_pages,
+        service_failure=device.service_failure,
     )
 
 

@@ -207,7 +207,7 @@ class PreservationRuleTests(unittest.TestCase):
             TranslateConverter(PDFResourceManager(), service="bing")
 
     def test_converter_accepts_every_registered_engine(self):
-        for service in ("google", "handoff"):
+        for service in ("ollama", "google", "handoff"):
             with self.subTest(service=service):
                 converter = TranslateConverter(PDFResourceManager(), service=service)
                 self.assertEqual(converter.translator.name, service)
