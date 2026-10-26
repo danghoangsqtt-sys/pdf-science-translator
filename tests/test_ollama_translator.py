@@ -15,12 +15,14 @@ from pdf2zh import translator as translator_module
 from pdf2zh.translator import (
     ENGINES,
     FormulaPlaceholderError,
+    ImplausibleTranslationError,
     OllamaTranslator,
     SegmentTooLongError,
     TranslationServiceUnavailable,
     encode_formula_placeholders,
     ollama_base_url,
     ollama_status,
+    plausible_length,
     restore_formula_placeholders,
 )
 
@@ -164,6 +166,116 @@ class OllamaTranslatorTests(unittest.TestCase):
             restore_formula_placeholders(source, translated),
             "Phương trình {v0} cho thấy giới hạn {v1}.",
         )
+
+    def test_lost_markers_are_retried_with_braced_formulas(self):
+        source = "We use the samples {v6} to derive {v8}({v9})."
+        self.post.side_effect = [
+            _reply("Chúng tôi dùng các mẫu để suy ra <b8></b8>(<b9></b9>)."),
+            _reply("Chúng tôi dùng các mẫu {6} để suy ra {8}({9})."),
+        ]
+
+        translated = self.translator.translate(encode_formula_placeholders(source))
+
+        self.assertEqual(
+            restore_formula_placeholders(source, translated),
+            "Chúng tôi dùng các mẫu {v6} để suy ra {v8}({v9}).",
+        )
+        rescue = self.post.call_args_list[1].kwargs["json"]
+        self.assertTrue(rescue["prompt"].endswith("We use the samples {6} to derive {8}({9})."))
+        self.assertEqual(rescue["options"]["temperature"], 0.0)
+
+    def test_sampled_retries_follow_and_use_fixed_seeds(self):
+        source = "Let {v0} be the loss."
+        lost = _reply("Gọi là hàm mất mát.")
+        self.post.side_effect = [lost, lost, lost, _reply("Gọi {0} là hàm mất mát.")]
+
+        translated = self.translator.translate(encode_formula_placeholders(source))
+
+        self.assertEqual(restore_formula_placeholders(source, translated), "Gọi {v0} là hàm mất mát.")
+        options = [call.kwargs["json"]["options"] for call in self.post.call_args_list]
+        self.assertEqual([o["temperature"] for o in options], [0, 0.0, 0.4, 0.4])
+        self.assertEqual([o.get("seed") for o in options], [None, None, 1, 2])
+
+    def test_when_every_retry_fails_the_first_answer_is_rejected_as_before(self):
+        source = "Let {v0} be the loss."
+        self.post.return_value = _reply("Gọi là hàm mất mát.")
+
+        translated = self.translator.translate(encode_formula_placeholders(source))
+
+        self.assertEqual(self.post.call_count, 4)
+        self.assertEqual(translated, "Gọi là hàm mất mát.")
+        with self.assertRaises(FormulaPlaceholderError):
+            restore_formula_placeholders(source, translated)
+
+    def test_a_segment_with_intact_markers_costs_one_request(self):
+        self.post.return_value = _reply("Gọi <b0></b0> là hàm mất mát.")
+        self.translator.translate(encode_formula_placeholders("Let {v0} be the loss."))
+        self.assertEqual(self.post.call_count, 1)
+
+    def test_a_lost_style_run_is_retried_in_its_own_form(self):
+        source = "Higher scores indicate <s1>better</s1> quality."
+        self.post.side_effect = [
+            _reply("Điểm cao hơn cho thấy chất lượng tốt hơn."),
+            _reply("Điểm cao hơn cho thấy chất lượng <s1>tốt hơn</s1>."),
+        ]
+        translated = self.translator.translate(source)
+        self.assertEqual(translated, "Điểm cao hơn cho thấy chất lượng <s1>tốt hơn</s1>.")
+        retry = self.post.call_args_list[1].kwargs["json"]
+        self.assertIn("<s1>better</s1>", retry["prompt"])
+        self.assertEqual(retry["options"]["temperature"], 0.4)
+
+    def test_literal_braced_numbers_in_the_source_disable_the_braced_form(self):
+        source = "The set {3} contains {v0}."
+        self.post.return_value = _reply("Tập {3} chứa.")
+        self.translator.translate(encode_formula_placeholders(source))
+        for call in self.post.call_args_list:
+            self.assertIn("<b0></b0>", call.kwargs["json"]["prompt"])
+
+    def test_an_answer_padded_with_invented_text_is_retried_then_refused(self):
+        """Seen from translategemma:12b on the Inception Score excerpt."""
+        source = (
+            "The authors who proposed the IS aimed to codify two desirable "
+            "qualities of a generative model into a metric:"
+        )
+        invented = (
+            "- accuracy- interpretabilityCác tác giả đề xuất chỉ số IS (Information "
+            "Structure Index) nhằm mục đích mã hóa hai đặc tính mong muốn của một mô "
+            "hình sinh ra thành một thước đo:- độ chính xác- khả năng giải thích"
+        )
+        self.post.return_value = _reply(invented)
+
+        with self.assertRaises(ImplausibleTranslationError):
+            self.translator.translate(source)
+        self.assertEqual(self.post.call_count, 3)  # first answer, then two sampled retries
+
+    def test_a_faithful_retry_replaces_an_invented_answer(self):
+        source = "The authors aimed to codify two qualities into a metric:"
+        self.post.side_effect = [
+            _reply("Các tác giả đặt ra chỉ số IS (Information Structure Index) nhằm mã hóa "
+                   "hai đặc tính: độ chính xác, khả năng giải thích, và nhiều điều khác nữa."),
+            _reply("Các tác giả muốn mã hóa hai đặc tính thành một thước đo:"),
+        ]
+        self.assertEqual(
+            self.translator.translate(source),
+            "Các tác giả muốn mã hóa hai đặc tính thành một thước đo:",
+        )
+
+    def test_ordinary_vietnamese_length_is_plausible(self):
+        pairs = [
+            ("3. The Inception Score for Image Generation",
+             "3. Điểm Inception để đánh giá chất lượng hình ảnh được tạo ra"),
+            ("Abstract", "Tóm tắt"),
+            ("Unit", "Đơn vị đo lường"),
+        ]
+        for source, translated in pairs:
+            with self.subTest(source=source):
+                self.assertTrue(plausible_length(source, translated))
+
+    def test_backticks_the_source_never_had_are_removed(self):
+        source = "where {v0} indicates that {v1} is an image"
+        self.post.return_value = _reply("trong đó, `<b0></b0>` chỉ ra rằng `<b1></b1>` là một ảnh")
+        translated = self.translator.translate(encode_formula_placeholders(source))
+        self.assertEqual(translated, "trong đó, <b0></b0> chỉ ra rằng <b1></b1> là một ảnh")
 
     def test_a_heading_does_not_gain_a_full_stop(self):
         cases = {

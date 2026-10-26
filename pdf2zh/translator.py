@@ -471,8 +471,8 @@ class OllamaTranslator(BaseTranslator):
                 f"{self.MAXIMUM_SEGMENT_CHARACTERS} sent in one request"
             )
         try:
-            translated = self._request_with_retries(text)
-        except TranslationServiceUnavailable:
+            translated = self._translate_keeping_markers(text)
+        except (TranslationServiceUnavailable, ImplausibleTranslationError):
             raise
         except Exception:
             with self._failure_lock:
@@ -490,19 +490,78 @@ class OllamaTranslator(BaseTranslator):
             self._consecutive_failures = 0
         return translated
 
-    def _request_with_retries(self, text: str) -> str:
+    # Measured on the Inception Score excerpt with translategemma:12b: of 16
+    # segments whose markers were lost at temperature 0, writing formulas as
+    # "{0}" rescued 7, and two sampled retries of that form 2 more. Sampling
+    # with the tag form rescued only 3. Every candidate still has to pass the
+    # same marker check, so a rescue can never return a damaged formula.
+    RESCUE_ATTEMPTS = ((0.0, None), (0.4, 1), (0.4, 2))
+
+    def _translate_keeping_markers(self, text: str) -> str:
+        """Translate; if markers were lost, retry in the forms the model keeps.
+
+        Only segments whose first answer failed the marker check pay for the
+        extra requests. When every attempt fails, the first answer is returned
+        and the converter rejects it as before.
+        """
+        first = self._request_with_retries(text)
+        if markers_intact(text, first) and plausible_length(text, first):
+            return first
+        braceable = (
+            not markers_intact(text, first)
+            and "<b" in text
+            and not BRACED_NUMBER_PATTERN.search(text)
+        )
+        for temperature, seed in self.RESCUE_ATTEMPTS:
+            if not braceable and temperature == 0.0:
+                continue  # the tag form at temperature 0 is the answer we have
+            try:
+                if braceable:
+                    candidate = unbrace_formula_tags(
+                        self._request_with_retries(
+                            brace_formula_tags(text), temperature, seed
+                        ),
+                        text,
+                    )
+                else:
+                    candidate = self._request_with_retries(text, temperature, seed)
+            except TranslationServiceUnavailable:
+                raise
+            except Exception:  # noqa: BLE001 - the first answer still stands
+                break
+            if markers_intact(text, candidate) and plausible_length(text, candidate):
+                return candidate
+        if not plausible_length(text, first):
+            raise ImplausibleTranslationError(
+                f"translation of {len(strip_markers(text))} characters came back as "
+                f"{len(strip_markers(first))}; the model added text of its own"
+            )
+        return first
+
+    def _request_with_retries(
+        self, text: str, temperature: float = 0.0, seed: int | None = None
+    ) -> str:
         last_error: Exception | None = None
         for attempt in range(self.ATTEMPTS):
             if attempt:
                 time.sleep(self.BACKOFF_SECONDS * 2 ** (attempt - 1))
             try:
-                return self._request(text)
+                return self._request(text, temperature, seed)
             except (requests.Timeout, _RetryableOllamaError) as error:
                 last_error = error
         assert last_error is not None
         raise last_error
 
-    def _request(self, text: str) -> str:
+    def _request(self, text: str, temperature: float = 0.0, seed: int | None = None) -> str:
+        options: dict[str, Any] = {
+            "temperature": temperature,
+            "num_ctx": 8192,
+            # Room for Vietnamese to run longer than its source, while a
+            # model that starts looping still stops.
+            "num_predict": max(256, len(text)),
+        }
+        if seed is not None:
+            options["seed"] = seed
         try:
             response = self.session.post(
                 f"{self.base_url}/api/generate",
@@ -511,13 +570,7 @@ class OllamaTranslator(BaseTranslator):
                     "prompt": self.prompt(text),
                     "stream": False,
                     "keep_alive": "15m",
-                    "options": {
-                        "temperature": 0,
-                        "num_ctx": 8192,
-                        # Room for Vietnamese to run longer than its source,
-                        # while a model that starts looping still stops.
-                        "num_predict": max(256, len(text)),
-                    },
+                    "options": options,
                 },
                 timeout=self.timeout,
             )
@@ -542,6 +595,9 @@ class OllamaTranslator(BaseTranslator):
             raise RuntimeError("Ollama response did not contain a translation") from error
         translated = close_lone_formula_tags(remove_control_characters(translated.strip()))
         translated = drop_added_final_period(text, translated)
+        if "`" not in text:
+            # The model quotes "{0}" as code; the source never had backticks.
+            translated = translated.replace("`", "")
         if not translated:
             raise RuntimeError("Ollama returned an empty translation")
         return translated
@@ -567,6 +623,70 @@ def drop_added_final_period(source: str, translated: str) -> str:
     if not translated_body.endswith(".") or translated_body.endswith(".."):
         return translated
     return translated_body[:-1] + translated[len(translated_body):]
+
+
+class ImplausibleTranslationError(RuntimeError):
+    """The model answered with far more text than it was given.
+
+    translategemma turned "...two desirable qualities of a generative model
+    into a metric:" into a sentence with an invented acronym and an invented
+    list. Nothing structural is wrong with such an answer, so the marker
+    check passes it; only its length gives it away.
+    """
+
+
+MARKER_PATTERN = re.compile(r"</?[bst]\d+>")
+# Vietnamese ran 1.1-1.5x the English character count on the measured
+# excerpt; the invented answer ImplausibleTranslationError describes ran 1.94x.
+# 1.6x plus a little room for short headings is past anything a faithful
+# translation needed there.
+PLAUSIBLE_LENGTH_RATIO = 1.6
+PLAUSIBLE_LENGTH_SLACK = 20
+
+
+def strip_markers(text: str) -> str:
+    return MARKER_PATTERN.sub("", text)
+
+
+def plausible_length(sent: str, translated: str) -> bool:
+    source_length = len(strip_markers(sent))
+    return len(strip_markers(translated)) <= (
+        PLAUSIBLE_LENGTH_RATIO * source_length + PLAUSIBLE_LENGTH_SLACK
+    )
+
+
+BRACED_NUMBER_PATTERN = re.compile(r"\{(\d+)\}")
+
+
+def brace_formula_tags(text: str) -> str:
+    """``<b3></b3>`` -> ``{3}``: a spelling translategemma drops less often."""
+    return PAIRED_PLACEHOLDER_PATTERN.sub(lambda match: f"{{{match.group(1)}}}", text)
+
+
+def unbrace_formula_tags(translated: str, sent: str) -> str:
+    """Turn ``{3}`` back into ``<b3></b3>``, for numbers the sent text used only."""
+    numbers = set(PAIRED_PLACEHOLDER_PATTERN.findall(sent))
+
+    def restore(match: re.Match) -> str:
+        number = match.group(1)
+        return f"<b{number}></b{number}>" if number in numbers else match.group(0)
+
+    return BRACED_NUMBER_PATTERN.sub(restore, translated)
+
+
+def markers_intact(sent: str, translated: str) -> bool:
+    """The check the converter applies later: formula, style and term markers."""
+    if placeholders(sent) != placeholders(translated):
+        return False
+    if PAIRED_DOMAIN_TERM_PATTERN.findall(sent) != PAIRED_DOMAIN_TERM_PATTERN.findall(
+        translated
+    ):
+        return False
+    try:
+        validate_style_tags(sent, translated)
+    except FormulaPlaceholderError:
+        return False
+    return True
 
 
 LONE_FORMULA_TAG_PATTERN = re.compile(r"<b(\d+)\s*/?>")

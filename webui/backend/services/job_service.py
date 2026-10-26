@@ -42,7 +42,8 @@ def translation_warnings(translation: Translation) -> list[str]:
     kept = translation.kept_by_reason
     if kept.get("service"):
         warnings.append(
-            f"{kept['service']} đoạn giữ nguyên bản gốc vì bộ dịch gặp lỗi."
+            f"{kept['service']} đoạn giữ nguyên bản gốc vì bộ dịch gặp lỗi hoặc trả lời "
+            "không đáng tin (bịa thêm nội dung)."
         )
     if kept.get("formula"):
         warnings.append(
