@@ -27,15 +27,27 @@ Use the interpreter inside `<skill-root>/.venv`:
 
 | Mode | Translator | Use when |
 | --- | --- | --- |
-| Google (default) | `translate.google.com` | Books, batches, first drafts, or low token use |
+| Ollama (default) | `translategemma:12b` on the local machine | Private documents, no account, no network |
+| Azure | Azure Translator v3 with the user's key | The user has a key and wants the official service |
+| Google | `translate.google.com` | Fallback when neither is available |
 | Handoff | The active agent | Terminology, context, or translation quality matters |
 
-Default to Google. Offer handoff when the user asks for higher quality, rejects the Google result, or provides a short technical document.
+Default to Ollama. The runner checks the server and model before reading any
+page and says how to fix it (`ollama pull translategemma:12b`); offer
+`--model translategemma:4b` on a weak machine. Use Google only as a fallback:
+its free endpoint blocks an IP that sends it a whole document, and the runner
+then stops with a Vietnamese message instead of retrying. Offer handoff when
+the user asks for higher quality or provides a short technical document.
+
+Report the translated share the runner prints (`Translated 34/43 segments
+(79%)`) and every kept-source reason; a run with nothing translated is an
+error, never a delivered file.
 
 ## Boundaries
 
 - Use the bundled `pdf2zh/` core. Never substitute the PyPI `pdf2zh` package; the runner checks version `1.9.11` and preservation ruleset `code4life-preservation-v1` and refuses an external core.
-- Google mode sends extracted document text to Google. Tell the user before processing sensitive material and obtain explicit confirmation unless their request already authorizes that disclosure. Handoff mode does not contact Google.
+- Google and Azure modes send extracted document text to those services. Tell the user before processing sensitive material and obtain explicit confirmation unless their request already authorizes that disclosure. Ollama and handoff modes keep the text on the machine.
+- Azure reads `AZURE_TRANSLATOR_KEY`/`AZURE_TRANSLATOR_REGION` or the per-user `engines.json`; never write a key into the repository or a command shown to the user.
 - Supported targets are the Latin-script codes enforced by `scripts/translate_pdf.py`. CJK, right-to-left, Thai, Devanagari, and other complex-shaping targets are rejected because the bundled font and layout engine cannot render them reliably.
 - OCR is opt-in with `--ocr standard|enhanced`. It fails closed on unsafe tables,
   formulas, figures, code and ambiguous reading order; report every preserved
@@ -65,11 +77,12 @@ python3 -m venv "<skill-root>/.venv"
 "<skill-root>/.venv/bin/python" -m pip install -r "<skill-root>/requirements.txt"
 ```
 
-Shared runner options include `--target-language` (default `vi`), `--source-language auto`, one-based `--pages 1,3-5`, `--threads 1..8` (default `4`), `--ignore-cache`, and `--overwrite`.
+Shared runner options include `--target-language` (default `vi`), `--source-language auto`, one-based `--pages 1,3-5`, `--threads 1..8` (default `2` for Ollama, `4` otherwise), `--engine ollama|azure|google|handoff`, `--model` (Ollama only), `--ignore-cache`, and `--overwrite`.
 
-## Google mode
+## Ollama, Azure or Google mode
 
-Run one command per file. Use absolute paths for the input and output directory.
+Add `--engine azure` or `--engine google` to choose those engines; Ollama needs
+no flag. Run one command per file. Use absolute paths for the input and output directory.
 
 Windows:
 
@@ -123,7 +136,7 @@ untranslated instead of silently losing emphasis.
 
 The command prints the remaining untranslated segment count. If it is nonzero, translate `still-missing.jsonl`, append valid records to `translations.jsonl`, and rebuild again. Stop only at zero or when a segment cannot be translated safely; then report the exact remaining limitation.
 
-Extraction and rebuild each run the layout pass, so handoff uses roughly twice the local PDF processing of Google mode in addition to the agent's translation work.
+Extraction and rebuild each run the layout pass, so handoff uses roughly twice the local PDF processing of the other modes in addition to the agent's translation work.
 
 ## Verify before delivery
 

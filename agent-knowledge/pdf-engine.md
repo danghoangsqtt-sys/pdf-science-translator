@@ -108,6 +108,42 @@ come from the onnxruntime session, so nothing imports `onnx` directly.
   a lone token such as `2` receive a bounded, gentle font reduction to balance
   the wrap without affecting ordinary body paragraphs.
 
+## Translation Engines
+
+`pdf2zh/translator.py` registers `ollama` (default), `azure`, `google` and
+`handoff`. `scripts/translate_pdf.py` checks the chosen engine before reading
+any page: Ollama must answer `/api/tags` with the model pulled, Azure needs a
+key from `AZURE_TRANSLATOR_KEY`/`_REGION` or the per-user `engines.json`
+(`%APPDATA%\PDFTranslate`, `~/.config/pdftranslate`), never the repository.
+The Tkinter app pins `engine="google"`; it has no engine picker.
+
+- **Ollama** sends TranslateGemma's own prompt verbatim (source and target
+  name plus code, two blank lines before the text). It has no glossary slot,
+  so domain terms keep travelling as masked `<tN>` tags. Two threads by
+  default: one GPU serves requests in turn. The engine retries timeouts and
+  5xx itself (`handles_retries`), so the converter does not multiply them.
+- translategemma drops formula markers in formula-dense prose. Only a segment
+  whose markers failed is asked again, with formulas spelled `{N}` and then
+  twice sampled at temperature 0.4 with fixed seeds; every candidate must
+  still pass `markers_intact`, so a rescue cannot return a damaged formula.
+  It also pads answers with invented text: an answer over 1.6x the source plus
+  20 characters is retried, then refused as `ImplausibleTranslationError`.
+- **Azure** sends `textType=html` with prose escaped and marker tags left as
+  tags. The converter hands each page's outgoing segments to
+  `translator.prefetch`, which Azure batches within 1,000 elements and 50,000
+  characters per request; other engines ignore it.
+- `TranslationServiceUnavailable` means no later segment can succeed (server
+  down, model missing, key refused, quota, Google's 429 / `/sorry` / CAPTCHA
+  page). The converter does not retry it, keeps every later segment without
+  another request, and carries the user-facing message in
+  `TranslationReport.service_failure`.
+- `Translation` reports `total_segments`, `translated_ratio` and
+  `kept_by_reason` (`service`, `formula`, `fit`, `too_long`). A run that kept
+  every segment raises instead of writing the output. The web backend marks a
+  delivered result below 50% translated `complete_with_warnings`.
+- `cancel_event` reaches the core's per-page cancellation check; a cancelled
+  run raises `TranslationCancelled` and writes nothing.
+
 ## Colour and Emphasis
 
 The colour in force is captured as the source wrote it and replayed in front of

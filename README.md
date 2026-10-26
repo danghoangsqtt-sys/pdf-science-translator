@@ -190,6 +190,52 @@ Codex, Claude Code hay Copilot.
 
 Các hệ chữ sau chưa được hỗ trợ: Trung, Nhật, Hàn, Ả Rập, Do Thái, Thái và các chữ Ấn Độ. Ứng dụng sẽ báo lỗi thay vì tạo PDF chứa ký tự ô vuông do thiếu glyph.
 
+## Bộ dịch
+
+Từ bản này, lõi dịch và giao diện Electron mặc định dịch **ngoại tuyến** trên máy bằng [Ollama](https://ollama.com). Tài liệu không rời khỏi máy và không cần tài khoản. App desktop Tkinter (`app/gui.py`) vẫn dùng Google như trước.
+
+| Bộ dịch | Khi nào dùng | Cần gì |
+| --- | --- | --- |
+| **Ngoại tuyến (Ollama)** – mặc định | Tài liệu riêng tư, không muốn phụ thuộc Internet | Ollama và mô hình `translategemma:12b` (8,1 GB; nên có GPU khoảng 10 GB VRAM) hoặc `translategemma:4b` (3,3 GB) cho máy yếu |
+| **Azure** | Cần dịch vụ chính thức, ổn định | Khóa Azure Translator của bạn (gói F0 miễn phí 2 triệu ký tự/giờ) |
+| **Google (dự phòng)** | Thử nhanh khi không có hai lựa chọn trên | Internet. Google có thể tạm chặn máy khi dịch nhiều trang |
+
+### Cài Ollama
+
+Bộ cài của ứng dụng **không** kèm Ollama. App tự kiểm tra và hướng dẫn từng bước khi chưa sẵn sàng.
+
+1. Tải và cài Ollama tại <https://ollama.com/download>, rồi mở ứng dụng Ollama.
+2. Tải mô hình (chỉ một lần):
+
+   ```powershell
+   ollama pull translategemma:12b
+   ```
+
+   Máy yếu hoặc GPU dưới 8 GB: dùng `ollama pull translategemma:4b` và chọn mô hình 4B trong app.
+
+Các biến môi trường tùy chọn: `PDF_TRANSLATE_OLLAMA_URL` (hoặc `OLLAMA_HOST`) cho địa chỉ máy chủ, `PDF_TRANSLATE_OLLAMA_MODEL` cho tên mô hình, `PDF_TRANSLATE_OLLAMA_TIMEOUT` cho thời gian chờ mỗi đoạn (mặc định 180 giây).
+
+### Cấu hình Azure
+
+Đặt khóa bằng biến môi trường:
+
+```powershell
+setx AZURE_TRANSLATOR_KEY "khóa-của-bạn"
+setx AZURE_TRANSLATOR_REGION "southeastasia"
+```
+
+hoặc tạo tệp `%APPDATA%\PDFTranslate\engines.json` (macOS/Linux: `~/.config/pdftranslate/engines.json`):
+
+```json
+{"azure": {"key": "khóa-của-bạn", "region": "southeastasia"}}
+```
+
+Khóa chỉ nằm trên máy của bạn; đừng đưa tệp này vào repo.
+
+### Khi bản dịch chưa trọn vẹn
+
+Ứng dụng không bao giờ báo "hoàn tất" cho một bản dịch rỗng. Không dịch được đoạn nào thì báo lỗi, không tạo tệp. Dịch được một phần thì hiện băng vàng "Đã dịch X%" kèm lý do: bộ dịch lỗi, mô hình làm mất ký hiệu công thức, hoặc bản dịch không vừa chỗ. Những đoạn đó được giữ nguyên bản gốc thay vì in ra công thức hỏng. Kết quả đo thực tế: [docs/do-luong-ollama-2026-10-27.md](docs/do-luong-ollama-2026-10-27.md).
+
 ## Dùng như Agent Skill
 
 Repo đồng thời tuân theo chuẩn [Agent Skills](https://agentskills.io/) và có thể dùng với Codex, Claude Code, GitHub Copilot cùng các coding agent hỗ trợ `SKILL.md`.
@@ -212,14 +258,16 @@ Trong Claude Code hoặc Copilot CLI:
 /pdf-translate translate this PDF into Vietnamese.
 ```
 
-Skill cung cấp hai chế độ dịch:
+Skill cung cấp các chế độ dịch:
 
 | Chế độ | Bộ máy dịch | Phù hợp khi |
 | --- | --- | --- |
-| **Google** | `translate.google.com` | Cần nhanh, miễn phí và không có API key |
+| **Ollama** | `translategemma` chạy trên máy | Mặc định; dữ liệu không rời khỏi máy |
+| **Azure** | Azure Translator v3 | Có khóa Azure, cần dịch vụ chính thức |
+| **Google** | `translate.google.com` | Dự phòng nhanh, miễn phí, không có API key |
 | **Handoff** | AI agent trong phiên làm việc | Tài liệu chuyên ngành cần bản dịch theo ngữ cảnh |
 
-Google là chế độ mặc định và là chế độ được dùng trong app desktop. Handoff trích các đoạn văn sang JSONL để agent dịch, sau đó dựng lại PDF; dữ liệu không được gửi tới Google nhưng sẽ tốn token và mất nhiều thời gian hơn.
+Ollama là chế độ mặc định của dòng lệnh và giao diện Electron; app desktop Tkinter vẫn dùng Google. Handoff trích các đoạn văn sang JSONL để agent dịch, sau đó dựng lại PDF; dữ liệu không được gửi đi đâu nhưng sẽ tốn token và mất nhiều thời gian hơn.
 
 Ví dụ với từ *conduction* trong tài liệu truyền nhiệt:
 
@@ -240,10 +288,20 @@ python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-### Dịch bằng Google
+### Dịch ngoại tuyến bằng Ollama (mặc định)
 
 ```powershell
 .venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT
+.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT --model translategemma:4b
+```
+
+Mặc định dùng 2 luồng cho Ollama (GPU xử lý lần lượt từng yêu cầu); `--threads` để đổi.
+
+### Dịch bằng Azure hoặc Google
+
+```powershell
+.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT --engine azure
+.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT --engine google
 ```
 
 ### Dịch bằng Handoff
@@ -283,7 +341,9 @@ Gói phát hành được tạo tại `dist/PDFTranslate-macos-apple-silicon.dmg
   chắn sẽ được giữ nguyên và báo là dịch một phần.
 - Chữ nằm trong vùng được nhận diện là bảng hoặc hình đôi khi được giữ nguyên theo bản gốc.
 - Mục lục, index, danh mục ký hiệu và tài liệu tham khảo được ưu tiên giữ bố cục nên không được dàn lại dòng. Xem [quy tắc bảo toàn](references/preservation-rules.md).
-- Mỗi đoạn gửi tới Google được giới hạn ở 5.000 ký tự; phần vượt quá giới hạn không được dịch.
+- Mỗi đoạn gửi tới Google hoặc Ollama được giới hạn ở 5.000 ký tự (Azure: 50.000); đoạn dài hơn được giữ nguyên và báo lại.
+- Mô hình ngoại tuyến hay làm rơi ký hiệu công thức ở đoạn văn dày công thức; những đoạn đó được giữ nguyên tiếng Anh và tính vào tỷ lệ "Đã dịch X%".
+- Đoạn giữ nguyên bản gốc vẫn được dàn lại dòng, nên có thể còn dấu gạch nối của bản gốc giữa dòng (ví dụ "In- ception").
 - Với đoạn vốn quá chật, mẫu số của phân số nội dòng có thể vẫn nằm sát dòng bên dưới.
 
 Nên kiểm tra lại tài liệu đầu ra trước khi dùng cho xuất bản hoặc các mục đích yêu cầu độ chính xác cao.

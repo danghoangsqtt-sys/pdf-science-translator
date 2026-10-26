@@ -17,6 +17,13 @@ The release workflow rejects a mismatch.
 - macOS builds require Darwin and the target architecture. `build-macos.sh`
   builds/smoke-tests/signs the `.app`, creates a DMG, and verifies it.
 
+## Third-Party Engines
+
+Never bundle Ollama or a model into an installer or release asset. The app
+detects Ollama and tells the user how to install it and run `ollama pull`.
+Never ship an Azure key; it is read from the user's environment or settings
+file at run time.
+
 ## What the In-App Updater Depends On
 
 Windows builds replace themselves from the release, so the published asset is

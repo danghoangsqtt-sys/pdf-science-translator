@@ -5,6 +5,9 @@
 - `app/`: CustomTkinter GUI, the self-updater, UI fonts, icons, bundled assets.
   `app/update.py` also carries the PowerShell helper that performs the swap.
 - `scripts/translate_pdf.py`: supported CLI and stable output staging.
+- `webui/`: Electron + React frontend (`frontend/src`) and the FastAPI backend
+  (`backend/main.py`, `backend/services/`) it starts on 127.0.0.1:8089.
+  `/api/engines` reports engine readiness; jobs report the translated share.
 - `scripts/fetch_assets.py`: downloads the layout model and Unicode PDF font.
 - `pdf2zh/`: bundled extraction, translation, preservation, and PDF rendering.
 - `tests/`: standard-library `unittest` regressions.
