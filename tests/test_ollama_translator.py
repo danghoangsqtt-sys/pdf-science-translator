@@ -12,6 +12,7 @@ import pymupdf
 import requests
 
 from pdf2zh import translator as translator_module
+from pdf2zh.cache import clean_test_db, init_test_db
 from pdf2zh.translator import (
     ENGINES,
     FormulaPlaceholderError,
@@ -384,6 +385,60 @@ class OllamaTranslatorTests(unittest.TestCase):
         with self.assertRaises(SegmentTooLongError):
             self.translator.translate("a" * 5001)
         self.post.assert_not_called()
+
+
+class TranslationCacheSafetyTests(unittest.TestCase):
+    """Only marker-safe answers enter or leave the persistent cache."""
+
+    def setUp(self) -> None:
+        self.test_db = init_test_db()
+        self.addCleanup(clean_test_db, self.test_db)
+        sleep = mock.patch.object(translator_module.time, "sleep")
+        sleep.start()
+        self.addCleanup(sleep.stop)
+
+    def _translator(self) -> OllamaTranslator:
+        translator = OllamaTranslator("en", "vi", "translategemma:12b")
+        translator.base_url = "http://127.0.0.1:11434"
+        translator.session.post = mock.Mock()
+        return translator
+
+    def test_a_safe_answer_is_cached_and_served_without_a_request(self):
+        first = self._translator()
+        first.session.post.return_value = _reply("Gọi <b0></b0> là hàm mất mát.")
+        sent = encode_formula_placeholders("Let {v0} be the loss.")
+        first.translate(sent)
+
+        second = self._translator()
+        self.assertEqual(second.translate(sent), "Gọi <b0></b0> là hàm mất mát.")
+        second.session.post.assert_not_called()
+
+    def test_a_damaged_answer_is_never_cached(self):
+        sent = encode_formula_placeholders("Let {v0} be the loss.")
+        first = self._translator()
+        first.session.post.return_value = _reply("Gọi là hàm mất mát.")
+        first.translate(sent)
+        self.assertIsNone(first.cache.get(sent))
+
+        second = self._translator()
+        second.session.post.return_value = _reply("Gọi <b0></b0> là hàm mất mát.")
+        self.assertEqual(second.translate(sent), "Gọi <b0></b0> là hàm mất mát.")
+        second.session.post.assert_called()
+
+    def test_a_damaged_entry_from_an_older_build_is_ignored_and_replaced(self):
+        """The 17 entries the Inception Score run found already in the cache."""
+        sent = "<s1>Shane Barratt </s1><b0></b0> <s1>Rishi Sharma </s1><b1></b1>"
+        translator = self._translator()
+        translator.cache.set(sent, "Shane Barratt.Rishi Sharma")
+        translator.session.post.return_value = _reply(
+            "<s1>Shane Barratt </s1><b0></b0> <s1>Rishi Sharma </s1><b1></b1>"
+        )
+
+        translated = translator.translate(sent)
+
+        self.assertEqual(translated, sent)
+        translator.session.post.assert_called()
+        self.assertEqual(translator.cache.get(sent), sent)
 
 
 class OllamaPipelineTests(unittest.TestCase):

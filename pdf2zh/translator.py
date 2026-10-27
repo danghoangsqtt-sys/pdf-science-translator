@@ -177,14 +177,22 @@ class BaseTranslator:
         )
 
     def translate(self, text: str, ignore_cache: bool = False) -> str:
-        """Translate text, consulting the persistent cache unless bypassed."""
+        """Translate text, consulting the persistent cache unless bypassed.
+
+        Only answers whose formula, style and term markers survived are
+        cached or served from the cache. A damaged answer used to be stored
+        like any other, so every later run got the same rejected text back at
+        once and never asked the engine again; on the Inception Score paper 17
+        such entries kept pages 1-3 at the quality of the first, retry-less run.
+        """
         text = normalise_number_abbreviation(text)
-        if not (self.ignore_cache or ignore_cache):
+        use_cache = not (self.ignore_cache or ignore_cache)
+        if use_cache:
             cached = self.cache.get(text)
-            if cached is not None:
+            if cached is not None and markers_intact(text, cached):
                 return cached
         translated = self.do_translate(text)
-        if not (self.ignore_cache or ignore_cache):
+        if use_cache and markers_intact(text, translated):
             self.cache.set(text, translated)
         return translated
 
