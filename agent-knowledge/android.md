@@ -9,10 +9,10 @@ fix as fixed on Android, or the reverse, without checking both.
 
 ## Tag Namespaces Must Not Cross
 
-`v*` belongs to the desktop build. `.github/workflows/release.yml` triggers on
-it and `app/update.py` downloads `PDFTranslate-windows.zip` from whatever the
-latest `v*` release holds. Publishing an APK under `v*` makes every installed
-Windows copy see an update it cannot fetch.
+`v*` belongs to the desktop build. The retired Tkinter builds (v0.3.x) still
+installed on users' machines poll the latest `v*` release and download
+`PDFTranslate-windows.zip` from it. Publishing an APK under `v*` makes every
+such copy see an update it cannot fetch.
 
 Android releases are tagged `android-v<appVersionName>` and published by
 `.github/workflows/android-build.yml`, which refuses a tag that disagrees with

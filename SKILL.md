@@ -61,7 +61,7 @@ Read [the preservation contract](references/preservation-rules.md) before changi
 
 Use Python 3.11 or 3.12. Create `<skill-root>/.venv` and install `<skill-root>/requirements.txt` if the environment is absent or stale. Keep this environment separate from the user's project.
 
-The source distribution downloads layout and font assets on its first translation, so the first run needs network access and takes longer. The packaged Windows app already contains these assets.
+The source distribution downloads layout and font assets on its first translation, so the first run needs network access and takes longer.
 
 Windows:
 

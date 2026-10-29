@@ -11,9 +11,7 @@ if PROJECT_ROOT not in sys.path:
 def _use_bundled_assets() -> None:
     """Point the engine at the packaged model/font so no download is needed.
 
-    Same fallback pattern app/gui.py's use_bundled_assets() already uses for
-    the PyInstaller build: setdefault (an explicit override still wins) and
-    only when the file is actually present, so a dev checkout without
+    setdefault, so an explicit override still wins, and only when the file is actually present, so a dev checkout without
     app/assets/ populated falls through to the engine's own download logic
     unchanged instead of pointing at a path that doesn't exist.
     """

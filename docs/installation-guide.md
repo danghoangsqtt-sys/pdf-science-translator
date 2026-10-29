@@ -1,7 +1,7 @@
 # Hướng dẫn cài đặt — PDF Translate (vp-pdf)
 
 Tài liệu này dành cho việc chạy và kiểm thử từ mã nguồn trên máy Windows hiện
-tại. Không sửa đổi bất kỳ file mã nguồn nào trong `pdf2zh/`, `app/`, `scripts/`.
+tại. Không sửa đổi bất kỳ file mã nguồn nào trong `pdf2zh/`, `webui/`, `scripts/`.
 
 ## 1. Yêu cầu hệ thống
 
@@ -17,7 +17,7 @@ git clone https://github.com/danghoangsqtt-sys/Vp_translator.git
 cd Vp_translator
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt        # core dịch + OCR
-.\.venv\Scripts\python.exe -m pip install -r requirements-app.txt    # thêm GUI desktop
+.\.venv\Scripts\python.exe -m pip install -r webui\requirements-webui.txt  # backend cho app desktop
 .\.venv\Scripts\python.exe scripts\fetch_assets.py                   # tải model layout + font Unicode
 ```
 
@@ -71,23 +71,28 @@ Các cờ CLI đầy đủ (từ `scripts/translate_pdf.py --help`):
 | `--ignore-cache` | Bỏ qua cache bản dịch |
 | `--overwrite` | Ghi đè file đã dịch trước đó |
 
-## 5. Chạy giao diện Desktop (GUI)
+## 5. Chạy ứng dụng desktop (Electron)
+
+Cần Node.js 20 trở lên.
 
 ```powershell
-.\.venv\Scripts\python.exe app\gui.py
+cd webui\frontend
+npm install
+npm run dev
 ```
 
-Kéo-thả file/thư mục PDF vào cửa sổ; kết quả lưu vào thư mục `translated`
-cạnh file nguồn.
+Electron tự khởi động backend bằng `.venv\Scripts\python.exe`. Kéo thả một
+file PDF vào cửa sổ, bản dịch hiện cạnh bản gốc và tải xuống được.
 
-## 6. Build gói cài đặt (không cần cho việc kiểm thử chất lượng/tốc độ)
+## 6. Build bộ cài Windows (không cần cho việc kiểm thử chất lượng/tốc độ)
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
+cd webui\frontend
+npm run build
+npx electron-builder --win
 ```
 
-Tạo `dist\PDFTranslate-windows.zip`. Bỏ qua bước này nếu mục tiêu chỉ là đo
-tốc độ/chất lượng dịch qua CLI hoặc GUI chạy trực tiếp từ `.venv`.
+Bộ cài nằm trong `webui\frontend\release\`; cần sẵn `webui\python_runtime\`.
 
 ## 7. Giới hạn cần biết trước khi kiểm thử
 
@@ -100,6 +105,6 @@ tốc độ/chất lượng dịch qua CLI hoặc GUI chạy trực tiếp từ 
 - **Số trang khuyến nghị:** đã kiểm chứng sạch tới 36 trang (bài báo/chương
   ngắn) trong benchmark thật. Tài liệu trên 50 trang (`PAGE_COUNT_ADVISORY_LIMIT`
   trong `scripts/translate_pdf.py`) vẫn dịch được — đây không phải giới hạn
-  cứng — nhưng CLI/GUI sẽ tự hiện thông báo khuyên nên dịch thử một khoảng
+  cứng — nhưng CLI sẽ tự hiện thông báo khuyên nên dịch thử một khoảng
   trang bằng `--pages` trước, rồi mới dịch cả tài liệu, và kiểm tra kỹ các
   trang nhiều công thức/bảng trong kết quả trước khi dùng cho việc quan trọng.

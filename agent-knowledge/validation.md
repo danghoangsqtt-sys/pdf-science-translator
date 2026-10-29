@@ -12,11 +12,9 @@ python -m ruff check pdf2zh scripts app tests webui/backend --select E9,F63,F7,F
 
 With `webui/frontend/node_modules` present, `npx tsc -b` in `webui/frontend`
 must pass. Backend tests skip themselves when FastAPI is not installed.
-`test_app_gui.UpdateFlowTests` measures real free disk space; on a nearly
-full system drive two of them fail without any code change.
 
-`git diff --check` must be clean. Run `app/gui.py --smoke-test`; after packaging,
-run the packaged executable with `--smoke-test` and require exit code 0.
+`git diff --check` must be clean. For desktop changes, start the app with
+`npm run dev` in `webui/frontend` and translate one document end to end.
 
 ## Engine Gate
 
