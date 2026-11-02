@@ -13,8 +13,8 @@ tại. Không sửa đổi bất kỳ file mã nguồn nào trong `pdf2zh/`, `we
 ## 2. Cài đặt từ đầu (máy sạch)
 
 ```powershell
-git clone https://github.com/danghoangsqtt-sys/Vp_translator.git
-cd Vp_translator
+git clone https://github.com/danghoangsqtt-sys/pdf-science-translator.git
+cd pdf-science-translator
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt        # core dịch + OCR
 .\.venv\Scripts\python.exe -m pip install -r webui\requirements-webui.txt  # backend cho app desktop

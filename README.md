@@ -23,15 +23,15 @@ Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dị
 </p>
 
 <p align="center">
-  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases?q=android-v">
+  <a href="https://github.com/danghoangsqtt-sys/pdf-science-translator/releases?q=android-v">
     <img src="https://img.shields.io/badge/TẢI_XUỐNG-Android_APK-3ddc84?style=for-the-badge&logo=android&logoColor=white" alt="Tải PDF Translate cho Android">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest"><img src="https://img.shields.io/github/v/release/danghoangsqtt-sys/Vp_translator?style=flat-square&label=release" alt="Bản phát hành mới nhất"></a>
-  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases"><img src="https://img.shields.io/github/downloads/danghoangsqtt-sys/Vp_translator/total?style=flat-square&label=downloads" alt="Tổng lượt tải"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/danghoangsqtt-sys/Vp_translator?style=flat-square" alt="Giấy phép AGPL-3.0"></a>
+  <a href="https://github.com/danghoangsqtt-sys/pdf-science-translator/releases/latest"><img src="https://img.shields.io/github/v/release/danghoangsqtt-sys/pdf-science-translator?style=flat-square&label=release" alt="Bản phát hành mới nhất"></a>
+  <a href="https://github.com/danghoangsqtt-sys/pdf-science-translator/releases"><img src="https://img.shields.io/github/downloads/danghoangsqtt-sys/pdf-science-translator/total?style=flat-square&label=downloads" alt="Tổng lượt tải"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/danghoangsqtt-sys/pdf-science-translator?style=flat-square" alt="Giấy phép AGPL-3.0"></a>
   <img src="https://img.shields.io/badge/Python-không_cần_cài-2ea44f?style=flat-square" alt="Không cần cài Python">
 </p>
 
@@ -72,12 +72,12 @@ mới rồi mở `PDFTranslate.exe`.
 
 > [!NOTE]
 > Giao diện Tkinter cũ đã bị loại bỏ. Các bản `v0.3.x` trên trang
-> [Releases](https://github.com/danghoangsqtt-sys/Vp_translator/releases) vẫn chạy được nhưng không còn được phát triển
+> [Releases](https://github.com/danghoangsqtt-sys/pdf-science-translator/releases) vẫn chạy được nhưng không còn được phát triển
 > và sẽ không nhận bản cập nhật mới.
 
 ### Android
 
-1. **[Tải APK từ bản phát hành Android mới nhất](https://github.com/danghoangsqtt-sys/Vp_translator/releases?q=android-v)** (`PDFTranslate-android-*.apk`). Bản Android được đánh tag riêng theo dạng `android-v*`.
+1. **[Tải APK từ bản phát hành Android mới nhất](https://github.com/danghoangsqtt-sys/pdf-science-translator/releases?q=android-v)** (`PDFTranslate-android-*.apk`). Bản Android được đánh tag riêng theo dạng `android-v*`.
 2. Trên điện thoại, cho phép trình duyệt hoặc trình quản lý file **cài ứng dụng từ nguồn không xác định**, rồi mở file APK.
 3. Ứng dụng cần Android 8.0 trở lên.
 
@@ -157,7 +157,7 @@ Repo đồng thời tuân theo chuẩn [Agent Skills](https://agentskills.io/) v
 Cài skill cho tất cả agent có trên máy:
 
 ```powershell
-npx skills add danghoangsqtt-sys/Vp_translator -g --all
+npx skills add danghoangsqtt-sys/pdf-science-translator -g --all
 ```
 
 Sau đó gọi skill bằng yêu cầu tự nhiên:
@@ -194,8 +194,8 @@ Xem quy trình đầy đủ tại [SKILL.md](SKILL.md).
 ### Chuẩn bị môi trường
 
 ```powershell
-git clone https://github.com/danghoangsqtt-sys/Vp_translator.git
-cd Vp_translator
+git clone https://github.com/danghoangsqtt-sys/pdf-science-translator.git
+cd pdf-science-translator
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```

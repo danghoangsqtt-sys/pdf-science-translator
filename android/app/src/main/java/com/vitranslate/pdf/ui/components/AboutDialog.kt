@@ -34,7 +34,7 @@ fun AboutDialog(
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 
-    val officialSourceUrl = "https://github.com/danghoangsqtt-sys/Vp_translator"
+    val officialSourceUrl = "https://github.com/danghoangsqtt-sys/pdf-science-translator"
     val pdfMathTranslateUrl = "https://github.com/PDFMathTranslate/PDFMathTranslate"
     val babelDocUrl = "https://github.com/funstory-ai/BabelDOC"
 

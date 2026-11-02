@@ -6,7 +6,7 @@ __version__ = "1.9.11"
 __ruleset__ = "code4life-preservation-v1"
 __author__ = "Byaidu"
 __maintainer__ = "dhsystem"
-__maintainer_url__ = "https://github.com/danghoangsqtt-sys/Vp_translator"
+__maintainer_url__ = "https://github.com/danghoangsqtt-sys/pdf-science-translator"
 __all__ = ["translate", "translate_stream"]
 
 

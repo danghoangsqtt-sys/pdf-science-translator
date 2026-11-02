@@ -5,7 +5,7 @@ message: >-
 type: software
 authors:
   - name: dhsystem
-repository-code: 'https://github.com/danghoangsqtt-sys/Vp_translator'
+repository-code: 'https://github.com/danghoangsqtt-sys/pdf-science-translator'
 abstract: >-
   Ứng dụng desktop dịch tài liệu PDF sang tiếng Việt và 35 ngôn ngữ
   khác, giữ nguyên bố cục, công thức, bảng và hình ảnh. Phát triển và duy trì
