@@ -16,6 +16,7 @@ import {
   RemoteEngineNotice,
 } from './components/EnginePicker.tsx';
 import { TranslationWarningBanner } from './components/TranslationWarningBanner.tsx';
+import { AuthorFooter } from './components/AuthorInfo.tsx';
 import {
   createTranslationJob,
   cancelTranslationJob,
@@ -525,6 +526,8 @@ export const App: React.FC = () => {
           </div>
         )}
       </main>
+
+      <AuthorFooter />
     </div>
   );
 };
