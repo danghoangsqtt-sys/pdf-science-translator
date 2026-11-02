@@ -16,7 +16,7 @@ this entrypoint.
 
 ## Windows offline — active product contract
 
-Use repository Python 3.12 at `.venv312/Scripts/python.exe` and the verified local pack. Read `docs/offline-windows-2026-10-28.md` and `agent-knowledge/index.md` first. The public choices are Nhanh / Cân bằng / Chất lượng cao; use the owned worker. Never invoke Google, external agents, downloads or online updates in the offline edition. Preserve sources and report partial translations; validate/render output.
+Use repository Python 3.12 at `.venv312/Scripts/python.exe` and the verified local pack. Read `docs/bao-cao/offline-windows-2026-10-28.md` and `agent-knowledge/index.md` first. The public choices are Nhanh / Cân bằng / Chất lượng cao; use the owned worker. Never invoke Google, external agents, downloads or online updates in the offline edition. Preserve sources and report partial translations; validate/render output.
 
 ## Legacy standalone skill reference
 

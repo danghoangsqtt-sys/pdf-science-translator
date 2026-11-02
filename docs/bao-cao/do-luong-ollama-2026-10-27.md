@@ -77,6 +77,6 @@ mất glyph nào. Có một NUL trích xuất đã có trong font CMEX10 của n
 cùng bbox ở đầu ra. Số đo này dùng model đã có trên máy, không áp dụng điều
 kiện khởi động nguội của bảng thử 3 trang phía trên.
 
-Xem [báo cáo đầy đủ](../.viepilot/audit-report.md) để biết đường dẫn PDF, hash,
+Xem [báo cáo đầy đủ](../../.viepilot/audit-report.md) để biết đường dẫn PDF, hash,
 gate kiểm chứng và giới hạn thuật ngữ. Tỷ lệ đoạn không chứng minh toàn bộ
 nội dung PDF hoặc thuật ngữ đều được dịch đúng.

@@ -38,7 +38,7 @@ geometry and native Chromium interactions without a real translation service.
 Engine tests mock HTTP; never call Ollama, Azure or Google from unit tests.
 Before claiming an engine change works, run one real document through it and
 record time, translated share, kept-source reasons and formula integrity, as
-`docs/do-luong-ollama-2026-10-27.md` does. Compare math-font glyphs
+`docs/bao-cao/do-luong-ollama-2026-10-27.md` does. Compare math-font glyphs
 (CMMI/CMSY/CMEX/CMBX) between source and output per page: none may be lost.
 
 ## PDF Gate
@@ -56,7 +56,7 @@ Keep source and output hashes/paths separate. For every delivered PDF:
    bold/italic runs, and page numbers remain legible and correctly placed.
 6. Report every fallback segment or materially untranslated region as partial.
 
-Use `tmp/pdfs/` for render/diagnostic intermediates and `output/pdf/` for final
-PDFs. Never overwrite a source or an existing user output without explicit
+Use `D:/DataAdmin/vp-pdf-workspace/scratch/` for render/diagnostic intermediates
+and `D:/DataAdmin/vp-pdf-workspace/output/` for final PDFs, never the repository. Never overwrite a source or an existing user output without explicit
 authorization. For expensive translations, validate representative pages
 first, then regenerate the complete document with the final code.

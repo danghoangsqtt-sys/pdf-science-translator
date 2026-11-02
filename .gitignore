@@ -55,3 +55,12 @@ webui/frontend/dist-electron/
 models/
 .cache/
 *.gguf
+
+# Local samples, scratch output and review material kept beside the repo,
+# never in it. Translation inputs and outputs belong in
+# D:/DataAdmin/vp-pdf-workspace (see docs/README.md).
+test_samples/
+test_output/
+design-review/
+/NVIDIA Corporation/
+/.claude/launch.json

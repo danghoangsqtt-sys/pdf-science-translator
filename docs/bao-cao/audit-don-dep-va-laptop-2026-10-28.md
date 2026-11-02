@@ -123,8 +123,8 @@ needs_detail_lookup: true
 
 ## Hồ sơ thao tác
 
-`docs/cleanup-inventory-2026-10-28.json` là kiểm kê trước dọn.
-`docs/cleanup-evidence-2026-10-28/` có manifest staging, hash bản sao, danh sách
+`docs/bao-cao/bang-chung/cleanup-inventory-2026-10-28.json` là kiểm kê trước dọn.
+`docs/bao-cao/bang-chung/cleanup-evidence-2026-10-28/` có manifest staging, hash bản sao, danh sách
 từng mục xóa, ZIP script, hóa đơn xóa, hash nguồn trước dọn và xác minh sau dọn.
 Lệnh kiểm thử và phục hồi dependency ghi ở checkout ngoại tuyến `tmp/cleanup-*`;
 công cụ dọn có guard nằm ở checkout IDE `tmp/*cleanup*20261028*`.
@@ -136,5 +136,5 @@ giữ nguyên, không biến một lượt suite nhanh thành khẳng định đ
 ## Cập nhật kế hoạch tiếp theo
 
 Người dùng đã chốt kế hoạch xử lý BUG-008 trước rồi ENH-002. Đã tạo bốn phase
-4–7 với 12 task, xem [kế hoạch thực thi](ke-hoach-bug-008-enh-002-2026-10-28.md).
+4–7 với 12 task, xem [kế hoạch thực thi](../ke-hoach/ke-hoach-bug-008-enh-002-2026-10-28.md).
 Đây là cập nhật kế hoạch, chưa phải kết quả phục hồi hay triển khai tính năng.

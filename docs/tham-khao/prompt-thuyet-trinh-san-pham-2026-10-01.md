@@ -2,9 +2,9 @@
 
 ## Tư liệu dùng trong bài
 
-- Ảnh chụp cửa sổ ứng dụng desktop thật: [`app-screenshot-final.png`](../output/presentation-demo-2026-10-01/app-screenshot-final.png).
-- Trang PDF tiếng Anh dùng để thử: [`demo-source-page.png`](../output/presentation-demo-2026-10-01/demo-source-page.png), [PDF gốc](../output/presentation-demo-2026-10-01/math-physics-final-demo.pdf).
-- Trang PDF tiếng Việt sau khi chạy sản phẩm: [`demo-translated-page.png`](../output/presentation-demo-2026-10-01/demo-translated-page.png), [PDF kết quả](../output/presentation-demo-2026-10-01/math-physics-final-demo-vi.pdf).
+- Ảnh chụp cửa sổ ứng dụng desktop thật: [`app-screenshot-final.png`](../../output/presentation-demo-2026-10-01/app-screenshot-final.png).
+- Trang PDF tiếng Anh dùng để thử: [`demo-source-page.png`](../../output/presentation-demo-2026-10-01/demo-source-page.png), [PDF gốc](../../output/presentation-demo-2026-10-01/math-physics-final-demo.pdf).
+- Trang PDF tiếng Việt sau khi chạy sản phẩm: [`demo-translated-page.png`](../../output/presentation-demo-2026-10-01/demo-translated-page.png), [PDF kết quả](../../output/presentation-demo-2026-10-01/math-physics-final-demo-vi.pdf).
 
 Các tệp ảnh và PDF trên là hiện vật thử nghiệm cục bộ trong `output/`; thư mục này được Git bỏ qua. Khi chuyển prompt cho công cụ tạo slide, đính kèm ba ảnh PNG và, nếu công cụ hỗ trợ, hai PDF.
 

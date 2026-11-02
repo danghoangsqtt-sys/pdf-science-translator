@@ -51,7 +51,7 @@ untracked `android/keystore.properties`, and are left unsigned when neither is
 present. Never restore `signingConfig = signingConfigs.getByName("debug")` for
 the release type: a debug keystore is generated per machine, so CI would sign
 each release with a different key and users could not update in place. Full
-procedure in `docs/android-release.md`.
+procedure in `docs/huong-dan/android-release.md`.
 
 ## Translation Runs in a Foreground Service
 

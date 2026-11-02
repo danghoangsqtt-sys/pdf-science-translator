@@ -3,7 +3,7 @@
 ## Structure
 
 For the end-to-end component map and desktop/API/Android boundaries, see
-[`docs/codebase-architecture.md`](../docs/codebase-architecture.md).
+[`docs/kien-truc/codebase-architecture.md`](../docs/kien-truc/codebase-architecture.md).
 
 - `app/errors.py`: user-facing failure codes and the copyable error report.
 - `app/assets/`, `app/fonts/`: layout model, Unicode PDF font and OCR font;
@@ -22,6 +22,15 @@ For the end-to-end component map and desktop/API/Android boundaries, see
 - `pdf2zh/`: bundled extraction, translation, preservation, and PDF rendering.
 - `tests/`: standard-library `unittest` regressions.
 - `references/`: product preservation contract.
+- `docs/`: grouped by kind (`huong-dan`, `kien-truc`, `bao-cao`, `ke-hoach`,
+  `tham-khao`; `brainstorm` stays where ViePilot expects it). Evidence under
+  `docs/bao-cao/bang-chung/` is a historical record; never rewrite it.
+  [`docs/README.md`](../docs/README.md) is the index.
+
+Samples, translation output and audit scratch live outside the repository in
+`D:/DataAdmin/vp-pdf-workspace/` (`samples/`, `output/`, `scratch/`); release
+builds go to `D:/PDFTranslate-Release/`. Do not recreate `tmp/`, `output/`,
+`test_samples/` or `test_output/` at the repository root.
 - `.github/workflows/`: Android builds only; the desktop app has no release
   workflow yet.
 

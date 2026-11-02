@@ -15,7 +15,7 @@ danh tính AI qua UI/API/lỗi/log người dùng. Giữ thay đổi người d�
 - 421/421 unittest; pip check/Ruff/smoke đạt; 16/16 Chromium; ba mức dịch thật
   giữ 123/123 glyph toán; scan portable dịch 4/4 đoạn. Gói khoảng 22,66 GB đã mở sẵn.
 - Chưa có Windows sạch/VM ngắt mạng hoặc ma trận phần cứng; không suy diễn nghiệm thu phát hành.
-- Báo cáo: `docs/offline-windows-2026-10-28.md`.
+- Báo cáo: `docs/bao-cao/offline-windows-2026-10-28.md`.
 - Không tạo commit/tag/push hoặc gom thay đổi không thuộc nhiệm vụ. Trạng thái
   kiểm chứng tách khỏi PASS/persistence; chỉ ghi PASS khi đủ gate của skill.
 

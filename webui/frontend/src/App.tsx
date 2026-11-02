@@ -69,7 +69,7 @@ const TARGET_LANGUAGES = [
   { code: 'tl', name: 'Tagalog (tl)' },
 ];
 
-// Mirrors pdf2zh.translator.SUPPORTED_DOMAINS (see docs/implementation-plan-2026-09-10.md
+// Mirrors pdf2zh.translator.SUPPORTED_DOMAINS (see docs/ke-hoach/implementation-plan-2026-09-10.md
 // Phase C v2). An empty value means "no domain selected" - the backend
 // treats that the same as omitting the field.
 const DOMAINS = [

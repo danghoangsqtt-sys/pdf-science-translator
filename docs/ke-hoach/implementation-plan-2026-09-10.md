@@ -1,13 +1,13 @@
 # Kế hoạch triển khai: chất lượng dịch chuyên ngành/học thuật
 
-- **Nguồn gốc:** [`docs/brainstorm/session-2026-09-10.md`](brainstorm/session-2026-09-10.md)
+- **Nguồn gốc:** [`docs/brainstorm/session-2026-09-10.md`](../brainstorm/session-2026-09-10.md)
   mục 6–8; bằng chứng QA ở
-  [`docs/qa-benchmark-report-2026-09-10.md`](qa-benchmark-report-2026-09-10.md).
+  [`docs/bao-cao/qa-benchmark-report-2026-09-10.md`](../bao-cao/qa-benchmark-report-2026-09-10.md).
 - **Không tạo `.viepilot/`:** dự án đã có hệ thống tài liệu riêng
   (`agent-knowledge/` + `CLAUDE.md`). Kế hoạch này chỉ là 1 file tham chiếu
   thêm, không thay LICENSE/CONTRIBUTING/CONTRIBUTORS/CHANGELOG/README hiện có.
 - **Trạng thái:** chưa triển khai — đánh dấu `[x]` khi hoàn tất từng việc.
-  Mỗi phase đọc [`agent-knowledge/index.md`](../agent-knowledge/index.md) để
+  Mỗi phase đọc [`agent-knowledge/index.md`](../../agent-knowledge/index.md) để
   biết file kiến thức nào cần đọc trước khi sửa (theo đúng quy ước repo).
 
 ## Thứ tự phase
@@ -26,8 +26,8 @@ Phase D (preview theo trang trong GUI)
 
 ## Phase A — Sửa 2 lỗi pipeline dịch chung
 
-Đọc trước: [`agent-knowledge/pdf-engine.md`](../agent-knowledge/pdf-engine.md),
-[`agent-knowledge/regressions.md`](../agent-knowledge/regressions.md).
+Đọc trước: [`agent-knowledge/pdf-engine.md`](../../agent-knowledge/pdf-engine.md),
+[`agent-knowledge/regressions.md`](../../agent-knowledge/regressions.md).
 
 ### A1. Crash `KeyError: 'N'` trên tài liệu lớn xử lý toàn văn bản
 
@@ -35,7 +35,7 @@ Phase D (preview theo trang trong GUI)
   trang) nguyên file bằng CLI mặc định → crash ở ~17/144 trang, không ra
   file. Cùng nội dung qua `--pages 1-20` hoặc `--pages 15-20` thì **không**
   crash — lỗi phụ thuộc trạng thái toàn văn bản, không phải một trang đơn lẻ.
-  Log đầy đủ trong `docs/qa-benchmark-report-2026-09-10.md` mục 4.1.
+  Log đầy đủ trong `docs/bao-cao/qa-benchmark-report-2026-09-10.md` mục 4.1.
 - [x] Xác định vị trí ném `KeyError: 'N'`: **`pdf2zh/pdfinterp.py:231`**,
       trong `init_resources()` → closure `get_colorspace()`. Một tài nguyên
       `ColorSpace` kiểu `ICCBased` trỏ tới một stream hỏng
@@ -47,7 +47,7 @@ Phase D (preview theo trang trong GUI)
       thể: 1 trong nhiều lần dịch trọn vẹn 144 trang mới crash, các lần dịch
       theo `--pages` con hoặc lần chạy sạch khác có thể không trúng đúng
       luồng xử lý tài nguyên hỏng đó.
-- [x] Viết test hồi quy: [`tests/test_colorspace_resources.py`](../tests/test_colorspace_resources.py)
+- [x] Viết test hồi quy: [`tests/test_colorspace_resources.py`](../../tests/test_colorspace_resources.py)
       — dựng `PDFPageInterpreterEx` tối thiểu với 1 resource `ICCBased` trỏ
       tới stream hỏng, xác nhận trước khi sửa test này bắt đúng
       `KeyError: 'N'` (đã kiểm chứng bằng `git stash` tạm bỏ fix rồi chạy lại
@@ -65,7 +65,7 @@ Phase D (preview theo trang trong GUI)
 - **Tái hiện:** dịch `test_samples/07_arxiv_large_datacenters.pdf`, trang 23
   chứa đoạn `"...onding Max..."` kẹt giữa câu tiếng Việt (mảnh vỡ của
   "corresponding Maxwell") — không có warning nào được phát ra dù văn bản
-  hỏng. Xem `docs/qa-benchmark-report-2026-09-10.md` mục 4.2.
+  hỏng. Xem `docs/bao-cao/qa-benchmark-report-2026-09-10.md` mục 4.2.
 - [x] Tìm bước dựng lại đoạn/trang gây ghép chữ — **đã xác định cơ chế
       chính xác, chưa vá**. Bằng chứng (instrument trực tiếp
       `GoogleTranslator.do_translate`, xem toàn bộ log ở
@@ -164,7 +164,7 @@ quyết được vấn đề thật.
 
 **Thiết kế đúng** (giống hệt cơ chế `{vN}` che công thức đã có, và giống cách
 `dhsystem_mdconverter` che `TERM0`/`FORMULA0` trước khi dịch, xem
-`docs/electron-ui-research-2026-09-10.md` mục 1):
+`docs/tham-khao/electron-ui-research-2026-09-10.md` mục 1):
 
 1. Trước khi gửi đoạn cho Google: quét đoạn văn tìm các thuật ngữ khớp từ
    điển của lĩnh vực đã chọn (so khớp theo ranh giới từ, ưu tiên cụm dài nhất
@@ -240,7 +240,7 @@ inside the file being translated").
   ghi ra đĩa cho tới khi hoàn tất.
 
 **Verify:** `.\.venv\Scripts\python.exe app\gui.py --smoke-test` (theo gate ở
-[`agent-knowledge/validation.md`](../agent-knowledge/validation.md)).
+[`agent-knowledge/validation.md`](../../agent-knowledge/validation.md)).
 
 ---
 

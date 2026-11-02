@@ -15,7 +15,7 @@ Status: `technical_verified`; Git persistence: `pending_user_scope`.
 - 16/16 Chromium viewer đạt.
 - Fresh portable tự dùng Python 3.12/worker/data đi kèm.
 - PDF khoa học giữ 123/123 glyph toán; PDF scan dịch 4/4 đoạn; render đã xem.
-- Báo cáo: `docs/recovery/bug-008-build-verification.md`.
+- Báo cáo: `docs/bao-cao/bang-chung/recovery/bug-008-build-verification.md`.
 
 ## Remaining gates
 

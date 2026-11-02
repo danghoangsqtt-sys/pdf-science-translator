@@ -11,10 +11,10 @@
 
 ## Ca thử PDF tiếng Anh về toán và vật lý
 
-- Mẫu cuối: [`math-physics-final-demo.pdf`](../output/presentation-demo-2026-10-01/math-physics-final-demo.pdf); SHA-256 `4e2cf444bab66fc062839dfe821f35bed37bfd488a1194c907c95b3afd2b86cc`.
-- Đầu ra: [`math-physics-final-demo-vi.pdf`](../output/presentation-demo-2026-10-01/math-physics-final-demo-vi.pdf). Handoff còn 0/10 đoạn chưa dịch.
+- Mẫu cuối: [`math-physics-final-demo.pdf`](../../output/presentation-demo-2026-10-01/math-physics-final-demo.pdf); SHA-256 `4e2cf444bab66fc062839dfe821f35bed37bfd488a1194c907c95b3afd2b86cc`.
+- Đầu ra: [`math-physics-final-demo-vi.pdf`](../../output/presentation-demo-2026-10-01/math-physics-final-demo-vi.pdf). Handoff còn 0/10 đoạn chưa dịch.
 - Hai bản đều 1 trang, khổ 595 × 842 pt; bốn dòng công thức giữ nguyên. Trích xuất không thấy marker `{vN}`, `<bN>`, `<sN>`, ký tự NUL hay U+FFFD; không có span vượt khung trang. Đã render và xem trang nguồn, trang đích ở độ phân giải gấp đôi.
-- Ảnh cửa sổ desktop thật: [`app-screenshot-final.png`](../output/presentation-demo-2026-10-01/app-screenshot-final.png). Ảnh cho thấy tài liệu ở hàng đợi, không phải màn hình báo hoàn tất.
+- Ảnh cửa sổ desktop thật: [`app-screenshot-final.png`](../../output/presentation-demo-2026-10-01/app-screenshot-final.png). Ảnh cho thấy tài liệu ở hàng đợi, không phải màn hình báo hoàn tất.
 
 ## Lưu ý khi báo cáo
 

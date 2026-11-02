@@ -43,7 +43,7 @@ sang 0.4.0 trong P7-T1 khi thực thi. Chưa ký số, commit/push/tag hoặc ph
 
 Bộ Windows offline hiện tại có profile-only UI/API và worker/data đi kèm. Audit
 sau dọn ghi 421/421 unittest; số 16 ca Chromium là bằng chứng từ lượt trước dọn.
-Nguồn thực: docs/offline-windows-2026-10-28.md và báo cáo cleanup ở checkout IDE.
+Nguồn thực: docs/bao-cao/offline-windows-2026-10-28.md và báo cáo cleanup ở checkout IDE.
 File changelog trước đó không còn trong checkout tại lúc lập kế hoạch; phần lịch
 sử này chỉ tái dựng từ bằng chứng đã có, không giả khôi phục nội dung chưa biết.
 

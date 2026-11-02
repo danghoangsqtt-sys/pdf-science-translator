@@ -5,7 +5,7 @@
 - Việc này KHÔNG do tôi (Claude) code trực tiếp — bạn chuyển cho Gemini để
   tiết kiệm thời gian. File này là bản đặc tả chặt để Gemini không tự suy
   diễn/code lỗi.
-- Nghiên cứu nền tảng đầy đủ: [`docs/electron-ui-research-2026-09-10.md`](electron-ui-research-2026-09-10.md).
+- Nghiên cứu nền tảng đầy đủ: [`docs/tham-khao/electron-ui-research-2026-09-10.md`](electron-ui-research-2026-09-10.md).
 - Sau khi Gemini code xong, **tôi (Claude) sẽ review lại code trước khi bạn
   build/dùng thật** — đừng tự chạy `npm run build:electron` với dữ liệu thật
   trước khi có review.

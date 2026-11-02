@@ -1,7 +1,7 @@
 # Kiến trúc bổ sung — BUG-008 và ENH-002
 
 Status: proposed, 28/10/2026. Mô tả quyết định kế hoạch; chưa phải thành phần đã
-triển khai. Kiến trúc thực hiện có xem docs/codebase-architecture.md và
+triển khai. Kiến trúc thực hiện có xem docs/kien-truc/codebase-architecture.md và
 agent-knowledge/pdf-engine.md. Root thực thi là checkout feature/offline-engine.
 
 ## Các quyết định

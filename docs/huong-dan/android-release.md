@@ -1,6 +1,6 @@
 # Building and Releasing the Android APK
 
-The Android app lives in [`android/`](../android). It is a separate product
+The Android app lives in [`android/`](../../android). It is a separate product
 from the desktop build and releases under its own tag namespace.
 
 ## Toolchain
@@ -105,7 +105,7 @@ fails to deliver it.
 Releasing is one number and one tag:
 
 1. Change `appVersionName` in
-   [`android/app/build.gradle.kts`](../android/app/build.gradle.kts). That is
+   [`android/app/build.gradle.kts`](../../android/app/build.gradle.kts). That is
    the only edit. `versionCode` is derived from it as
    `major * 10000 + minor * 100 + patch`, so 0.1.0 is 100 and 1.2.3 is 10203 —
    there is no second number to remember to bump, and forgetting one is how you

@@ -1,6 +1,6 @@
 # Audit và hoàn thiện hệ thống — 27/10/2026
 
-> Cập nhật lần kiểm tra sau: [báo cáo mở giao diện](../docs/kiem-tra-lai-va-mo-giao-dien-2026-10-27.md).
+> Cập nhật lần kiểm tra sau: [báo cáo mở giao diện](../docs/bao-cao/kiem-tra-lai-va-mo-giao-dien-2026-10-27.md).
 > Đã tái hiện native smoke chậm; hiện còn BUG-007 và ENH-001 mở. Kết quả và
 > trạng thái đóng 5 request dưới đây là lịch sử của lần audit trước.
 
@@ -13,7 +13,7 @@
   thay đổi đang có ở checkout IDE.
 - Đọc pipeline Python, quy tắc bảo toàn, translator/cache, CLI, job/API,
   desktop smoke và khung đọc PDF React/Electron. Bản đồ chi tiết:
-  [codebase-architecture.md](../docs/codebase-architecture.md).
+  [codebase-architecture.md](../docs/kien-truc/codebase-architecture.md).
 - Giữ bản sửa tham khảo/fallback/cache và giao diện đang dang dở. Không commit,
   push, merge, tag, đóng gói hay phát hành trong phiên audit.
 

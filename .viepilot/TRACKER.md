@@ -36,7 +36,7 @@
 - P2-T1: locally_verified; profile-only UI/API/lỗi, cổng/token từng phiên. Sửa lỗi CSP cổng cố định và trạng thái sẵn sàng giả.
 - Gate cuối: 421/421 unittest; pip check/Ruff/native smoke đạt; 16/16 Chromium. Ba mức dịch 12/19, 16/19, 19/19 đoạn, giữ đủ 123 glyph toán.
 - P3-T1: delivered_for_review; portable 22,66 GB mở sẵn. Scan thật bắt lỗi thiếu font lớp chữ OCR, đã sửa manifest/đường dẫn và có hồi quy; sau sửa dịch 4/4 đoạn, render đạt.
-- Nghiệm thu Windows sạch/VM mất mạng và ma trận phần cứng còn pending. Chi tiết: [báo cáo](../docs/offline-windows-2026-10-28.md).
+- Nghiệm thu Windows sạch/VM mất mạng và ma trận phần cứng còn pending. Chi tiết: [báo cáo](../docs/bao-cao/offline-windows-2026-10-28.md).
 - Git persistence: pending_user_scope; không gộp thay đổi có sẵn vào commit.
 
 Nhật ký audit được giữ lại; kế hoạch triển khai mới có ROADMAP, phase/task và HANDOFF.
@@ -64,7 +64,7 @@ Chi tiết và bằng chứng: [audit-report.md](audit-report.md).
 | 2026-10-27 | BUG-007: Suite đạt nhưng native smoke mất 109,662 giây. | vp-audit Tier 3 | Mở, cần profile |
 | 2026-10-27 | ENH-001: Thuật ngữ ở model chính cần kiểm soát theo domain. | vp-audit Tier 3 | Mở |
 
-Báo cáo mới nhất: [kiểm tra lại và mở giao diện](../docs/kiem-tra-lai-va-mo-giao-dien-2026-10-27.md).
+Báo cáo mới nhất: [kiểm tra lại và mở giao diện](../docs/bao-cao/kiem-tra-lai-va-mo-giao-dien-2026-10-27.md).
 
 - Execution P4-T1: in_progress; Snapshot and provenance inventory. Git persistence pending_user_scope.
 

@@ -44,7 +44,7 @@ lỗi; sự cố chỉ hiện ra khi xử lý toàn bộ 144 trang liền mạch
 ## 3. Chất lượng dịch — quan sát trực quan
 
 Đối chiếu ảnh render 150dpi trang nguồn và trang dịch (theo quy trình PDF Gate
-ở [`agent-knowledge/validation.md`](../agent-knowledge/validation.md)):
+ở [`agent-knowledge/validation.md`](../../agent-knowledge/validation.md)):
 
 - **Công thức toán (05, trang 4 — pt. 9):** giữ nguyên 100% glyph, vị trí, cỡ
   chữ. Văn xuôi xung quanh dịch tự nhiên, đúng ngữ cảnh MOND/vật lý thiên văn.
