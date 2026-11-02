@@ -1,16 +1,11 @@
-# Bundled UI fonts
-
-Drop the `.ttf` files here. The app registers them for its own process with
-`AddFontResourceEx(..., FR_PRIVATE)`, so nothing is installed system-wide, and
-falls back to Segoe UI and Consolas when this directory is empty.
+# Bundled fonts
 
 | Family | Used for | Licence | Source |
 | --- | --- | --- | --- |
-| Be Vietnam Pro | All UI text | OFL 1.1 | https://fonts.google.com/specimen/Be+Vietnam+Pro |
-| JetBrains Mono | File list rows | OFL 1.1 | https://fonts.google.com/specimen/JetBrains+Mono |
+| Be Vietnam Pro Regular | Prose reflowed from OCR (`pdf2zh/ocr.py`) | OFL 1.1 | https://fonts.google.com/specimen/Be+Vietnam+Pro |
 
-Regular and Bold weights are enough. Be Vietnam Pro is drawn for Vietnamese
-diacritics, which stack tall and collide in fonts that were not designed for them.
+Be Vietnam Pro is drawn for Vietnamese diacritics, which stack tall and collide
+in fonts that were not designed for them. It is OFL, so redistributing it inside
+a packaged app is fine. Keep `BeVietnamPro-OFL.txt` next to the font.
 
-Both are OFL, so redistributing them inside the packaged app is fine. Keep the
-`OFL.txt` that ships with each family next to the fonts.
+A packaged desktop build that enables OCR must ship this directory.

@@ -15,7 +15,6 @@ Before acting:
 3. Resolve commands from the repository root containing `pdf2zh/` and
    `scripts/translate_pdf.py`, not from this adapter directory.
 
-On macOS use `.venv/bin/python` and `bash build-macos.sh`; on Windows use
-`.venv\Scripts\python.exe` and `build.ps1`. The preservation behavior and tests
-are shared across platforms. Keep the source unchanged, validate rendered
+On macOS use `.venv/bin/python`; on Windows use `.venv\Scripts\python.exe`.
+The preservation behavior and tests are shared across platforms. Keep the source unchanged, validate rendered
 output, and report partial fallbacks honestly.

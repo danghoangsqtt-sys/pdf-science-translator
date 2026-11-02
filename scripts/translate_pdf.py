@@ -352,7 +352,7 @@ def _peek_page_count(path: Path) -> int | None:
     """Best-effort page count read before translation starts.
 
     A nicer heads-up is never worth failing the run over, so any error here
-    is swallowed the same way app/gui.py's count_pages already does.
+    is swallowed rather than allowed to stop the translation.
     """
     try:
         import fitz

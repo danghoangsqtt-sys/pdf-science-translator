@@ -92,8 +92,7 @@ translatable. The source page stream stays exact for wholly protected pages.
   `page_has_image` (any image at all) drives the image-only report, because a
   scanner routinely emits one page as dozens of small tiles.
 - The experimental OCR path is opt-in at the CLI (`--ocr standard|enhanced`)
-  and defaults to standard in the desktop GUI, where off/enhanced remain
-  explicit choices. The packaged smoke test loads both OCR profiles.
+  and is not yet exposed in the desktop app (`webui/`).
   It adds an invisible sidecar only for image-only pages, never paints white
   backing rectangles on those pages, and replaces the scan image only after a
   safe inpainting pass. DocLayout inference is capped at 1024 pixels while OCR
@@ -144,7 +143,7 @@ translatable. The source page stream stays exact for wholly protected pages.
 any page: Ollama must answer `/api/tags` with the model pulled, Azure needs a
 key from `AZURE_TRANSLATOR_KEY`/`_REGION` or the per-user `engines.json`
 (`%APPDATA%\PDFTranslate`, `~/.config/pdftranslate`), never the repository.
-The Tkinter app pins `engine="google"`; it has no engine picker.
+The desktop app (`webui/`) lets the user pick the engine and model.
 
 - **Ollama** sends TranslateGemma's own prompt verbatim (source and target
   name plus code, two blank lines before the text). It has no glossary slot,

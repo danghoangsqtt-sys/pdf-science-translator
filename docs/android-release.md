@@ -96,10 +96,10 @@ debug APK for testing until the secrets are in place.
 ## Releasing
 
 Android tags are `android-v<versionName>`. **Never release the Android build
-under a `v*` tag.** That namespace belongs to the desktop product:
-`.github/workflows/release.yml` triggers on it, and `app/update.py` downloads
-`PDFTranslate-windows.zip` from whatever it finds there. A `v*` tag carrying
-only an APK tells every installed Windows copy that an update exists and then
+under a `v*` tag.** That namespace belongs to the desktop product, and the
+retired Tkinter builds (v0.3.x) still installed on users' machines download
+`PDFTranslate-windows.zip` from whatever the latest `v*` release holds. A `v*`
+tag carrying only an APK tells every such copy that an update exists and then
 fails to deliver it.
 
 Releasing is one number and one tag:

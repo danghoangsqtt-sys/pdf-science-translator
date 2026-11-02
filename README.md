@@ -23,14 +23,8 @@ Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dị
 </p>
 
 <p align="center">
-  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-windows.zip">
-    <img src="https://img.shields.io/badge/TẢI_XUỐNG-Windows_x64-14452F?style=for-the-badge&logo=windows11&logoColor=white" alt="Tải PDF Translate cho Windows">
-  </a>
-  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg">
-    <img src="https://img.shields.io/badge/TẢI_XUỐNG-macOS_Apple_Silicon-111111?style=for-the-badge&logo=apple&logoColor=white" alt="Tải PDF Translate cho Mac Apple Silicon">
-  </a>
-  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-intel.dmg">
-    <img src="https://img.shields.io/badge/TẢI_XUỐNG-macOS_Intel-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Tải PDF Translate cho Mac Intel">
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases?q=android-v">
+    <img src="https://img.shields.io/badge/TẢI_XUỐNG-Android_APK-3ddc84?style=for-the-badge&logo=android&logoColor=white" alt="Tải PDF Translate cho Android">
   </a>
 </p>
 
@@ -43,7 +37,7 @@ Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dị
 
 <p align="center">
   <a href="#điểm-nổi-bật">Điểm nổi bật</a> ·
-  <a href="#bắt-đầu-trong-1-phút">Cài đặt</a> ·
+  <a href="#bắt-đầu">Cài đặt</a> ·
   <a href="#cách-sử-dụng">Cách dùng</a> ·
   <a href="#được-phát-triển-ở-đây">Phát triển</a> ·
   <a href="#dùng-như-agent-skill">Agent Skill</a> ·
@@ -52,35 +46,34 @@ Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dị
 
 ---
 
-PDF Translate là ứng dụng mã nguồn mở dành cho Windows, macOS và Android. Công cụ phân tích bố cục từng trang, bảo vệ công thức và code, dịch phần văn xuôi rồi đặt nội dung trở lại đúng vị trí trong tài liệu gốc — không biến PDF của bạn thành một trang chữ trắng đơn giản.
+PDF Translate là ứng dụng mã nguồn mở dành cho Windows và Android. Công cụ phân tích bố cục từng trang, bảo vệ công thức và code, dịch phần văn xuôi rồi đặt nội dung trở lại đúng vị trí trong tài liệu gốc — không biến PDF của bạn thành một trang chữ trắng đơn giản.
 
 Đây không phải bản dịch giao diện của một công cụ có sẵn. Dự án mượn ý tưởng và phần nhân đọc/ghi PDF từ hai dự án mã nguồn mở, rồi tự xây phần quyết định chất lượng đầu ra: ứng dụng desktop, bộ quy tắc bảo toàn bố cục, lớp xử lý tiếng Việt và hàng loạt bản sửa lỗi ngay trong nhân. Chi tiết ở mục [Được phát triển ở đây](#được-phát-triển-ở-đây).
 
 ## Điểm nổi bật
 
 - **Giữ nguyên bố cục:** bảo toàn vị trí của đoạn văn, công thức, bảng, hình, mục lục và tài liệu tham khảo.
-- **Sẵn sàng để dùng:** tải về, giải nén và chạy; không cần cài Python hay model riêng.
-- **Xử lý hàng loạt:** kéo thả nhiều file PDF hoặc cả thư mục vào ứng dụng.
-- **OCR cục bộ cho trang scan:** chế độ Tự động đọc và dịch vùng văn bản an
-  toàn; bảng, công thức và hình phức tạp được giữ nguyên thay vì bị phá bố cục.
+- **Xem song song:** bản gốc và bản dịch hiện cạnh nhau ngay trong ứng dụng để kiểm tra công thức, bảng trước khi lưu.
+- **Ba bộ dịch:** ngoại tuyến bằng Ollama, Azure Translator, hoặc Google làm dự phòng; có thể ép thuật ngữ theo lĩnh vực.
 - **36 ngôn ngữ đích:** mặc định là tiếng Việt, cùng nhiều ngôn ngữ sử dụng chữ Latin.
-- **Không dừng cả hàng đợi:** một file lỗi không làm gián đoạn các file còn lại.
-- **Tự cập nhật (Windows):** có bản mới thì ứng dụng tự tải ngầm, bạn chỉ cần bấm một lần để khởi động lại. Trên macOS vẫn là dòng nhắc mở trang tải.
+- **Báo cáo trung thực:** bản dịch thiếu được báo rõ tỷ lệ và lý do; có thể huỷ giữa chừng.
+- **OCR cục bộ cho trang scan** (dòng lệnh): đọc và dịch vùng văn bản an toàn; bảng, công thức và hình phức tạp được giữ nguyên.
 - **Có chế độ dành cho AI agent:** dùng model trong Codex, Claude Code hoặc Copilot để dịch tài liệu chuyên ngành tốt hơn.
 
-## Bắt đầu trong 1 phút
+## Bắt đầu
 
-### Windows
+### Ứng dụng desktop (Windows)
 
-1. **[Tải PDF Translate cho Windows](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-windows.zip)** (`.zip`, khoảng 336 MB; đã gồm model OCR chạy cục bộ, không cần mạng).
-2. Giải nén toàn bộ file vừa tải.
-3. Mở `PDFTranslate.exe`.
+Ứng dụng desktop là bản Electron chạy **ngoại tuyến hoàn toàn**: bộ xử lý dịch,
+model và font đi kèm trong thư mục ứng dụng, không cần cài Python, Ollama hay
+kết nối Internet. Có hai phiên bản: **máy cấu hình mạnh** (ba mức Nhanh / Cân bằng /
+Chất lượng cao) và **máy cấu hình yếu** (chỉ mức Nhanh). Chép cả thư mục sang máy
+mới rồi mở `PDFTranslate.exe`.
 
-### macOS
-
-1. Tải bản phù hợp: **[Apple Silicon](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg)** cho Mac M1/M2/M3/M4/M5 hoặc **[Intel](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-intel.dmg)** cho Mac Intel.
-2. Mở file `.dmg`, kéo **PDF Translate** vào thư mục **Applications**.
-3. Trong lần chạy đầu, bấm chuột phải vào ứng dụng → **Open** → **Open**.
+> [!NOTE]
+> Giao diện Tkinter cũ đã bị loại bỏ. Các bản `v0.3.x` trên trang
+> [Releases](https://github.com/danghoangsqtt-sys/Vp_translator/releases) vẫn chạy được nhưng không còn được phát triển
+> và sẽ không nhận bản cập nhật mới.
 
 ### Android
 
@@ -95,62 +88,21 @@ cd android
 ./gradlew assembleDebug
 ```
 
-> [!NOTE]
-> Bản macOS yêu cầu **macOS 14 Sonoma trở lên**. Tất cả bản desktop đều không cần cài Python và không phải tải thêm model ở lần chạy đầu. Quá trình dịch bằng Google vẫn cần kết nối Internet.
-
 > [!IMPORTANT]
 > Bản Android là một bản viết lại trên PDFBox-Android, không phải bản desktop biên dịch lại. Nó chỉ đọc PDF dạng văn bản (chưa có OCR) và dùng heuristic thay cho model bố cục BabelDOC/YOLOv8, nên PDF nhiều công thức có thể còn sai chỉ số trên/dưới hoặc phân số. Chi tiết build và phát hành nằm ở [`docs/android-release.md`](docs/android-release.md).
 
 > [!WARNING]
-> Windows SmartScreen có thể cảnh báo vì ứng dụng chưa được ký số. Chọn **More info** → **Run anyway** nếu bạn tải file từ trang Releases chính thức của repo này.
-
-> [!WARNING]
-> Nếu máy bạn bật **Smart App Control** (mặc định trên các máy Windows 11 cài mới), ứng dụng sẽ bị **chặn hẳn** với thông báo *"An Application Control policy has blocked this file"* — không có nút Run anyway. Kiểm tra tại **Windows Security → App & browser control → Smart App Control**. Đây là hệ quả của việc ứng dụng chưa có chữ ký số, không phải lỗi của ứng dụng. Microsoft chỉ cho bật lại Smart App Control bằng cách cài lại Windows, nên hãy cân nhắc kỹ trước khi tắt nó; giải pháp đúng là ký số ứng dụng, và việc đó đang được xử lý.
-
-> [!WARNING]
-> Bản macOS hiện dùng chữ ký ad-hoc, chưa được Apple notarize. Gatekeeper có thể chặn thao tác mở thông thường; hãy dùng cách bấm chuột phải → **Open** ở trên nếu bạn tải từ trang Releases chính thức.
-
-Bạn cũng có thể mở [trang Releases](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest) để xem ghi chú thay đổi và các tệp của phiên bản mới nhất.
-
-Ứng dụng cũng tự kiểm tra phiên bản mới mỗi lần mở. Máy không có mạng thì bỏ qua, không báo lỗi.
-
-Trên **Windows**, bản mới được tải ngầm ngay trong lúc bạn vẫn dịch bình thường; góc trên bên phải hiện **↓ Đang tải vX.Y.Z**, tải xong đổi thành **● Cài vX.Y.Z & khởi động lại**. Bấm vào đó, ứng dụng đóng lại, thay thư mục cài đặt rồi tự mở lại — khoảng mười giây, không phải giải nén gì. Đang dịch dở thì nút chờ đến khi xong. Tải xong mà bạn tắt ứng dụng luôn cũng không mất: lần mở sau vẫn là nút khởi động lại, không tải lại từ đầu. Nếu bước thay thư mục hỏng giữa chừng, bản cũ được đưa lại nguyên vẹn và bạn tải thủ công như trước.
-
-Trên **macOS**, và khi ứng dụng nằm ở thư mục không có quyền ghi, dòng đó vẫn là **● Có bản mới vX.Y.Z** và bấm vào sẽ mở trang tải.
+> Bộ cài Windows tự build chưa được ký số, nên Windows SmartScreen có thể cảnh báo (**More info** → **Run anyway**), còn máy bật **Smart App Control** sẽ chặn hẳn. Giải pháp đúng là ký số ứng dụng.
 
 ## Cách sử dụng
 
-### 1. Thêm tài liệu
+1. **Chọn tài liệu:** kéo thả một file PDF vào cửa sổ hoặc bấm **Chọn file PDF**.
+2. **Chọn cấu hình:** ngôn ngữ đích (mặc định **Tiếng Việt**), lĩnh vực nếu cần ép thuật ngữ, và mức xử lý **Nhanh / Cân bằng / Chất lượng cao**. Mức nào chưa đủ tài nguyên trên máy sẽ hiện lý do.
+3. **Bấm Dịch ngay:** thanh tiến độ báo theo trang; bấm **Hủy** để dừng sau trang đang dịch.
+4. **Kiểm tra và lưu:** bản dịch hiện bên phải bản gốc; bấm nút tải xuống để lưu `<tên-file>-<ngôn ngữ>.pdf`.
 
-Chọn một trong ba cách:
-
-- Kéo thả file PDF hoặc cả thư mục vào cửa sổ ứng dụng.
-- Bấm **Chọn file** hoặc **Chọn thư mục**.
-- Thả file trực tiếp lên biểu tượng ứng dụng.
-
-### 2. Chọn ngôn ngữ
-
-Chọn ngôn ngữ đích trong mục **Dịch sang**. Ứng dụng mặc định dịch sang **Tiếng Việt**.
-
-Với PDF scan, giữ **Trang ảnh scan → Tự động (khuyên dùng)**. Chế độ **Nâng
-cao** chậm hơn đáng kể và chủ yếu dùng để thử nghiệm; **Tắt OCR** nếu bạn chỉ
-muốn xử lý lớp chữ có sẵn. Một trang có bảng, công thức, hình hoặc nhận dạng
-không chắc chắn sẽ được giữ nguyên và hàng đợi báo **dịch một phần**.
-
-### 3. Bắt đầu dịch
-
-Bấm **Dịch**. Các file được xử lý lần lượt và hiển thị trạng thái ngay trong hàng đợi.
-
-Kết quả được lưu tự động vào thư mục `translated` nằm cạnh file nguồn:
-
-```text
-TaiLieu/
-├── document.pdf
-└── translated/
-    └── document-vi.pdf
-```
-
-Mặc định, ứng dụng không ghi đè kết quả đã có. Bật **Ghi đè file đã dịch trước đó** khi bạn muốn dịch lại.
+Giao diện hiện dịch từng file một và chưa có OCR. Với PDF scan, dùng dòng lệnh
+với `--ocr standard` (xem [Chạy từ mã nguồn](#chạy-từ-mã-nguồn)).
 
 ## Được phát triển ở đây
 
@@ -158,14 +110,12 @@ Phần kế thừa từ dự án gốc là nhân đọc, phân tích bố cục 
 quyết định việc một trang tiếng Việt in ra có đọc được hay không đều được viết
 cho dự án này:
 
-**Ứng dụng desktop — 1.620 dòng trong [`app/`](app/)**
-Giao diện, kéo thả, hàng đợi nhiều file không dừng vì một file lỗi, mã lỗi đọc
-được kèm log để người dùng báo lỗi được, cơ chế tự cập nhật tự thay thư mục cài
-đặt rồi mở lại app, đóng gói PyInstaller cho Windows và cả hai kiến trúc macOS,
-workflow phát hành tự động. Không một dòng nào trong thư mục này đến từ dự án
-gốc.
+**Ứng dụng desktop — [`webui/`](webui/)**
+Giao diện Electron + React với backend FastAPI cục bộ: xem bản gốc và bản dịch
+song song, chọn bộ dịch và lĩnh vực, huỷ giữa chừng, báo rõ phần chưa dịch được.
+Không một dòng nào trong thư mục này đến từ dự án gốc.
 
-**Bộ quy tắc bảo toàn — [`pdf2zh/rules.py`](pdf2zh/rules.py) (519 dòng) và [contract sản phẩm](references/preservation-rules.md)**
+**Bộ quy tắc bảo toàn — [`pdf2zh/rules.py`](pdf2zh/rules.py) và [contract sản phẩm](references/preservation-rules.md)**
 Đây là thứ phân biệt dự án với một công cụ dịch PDF thông thường: nhận diện vùng
 công thức và ký hiệu kỹ thuật để không dịch nhầm thành văn xuôi, giữ in đậm và
 in nghiêng qua vòng dịch, dựng lại chữ xoay 90 độ đúng chiều thay vì bẻ ngang,
@@ -185,7 +135,7 @@ và sửa tại đây:
 
 Bảng nguyên nhân đầy đủ: [agent-knowledge/regressions.md](agent-knowledge/regressions.md).
 
-**278 test hồi quy — 3.422 dòng trong [`tests/`](tests/)**
+**Bộ test hồi quy trong [`tests/`](tests/)**
 Mỗi lỗi đã sửa đều bị khoá lại bằng một test dựng đúng hình học nhỏ nhất gây ra nó,
 nên bản sửa không âm thầm mất đi ở lần thay đổi sau.
 
@@ -229,7 +179,7 @@ Skill cung cấp hai chế độ dịch:
 | **Google** | `translate.google.com` | Cần nhanh, miễn phí và không có API key |
 | **Handoff** | AI agent trong phiên làm việc | Tài liệu chuyên ngành cần bản dịch theo ngữ cảnh |
 
-Google là chế độ mặc định và là chế độ được dùng trong app desktop. Handoff trích các đoạn văn sang JSONL để agent dịch, sau đó dựng lại PDF; dữ liệu không được gửi tới Google nhưng sẽ tốn token và mất nhiều thời gian hơn.
+Dòng lệnh mặc định dịch bằng Ollama; ứng dụng desktop dịch ngoại tuyến bằng bộ xử lý đi kèm. Handoff trích các đoạn văn sang JSONL để agent dịch, sau đó dựng lại PDF; dữ liệu không được gửi đi đâu nhưng sẽ tốn token và mất nhiều thời gian hơn.
 
 Ví dụ với từ *conduction* trong tài liệu truyền nhiệt:
 
@@ -268,23 +218,30 @@ python -m venv .venv
 .venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --engine handoff --segments translations.jsonl --output-dir OUT
 ```
 
-### Build ứng dụng Windows
+### Chạy ứng dụng desktop
+
+Cần thêm Node.js 20 trở lên. Từ thư mục gốc của repo:
 
 ```powershell
-.\build.ps1
+.venv\Scripts\python.exe -m pip install -r webui\requirements-webui.txt
+.venv\Scripts\python.exe scripts\fetch_assets.py
+cd webui\frontend
+npm install
+npm run dev
 ```
 
-Gói phát hành được tạo tại `dist\PDFTranslate-windows.zip`.
+Electron tự khởi động backend bằng `.venv\Scripts\python.exe`.
 
-### Build ứng dụng macOS
+### Build bộ cài Windows
 
-Chạy trên máy Mac dùng đúng kiến trúc cần phát hành:
-
-```bash
-bash build-macos.sh
+```powershell
+cd webui\frontend
+npm run build
+npx electron-builder --win
 ```
 
-Gói phát hành được tạo tại `dist/PDFTranslate-macos-apple-silicon.dmg` hoặc `dist/PDFTranslate-macos-intel.dmg`. Từ máy Windows, bạn có thể chạy thủ công workflow **Release** trên GitHub Actions để lấy cả hai DMG trong phần Artifacts; khi push tag `v*`, workflow tự đính kèm chúng vào GitHub Release.
+Bộ cài được tạo trong `webui\frontend\release\`. Bước đóng gói cần sẵn bộ Python
+chạy độc lập tại `webui\python_runtime\`; chưa có bản build cho macOS.
 
 ## Giới hạn hiện tại
 

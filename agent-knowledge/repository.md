@@ -5,8 +5,9 @@
 For the end-to-end component map and desktop/API/Android boundaries, see
 [`docs/codebase-architecture.md`](../docs/codebase-architecture.md).
 
-- `app/`: CustomTkinter GUI, the self-updater, UI fonts, icons, bundled assets.
-  `app/update.py` also carries the PowerShell helper that performs the swap.
+- `app/errors.py`: user-facing failure codes and the copyable error report.
+- `app/assets/`, `app/fonts/`: layout model, Unicode PDF font and OCR font;
+  the offline build packages them from here.
 - `scripts/translate_pdf.py`: supported CLI and stable output staging.
 - `webui/`: Electron + React frontend (`frontend/src`) and the FastAPI backend
   (`backend/main.py`, `backend/services/`) it starts on a private 127.0.0.1 port.
@@ -21,37 +22,37 @@ For the end-to-end component map and desktop/API/Android boundaries, see
 - `pdf2zh/`: bundled extraction, translation, preservation, and PDF rendering.
 - `tests/`: standard-library `unittest` regressions.
 - `references/`: product preservation contract.
-- `app.spec`, `build.ps1`: Windows packaging.
-- `app-macos.spec`, `build-macos.sh`: native macOS packaging.
-- `.github/workflows/`: release and on-demand macOS builds.
+- `.github/workflows/`: Android builds only; the desktop app has no release
+  workflow yet.
+
+The CustomTkinter GUI, its self-updater and PyInstaller packaging were
+removed on 2026-10-29 in favour of `webui/`. Do not reintroduce them.
 
 ## Commands
 
 For the Windows offline edition use `.venv312/Scripts/python.exe` (Python 3.12).
 Build frontend first, prepare a pack from local resources, then run the portable
-assembly script. The commands below also document the legacy desktop workflow.
+assembly script.
 The offline packaged marker and backend launcher prohibit cloud/update paths.
 
 Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-app.txt
-.\.venv\Scripts\python.exe app\gui.py
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt -r webui\requirements-webui.txt
+.\.venv\Scripts\python.exe scripts\fetch_assets.py
 .\.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
+cd webui\frontend; npm install; npm run dev
 ```
 
 macOS:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements-app.txt
-.venv/bin/python app/gui.py
+.venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python scripts/translate_pdf.py INPUT.pdf --output-dir OUT
 .venv/bin/python -m unittest discover -s tests -v
-bash build-macos.sh
 ```
 
 ## Code and Tests

@@ -5,10 +5,10 @@ name: Android
 # separate job that only a tag can reach.
 #
 # Tags are namespaced `android-v*` on purpose. `v*` belongs to the desktop
-# build: release.yml triggers on it and app/update.py downloads
-# PDFTranslate-windows.zip from whatever it finds there, so an Android release
-# under `v*` would tell every installed Windows copy to update to an asset that
-# does not exist.
+# build: the retired Tkinter builds still installed on users' machines download
+# PDFTranslate-windows.zip from whatever the latest `v*` release holds, so an
+# Android release under `v*` would tell every one of them to update to an asset
+# that does not exist.
 on:
   push:
     branches:

@@ -29,7 +29,7 @@ those details into this file; update the shared knowledge when behavior changes.
 - PDF architecture and invariants: [`pdf-engine.md`](agent-knowledge/pdf-engine.md)
 - Known failures and proven fixes: [`regressions.md`](agent-knowledge/regressions.md)
 - Test and visual QA: [`validation.md`](agent-knowledge/validation.md)
-- Windows/macOS builds and releases: [`release.md`](agent-knowledge/release.md)
+- Desktop builds and releases: [`release.md`](agent-knowledge/release.md)
 
 The reusable translation workflow remains in [`SKILL.md`](SKILL.md). Claude
 Code uses the project adapter under `.claude/skills/pdf-translate/`.

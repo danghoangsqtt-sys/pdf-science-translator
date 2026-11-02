@@ -217,6 +217,11 @@ quyết được vấn đề thật.
 
 ## Phase D — Preview theo trang trong GUI desktop (độc lập, có thể song song B/C)
 
+> **Cập nhật 2026-10-29:** app Tkinter (`app/gui.py`) đã bị loại bỏ. Ứng dụng
+> desktop `webui/` đã có khung xem bản gốc và bản dịch song song khi dịch xong;
+> phần còn lại của phase này (xem từng trang trong lúc dịch) chuyển sang `webui/`.
+> Các tham chiếu tới `app/gui.py` bên dưới chỉ còn giá trị lịch sử.
+
 Đọc trước: `pdf2zh/high_level.py` (callback tiến độ theo trang, khu vực dùng
 `tqdm.tqdm` + `callback(progress)`), `app/gui.py` (khu vực "Per-page progress
 inside the file being translated").

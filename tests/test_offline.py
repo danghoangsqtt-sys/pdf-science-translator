@@ -89,15 +89,6 @@ with socket.socket() as s:
             self.assertIn("Offline source text", page.get_text())
             self.assertEqual(tuple(page.rect), (0, 0, 400, 200))
 
-    def test_offline_updater_never_downloads_or_creates_output(self):
-        from app.update import Release, download_release
-        with tempfile.TemporaryDirectory() as folder, mock.patch.dict(os.environ, {"PDF_TRANSLATE_OFFLINE": "1"}):
-            target = Path(folder) / "new" / "update.zip"
-            with mock.patch("requests.get") as request, self.assertRaises(OfflineError):
-                download_release(Release("v9.0.0", "https://example.com/update.zip", 1), target)
-            request.assert_not_called()
-            self.assertFalse(target.parent.exists())
-
 
 class OfflinePackTests(unittest.TestCase):
     def setUp(self):
