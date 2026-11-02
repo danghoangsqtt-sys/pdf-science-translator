@@ -1,0 +1,59 @@
+
+> pdf-translate@1.0.0 test:viewer
+> node --experimental-strip-types --test tests/pdfViewport.test.ts && npm run build && node tests/run-viewer.cjs
+
+Γ£ö mirroring a position eight pixels into a page gutter keeps all eight pixels (0.7684ms)
+Γä╣ tests 1
+Γä╣ suites 0
+Γä╣ pass 1
+Γä╣ fail 0
+Γä╣ cancelled 0
+Γä╣ skipped 0
+Γä╣ todo 0
+Γä╣ duration_ms 146.5861
+
+> pdf-translate@1.0.0 build
+> tsc -b && vite build
+
+vite v8.3.0 building client environment for production...
+transforming...
+Γ£ô 1946 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                              0.88 kB Γöé gzip:   0.49 kB
+dist/assets/pdf.worker.min-qwK7q_zL.mjs  1,046.21 kB
+dist/assets/index-CAR5jvVK.css              13.03 kB Γöé gzip:   3.57 kB
+dist/assets/index-CpQMlmo_.js              721.36 kB Γöé gzip: 221.77 kB
+
+Γ£ô built in 5.46s
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+vite v8.3.0 building client environment for production...
+transforming...
+Γ£ô 2 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-electron/main.cjs  6.82 kB Γöé gzip: 3.04 kB
+
+Γ£ô built in 14ms
+vite v8.3.0 building client environment for production...
+
+ WARN  inlineDynamicImports option is deprecated, please use codeSplitting: false instead.
+
+transforming...
+Γ£ô 2 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-electron/preload.mjs  0.34 kB Γöé gzip: 0.24 kB
+
+Γ£ô built in 14ms
+[PLUGIN_TIMINGS] Plugin hooks ran for 5.0s of this 5.4s build (92%).
+The slowest hooks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - vite:build-html transform (85%, 4.6s, 1 call)
+Additional hook time came from hooks under 1s.
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+
+

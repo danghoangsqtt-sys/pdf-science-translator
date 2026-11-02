@@ -1,0 +1,22 @@
+sequenceDiagram
+  actor User
+  participant UI
+  participant API as Local API
+  participant Worker as Local Worker
+  participant PDF as PDF Pipeline
+  User->>UI: Chọn PDF + profile
+  UI->>API: POST job (profile only)
+  API->>API: Validate token, offline policy, assets
+  alt thiếu dữ liệu
+    API-->>UI: LOCAL_DATA_MISSING
+  else sẵn sàng
+    API->>Worker: private resolved configuration
+    Worker->>PDF: safe processing in staging
+    PDF-->>API: progress + kept-source reasons
+    API-->>UI: public progress / sanitized warnings
+    User->>UI: Hủy (tùy chọn)
+    UI->>API: POST cancel
+    API->>Worker: cancel event
+    Worker-->>API: stop at safe boundary / complete
+    API-->>UI: cancelled / complete / partial / error
+  end

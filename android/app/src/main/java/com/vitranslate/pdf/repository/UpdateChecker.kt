@@ -25,7 +25,7 @@ class UpdateChecker(private val currentVersion: String = BuildConfig.VERSION_NAM
         .readTimeout(10, TimeUnit.SECONDS)
         .build()
 
-    private val releasesUrl = "https://api.github.com/repos/breslee1707/VI-Translate/releases?per_page=30"
+    private val releasesUrl = "https://api.github.com/repos/danghoangsqtt-sys/Vp_translator/releases?per_page=30"
 
     suspend fun checkForUpdate(): UpdateInfo? = withContext(Dispatchers.IO) {
         try {
@@ -70,7 +70,7 @@ class UpdateChecker(private val currentVersion: String = BuildConfig.VERSION_NAM
         const val ANDROID_TAG_PREFIX = "android-v"
 
         private const val FALLBACK_RELEASES_URL =
-            "https://github.com/breslee1707/VI-Translate/releases"
+            "https://github.com/danghoangsqtt-sys/Vp_translator/releases"
 
         fun versionParts(version: String): List<Int> {
             val clean = version.trim()

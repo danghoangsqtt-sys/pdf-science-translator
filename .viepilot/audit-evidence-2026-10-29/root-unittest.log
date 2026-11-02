@@ -1,0 +1,395 @@
+AUDIT ROOT: D:\DataAdmin\vp-pdf
+PYTHON: 3.12.15
+CACHE: D:\DataAdmin\vp-pdf\tmp\audit-20261029-controlled\.cache\pdf2zh\cache.v1.db
+customtkinter.windows.widgets.font warning: Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.
+Using 'circle_shapes' instead. The rendering quality will be bad!
+test_a_broken_native_library_is_recognised (test_app_errors.DescribeFailureTests.test_a_broken_native_library_is_recognised) ... ok
+test_a_network_failure_is_recognised (test_app_errors.DescribeFailureTests.test_a_network_failure_is_recognised) ... ok
+test_an_existing_output_is_a_skip_not_a_failure (test_app_errors.DescribeFailureTests.test_an_existing_output_is_a_skip_not_a_failure) ... ok
+test_an_unmapped_failure_keeps_its_original_text (test_app_errors.DescribeFailureTests.test_an_unmapped_failure_keeps_its_original_text) ... ok
+test_an_unreadable_pdf_is_recognised_through_its_cause (test_app_errors.DescribeFailureTests.test_an_unreadable_pdf_is_recognised_through_its_cause) ... ok
+test_every_failure_offers_a_summary_and_an_action (test_app_errors.DescribeFailureTests.test_every_failure_offers_a_summary_and_an_action) ... ok
+test_the_cause_survives_the_generic_wrapper (test_app_errors.FlattenTests.test_the_cause_survives_the_generic_wrapper)
+The core wraps every failure in "Failed to translate <path>", so only ... ok
+test_a_missing_log_is_simply_omitted (test_app_errors.ReportTextTests.test_a_missing_log_is_simply_omitted) ... ok
+test_the_report_carries_what_a_maintainer_needs (test_app_errors.ReportTextTests.test_the_report_carries_what_a_maintainer_needs)
+A user who cannot read the error also cannot retype it, so the copied ... ok
+test_the_ocr_refusal_reaches_the_scan_advice (test_app_errors.ScannedDocumentTests.test_the_ocr_refusal_reaches_the_scan_advice)
+E-PDF-03 was written for this case but nothing ever raised it, so a ... ok
+test_unsafe_ocr_page_has_specific_fail_closed_advice (test_app_errors.ScannedDocumentTests.test_unsafe_ocr_page_has_specific_fail_closed_advice) ... ok
+test_a_directory_expands_to_its_pdfs_without_recursing (test_app_gui.CollectPdfsTests.test_a_directory_expands_to_its_pdfs_without_recursing) ... ok
+test_a_directory_named_like_a_pdf_is_not_queued (test_app_gui.CollectPdfsTests.test_a_directory_named_like_a_pdf_is_not_queued) ... ok
+test_a_vanished_file_stays_queued_so_the_runner_can_report_it (test_app_gui.CollectPdfsTests.test_a_vanished_file_stays_queued_so_the_runner_can_report_it) ... ok
+test_duplicates_collapse_across_a_directory_and_an_explicit_file (test_app_gui.CollectPdfsTests.test_duplicates_collapse_across_a_directory_and_an_explicit_file) ... ok
+test_non_pdf_files_are_dropped (test_app_gui.CollectPdfsTests.test_non_pdf_files_are_dropped) ... ok
+test_a_helper_that_will_not_start_leaves_a_working_app (test_app_gui.InstallUpdateTests.test_a_helper_that_will_not_start_leaves_a_working_app) ... ok
+test_a_running_batch_is_never_interrupted_by_a_restart (test_app_gui.InstallUpdateTests.test_a_running_batch_is_never_interrupted_by_a_restart) ... ok
+test_accepting_starts_the_helper_and_closes_the_app (test_app_gui.InstallUpdateTests.test_accepting_starts_the_helper_and_closes_the_app) ... ok
+test_declining_the_dialog_changes_nothing (test_app_gui.InstallUpdateTests.test_declining_the_dialog_changes_nothing) ... ok
+test_every_ocr_mode_has_a_unique_menu_label (test_app_gui.LanguageMenuTests.test_every_ocr_mode_has_a_unique_menu_label) ... ok
+test_every_supported_language_has_a_menu_label (test_app_gui.LanguageMenuTests.test_every_supported_language_has_a_menu_label) ... ok
+test_menu_labels_are_unique_so_the_reverse_lookup_is_total (test_app_gui.LanguageMenuTests.test_menu_labels_are_unique_so_the_reverse_lookup_is_total) ... ok
+test_an_unreadable_batch_never_raises (test_app_gui.LargestDocumentAdvisoryTests.test_an_unreadable_batch_never_raises) ... ok
+test_macos_uses_the_native_open_command (test_app_gui.OpenResultTests.test_macos_uses_the_native_open_command) ... ok
+test_smoke_test_loads_and_closes_the_app_without_entering_mainloop (test_app_gui.PackagedSmokeTestTests.test_smoke_test_loads_and_closes_the_app_without_entering_mainloop) ... ok
+test_the_smoke_test_exits_nonzero_when_the_native_stack_is_broken (test_app_gui.PackagedSmokeTestTests.test_the_smoke_test_exits_nonzero_when_the_native_stack_is_broken)
+A packaged build that cannot load pikepdf or onnx must not exit 0. ... smoke test failed: ImportError('no qpdf')
+ok
+test_verify_engine_loads_the_real_native_stack (test_app_gui.PackagedSmokeTestTests.test_verify_engine_loads_the_real_native_stack)
+Not mocked: this is the check itself, run against this environment. ... [INFO] 2026-10-29 15:26:10,352 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:26:10,360 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_small.onnx
+[INFO] 2026-10-29 15:26:10,360 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_small.onnx
+[INFO] 2026-10-29 15:26:10,416 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:26:10,416 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:26:10,416 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:26:10,457 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:26:10,472 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_small.onnx
+[INFO] 2026-10-29 15:26:10,473 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_small.onnx
+[INFO] 2026-10-29 15:26:11,293 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:26:11,343 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_medium.onnx
+[INFO] 2026-10-29 15:26:11,343 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_medium.onnx
+[INFO] 2026-10-29 15:26:11,476 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:26:11,476 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:26:11,476 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:26:11,529 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:26:11,577 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_medium.onnx
+[INFO] 2026-10-29 15:26:11,577 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_medium.onnx
+ok
+test_clean_ocr_result_is_done (test_app_gui.TranslationOutcomeTests.test_clean_ocr_result_is_done) ... ok
+test_ocr_safety_warning_is_visible_as_partial (test_app_gui.TranslationOutcomeTests.test_ocr_safety_warning_is_visible_as_partial) ... ok
+test_preserved_scan_is_never_reported_as_done (test_app_gui.TranslationOutcomeTests.test_preserved_scan_is_never_reported_as_done) ... ok
+test_worker_passes_selected_ocr_mode_and_reports_safety_partial (test_app_gui.TranslationOutcomeTests.test_worker_passes_selected_ocr_mode_and_reports_safety_partial) ... ok
+test_a_build_staged_earlier_is_offered_without_downloading_again (test_app_gui.UpdateFlowTests.test_a_build_staged_earlier_is_offered_without_downloading_again) ... ok
+test_a_build_that_cannot_swap_itself_only_gets_the_link (test_app_gui.UpdateFlowTests.test_a_build_that_cannot_swap_itself_only_gets_the_link)
+Running from source, or on a Mac: there is no folder to replace. ... ok
+test_a_disk_with_no_room_falls_back_to_the_link (test_app_gui.UpdateFlowTests.test_a_disk_with_no_room_falls_back_to_the_link) ... ok
+test_a_failed_download_leaves_the_link_and_no_staging (test_app_gui.UpdateFlowTests.test_a_failed_download_leaves_the_link_and_no_staging) ... ok
+test_a_release_with_no_windows_asset_falls_back_to_the_link (test_app_gui.UpdateFlowTests.test_a_release_with_no_windows_asset_falls_back_to_the_link) ... ok
+test_a_staged_download_ends_in_the_restart_offer (test_app_gui.UpdateFlowTests.test_a_staged_download_ends_in_the_restart_offer) ... ok
+test_leaves_a_working_stream_alone (test_app_gui.WritableStreamTests.test_leaves_a_working_stream_alone) ... ok
+test_replaces_streams_that_a_windowed_build_leaves_as_none (test_app_gui.WritableStreamTests.test_replaces_streams_that_a_windowed_build_leaves_as_none) ... ok
+test_icc_colorspace_missing_stream_is_dropped_not_crashed (test_colorspace_resources.ColorspaceResourceTests.test_icc_colorspace_missing_stream_is_dropped_not_crashed)
+A page whose ICCBased ColorSpace resource points at damage MuPDF ... ok
+test_icc_colorspace_with_valid_stream_still_resolves (test_colorspace_resources.ColorspaceResourceTests.test_icc_colorspace_with_valid_stream_still_resolves) ... ok
+test_compiled_provider_is_not_serialized (test_doclayout.OptimizedGraphCacheTests.test_compiled_provider_is_not_serialized) ... ok
+test_frozen_release_never_writes_hardware_specific_graph (test_doclayout.OptimizedGraphCacheTests.test_frozen_release_never_writes_hardware_specific_graph) ... ok
+test_source_cpu_runtime_may_cache (test_doclayout.OptimizedGraphCacheTests.test_source_cpu_runtime_may_cache) ... ok
+test_cli_domain_list_matches_the_core_supported_set (test_domain_glossary.DomainConstantsAgreeTests.test_cli_domain_list_matches_the_core_supported_set)
+scripts/translate_pdf.py duplicates SUPPORTED_DOMAINS as a plain ... ok
+test_an_unknown_domain_returns_an_empty_table_not_an_error (test_domain_glossary.LoadDomainGlossaryTests.test_an_unknown_domain_returns_an_empty_table_not_an_error) ... ok
+test_every_supported_domain_has_a_non_empty_table (test_domain_glossary.LoadDomainGlossaryTests.test_every_supported_domain_has_a_non_empty_table) ... ok
+test_a_multi_word_term_is_matched_as_one_unit (test_domain_glossary.MaskDomainTermsTests.test_a_multi_word_term_is_matched_as_one_unit) ... ok
+test_a_term_in_the_middle_of_a_sentence_is_masked (test_domain_glossary.MaskDomainTermsTests.test_a_term_in_the_middle_of_a_sentence_is_masked) ... ok
+test_an_empty_glossary_is_a_no_op (test_domain_glossary.MaskDomainTermsTests.test_an_empty_glossary_is_a_no_op) ... ok
+test_matching_is_case_insensitive_but_preserves_surrounding_text (test_domain_glossary.MaskDomainTermsTests.test_matching_is_case_insensitive_but_preserves_surrounding_text) ... ok
+test_placeholder_indices_follow_appearance_order (test_domain_glossary.MaskDomainTermsTests.test_placeholder_indices_follow_appearance_order) ... ok
+test_word_boundaries_are_respected (test_domain_glossary.MaskDomainTermsTests.test_word_boundaries_are_respected)
+"conduction" must not match inside "semiconduction" or similar. ... ok
+test_a_dropped_placeholder_is_rejected (test_domain_glossary.RestoreDomainTermsTests.test_a_dropped_placeholder_is_rejected) ... ok
+test_a_malformed_unpaired_tag_is_rejected_not_leaked (test_domain_glossary.RestoreDomainTermsTests.test_a_malformed_unpaired_tag_is_rejected_not_leaked) ... ok
+test_a_surviving_placeholder_is_replaced_with_the_preferred_term (test_domain_glossary.RestoreDomainTermsTests.test_a_surviving_placeholder_is_replaced_with_the_preferred_term) ... ok
+test_no_placeholders_requested_returns_the_text_unchanged (test_domain_glossary.RestoreDomainTermsTests.test_no_placeholders_requested_returns_the_text_unchanged) ... ok
+test_reordered_placeholders_are_rejected_not_silently_swapped (test_domain_glossary.RestoreDomainTermsTests.test_reordered_placeholders_are_rejected_not_silently_swapped)
+Google put term 1 before term 0 - restoring positionally would ... ok
+test_the_restored_text_never_contains_a_raw_placeholder_tag (test_domain_glossary.RestoreDomainTermsTests.test_the_restored_text_never_contains_a_raw_placeholder_tag) ... ok
+test_a_segment_at_the_limit_is_still_sent (test_handoff_translator.GoogleSegmentLengthTests.test_a_segment_at_the_limit_is_still_sent) ... ok
+test_a_segment_over_the_limit_is_refused_rather_than_truncated (test_handoff_translator.GoogleSegmentLengthTests.test_a_segment_over_the_limit_is_refused_rather_than_truncated)
+Upstream sends the first 5000 characters and returns that as the whole ... ok
+test_never_caches_an_untranslated_passthrough (test_handoff_translator.HandoffTranslatorTests.test_never_caches_an_untranslated_passthrough) ... ok
+test_records_each_miss_once_and_passes_the_text_through (test_handoff_translator.HandoffTranslatorTests.test_records_each_miss_once_and_passes_the_text_through) ... ok
+test_returns_the_supplied_translation (test_handoff_translator.HandoffTranslatorTests.test_returns_the_supplied_translation) ... ok
+test_truncates_a_stale_miss_file_on_construction (test_handoff_translator.HandoffTranslatorTests.test_truncates_a_stale_miss_file_on_construction) ... ok
+test_a_space_before_the_number_is_allowed (test_handoff_translator.NumberAbbreviationTests.test_a_space_before_the_number_is_allowed) ... ok
+test_already_capitalised_text_is_unchanged (test_handoff_translator.NumberAbbreviationTests.test_already_capitalised_text_is_unchanged) ... ok
+test_every_occurrence_in_a_segment_is_capitalised (test_handoff_translator.NumberAbbreviationTests.test_every_occurrence_in_a_segment_is_capitalised) ... ok
+test_the_abbreviation_is_capitalised_before_a_number (test_handoff_translator.NumberAbbreviationTests.test_the_abbreviation_is_capitalised_before_a_number) ... ok
+test_the_negation_is_left_alone (test_handoff_translator.NumberAbbreviationTests.test_the_negation_is_left_alone) ... ok
+test_the_tail_of_a_longer_word_is_not_the_abbreviation (test_handoff_translator.NumberAbbreviationTests.test_the_tail_of_a_longer_word_is_not_the_abbreviation) ... ok
+test_a_missing_path_yields_an_empty_table (test_handoff_translator.SegmentTableTests.test_a_missing_path_yields_an_empty_table) ... ok
+test_balanced_style_pairs_may_reorder_as_complete_runs (test_handoff_translator.SegmentTableTests.test_balanced_style_pairs_may_reorder_as_complete_runs) ... ok
+test_converter_placeholders_round_trip_through_safe_tags (test_handoff_translator.SegmentTableTests.test_converter_placeholders_round_trip_through_safe_tags) ... ok
+test_correct_vietnamese_is_not_treated_as_mojibake (test_handoff_translator.SegmentTableTests.test_correct_vietnamese_is_not_treated_as_mojibake)
+┬ and ├ are Vietnamese letters, so a marker search drops good work. ... ok
+test_damaged_or_reordered_placeholder_tags_are_rejected (test_handoff_translator.SegmentTableTests.test_damaged_or_reordered_placeholder_tags_are_rejected) ... ok
+test_damaged_vietnamese_letters_leave_the_segment_untranslated (test_handoff_translator.SegmentTableTests.test_damaged_vietnamese_letters_leave_the_segment_untranslated)
+Guessing the letters back is refused, so the record is dropped. ... D:\DataAdmin\vp-pdf\tmp\audit-20261029-controlled\temp\tmpjcoosvw2\letters.jsonl line 1: 'dst' is UTF-8 text decoded as Windows-1252; segment left untranslated
+ok
+test_handoff_skips_a_translation_that_loses_style (test_handoff_translator.SegmentTableTests.test_handoff_skips_a_translation_that_loses_style) ... D:\DataAdmin\vp-pdf\tmp\audit-20261029-controlled\temp\tmp2symwb3f\table.jsonl line 1: style tags differ between src and dst; segment left untranslated
+ok
+test_legacy_converter_placeholders_are_normalised (test_handoff_translator.SegmentTableTests.test_legacy_converter_placeholders_are_normalised) ... ok
+test_loads_records_and_skips_blank_translations (test_handoff_translator.SegmentTableTests.test_loads_records_and_skips_blank_translations) ... ok
+test_missing_or_cross_nested_style_tags_are_rejected (test_handoff_translator.SegmentTableTests.test_missing_or_cross_nested_style_tags_are_rejected) ... ok
+test_placeholders_are_returned_in_order (test_handoff_translator.SegmentTableTests.test_placeholders_are_returned_in_order) ... ok
+test_punctuation_repair_does_not_mask_damaged_letters (test_handoff_translator.SegmentTableTests.test_punctuation_repair_does_not_mask_damaged_letters)
+Repairing the dash first hid the damage in ten real records. ... D:\DataAdmin\vp-pdf\tmp\audit-20261029-controlled\temp\tmpzuqyioas\mixed.jsonl line 1: 'dst' is UTF-8 text decoded as Windows-1252; segment left untranslated
+ok
+test_rejects_a_malformed_record_and_names_the_line (test_handoff_translator.SegmentTableTests.test_rejects_a_malformed_record_and_names_the_line) ... ok
+test_repairs_unambiguous_punctuation_mojibake_in_handoff_jsonl (test_handoff_translator.SegmentTableTests.test_repairs_unambiguous_punctuation_mojibake_in_handoff_jsonl) ... ok
+test_skips_entries_that_lost_or_reordered_a_formula_placeholder (test_handoff_translator.SegmentTableTests.test_skips_entries_that_lost_or_reordered_a_formula_placeholder) ... D:\DataAdmin\vp-pdf\tmp\audit-20261029-controlled\temp\tmp5lcynji6\table.jsonl line 1: formula placeholders differ between src and dst; segment left untranslated
+ok
+test_a_clear_page_below_lends_its_whole_gap (test_inline_formula_layout.AvailableHeightTests.test_a_clear_page_below_lends_its_whole_gap) ... ok
+test_a_neighbour_in_another_column_is_not_an_obstacle (test_inline_formula_layout.AvailableHeightTests.test_a_neighbour_in_another_column_is_not_an_obstacle) ... ok
+test_a_paragraph_directly_below_lends_only_the_real_gap (test_inline_formula_layout.AvailableHeightTests.test_a_paragraph_directly_below_lends_only_the_real_gap) ... ok
+test_a_paragraph_never_gets_less_than_its_own_box (test_inline_formula_layout.AvailableHeightTests.test_a_paragraph_never_gets_less_than_its_own_box) ... ok
+test_a_touching_paragraph_lends_nothing (test_inline_formula_layout.AvailableHeightTests.test_a_touching_paragraph_lends_nothing) ... ok
+test_the_nearest_of_several_obstacles_wins (test_inline_formula_layout.AvailableHeightTests.test_the_nearest_of_several_obstacles_wins) ... ok
+test_the_paragraph_itself_is_never_its_own_obstacle (test_inline_formula_layout.AvailableHeightTests.test_the_paragraph_itself_is_never_its_own_obstacle) ... ok
+test_a_coloured_rule_is_left_alone (test_inline_formula_layout.FractionRuleTests.test_a_coloured_rule_is_left_alone) ... ok
+test_a_rule_drawn_in_the_default_colour_is_moved_with_its_formula (test_inline_formula_layout.FractionRuleTests.test_a_rule_drawn_in_the_default_colour_is_moved_with_its_formula) ... ok
+test_a_slanted_rule_is_left_alone (test_inline_formula_layout.FractionRuleTests.test_a_slanted_rule_is_left_alone) ... ok
+test_an_explicitly_black_rule_still_moves (test_inline_formula_layout.FractionRuleTests.test_an_explicitly_black_rule_still_moves) ... ok
+test_edge_recovery_does_not_attach_a_separate_gutter_glyph (test_inline_formula_layout.FractionRuleTests.test_edge_recovery_does_not_attach_a_separate_gutter_glyph) ... ok
+test_edge_recovery_never_overrides_protected_formula (test_inline_formula_layout.FractionRuleTests.test_edge_recovery_never_overrides_protected_formula) ... ok
+test_model_edge_does_not_detach_caption_suffix_or_footnote (test_inline_formula_layout.FractionRuleTests.test_model_edge_does_not_detach_caption_suffix_or_footnote) ... ok
+test_model_edge_does_not_detach_initial_n_or_f_from_a_word (test_inline_formula_layout.FractionRuleTests.test_model_edge_does_not_detach_initial_n_or_f_from_a_word) ... ok
+test_protected_grid_rule_is_retained_in_original_content_stream (test_inline_formula_layout.FractionRuleTests.test_protected_grid_rule_is_retained_in_original_content_stream) ... ok
+test_scaling_does_not_leak_into_later_strokes (test_inline_formula_layout.FractionRuleTests.test_scaling_does_not_leak_into_later_strokes) ... ok
+test_short_numeric_title_orphan_triggers_gentle_rebalance (test_inline_formula_layout.FractionRuleTests.test_short_numeric_title_orphan_triggers_gentle_rebalance) ... ok
+test_the_line_width_is_scaled_by_the_ctm_it_was_drawn_under (test_inline_formula_layout.FractionRuleTests.test_the_line_width_is_scaled_by_the_ctm_it_was_drawn_under) ... ok
+test_a_deep_denominator_pushes_only_the_line_below_it (test_inline_formula_layout.LineOffsetTests.test_a_deep_denominator_pushes_only_the_line_below_it) ... ok
+test_a_paragraph_with_no_slack_keeps_the_plain_leading (test_inline_formula_layout.LineOffsetTests.test_a_paragraph_with_no_slack_keeps_the_plain_leading) ... ok
+test_a_single_line_paragraph_needs_no_gaps (test_inline_formula_layout.LineOffsetTests.test_a_single_line_paragraph_needs_no_gaps) ... ok
+test_a_tall_numerator_pushes_the_line_above_it (test_inline_formula_layout.LineOffsetTests.test_a_tall_numerator_pushes_the_line_above_it) ... ok
+test_competing_formulas_share_the_slack (test_inline_formula_layout.LineOffsetTests.test_competing_formulas_share_the_slack) ... ok
+test_extra_room_is_capped_at_the_paragraph_slack (test_inline_formula_layout.LineOffsetTests.test_extra_room_is_capped_at_the_paragraph_slack) ... ok
+test_fitted_cell_text_is_shifted_inside_the_lower_border (test_inline_formula_layout.LineOffsetTests.test_fitted_cell_text_is_shifted_inside_the_lower_border) ... ok
+test_fitted_cell_text_is_shifted_inside_the_upper_border (test_inline_formula_layout.LineOffsetTests.test_fitted_cell_text_is_shifted_inside_the_upper_border) ... ok
+test_ink_uses_the_final_shrunk_font_size (test_inline_formula_layout.LineOffsetTests.test_ink_uses_the_final_shrunk_font_size) ... ok
+test_lines_without_recorded_ink_fall_back_to_the_usual_leading (test_inline_formula_layout.LineOffsetTests.test_lines_without_recorded_ink_fall_back_to_the_usual_leading) ... ok
+test_negative_cell_slack_with_no_formula_extra_keeps_plain_leading (test_inline_formula_layout.LineOffsetTests.test_negative_cell_slack_with_no_formula_extra_keeps_plain_leading) ... ok
+test_prose_keeps_the_usual_even_leading (test_inline_formula_layout.LineOffsetTests.test_prose_keeps_the_usual_even_leading) ... ok
+test_vertical_extent_includes_large_preserved_text_on_later_line (test_inline_formula_layout.LineOffsetTests.test_vertical_extent_includes_large_preserved_text_on_later_line) ... ok
+test_a_character_the_output_font_cannot_draw_is_preserved (test_inline_formula_layout.OrientationAndStyleTests.test_a_character_the_output_font_cannot_draw_is_preserved)
+A missing glyph draws as .notdef and extracts as U+0000. ... ok
+test_a_colour_that_cannot_be_replayed_is_dropped (test_inline_formula_layout.OrientationAndStyleTests.test_a_colour_that_cannot_be_replayed_is_dropped)
+Falling back to black beats drawing the run in a guessed colour. ... ok
+test_a_colourspace_is_replayed_in_front_of_its_components (test_inline_formula_layout.OrientationAndStyleTests.test_a_colourspace_is_replayed_in_front_of_its_components) ... ok
+test_a_glyph_parked_above_the_page_is_dropped (test_inline_formula_layout.OrientationAndStyleTests.test_a_glyph_parked_above_the_page_is_dropped)
+Stray off-page glyphs used to split a paragraph at every bold term. ... ok
+test_a_glyph_touching_the_edge_is_kept (test_inline_formula_layout.OrientationAndStyleTests.test_a_glyph_touching_the_edge_is_kept)
+Clipped is not invisible, and neither is a glyph with no page. ... ok
+test_a_graphics_state_that_could_hide_the_text_is_left_behind (test_inline_formula_layout.OrientationAndStyleTests.test_a_graphics_state_that_could_hide_the_text_is_left_behind)
+A page that reads as empty is worse than one whose black is a shade off. ... ok
+test_a_graphics_state_that_only_mixes_colour_is_replayed (test_inline_formula_layout.OrientationAndStyleTests.test_a_graphics_state_that_only_mixes_colour_is_replayed)
+Overprint belongs to the text: it is why a CMYK black prints black. ... ok
+test_a_line_is_never_judged_without_a_column_to_judge_it_against (test_inline_formula_layout.OrientationAndStyleTests.test_a_line_is_never_judged_without_a_column_to_judge_it_against) ... ok
+test_a_line_stopping_short_of_its_column_ends_the_paragraph (test_inline_formula_layout.OrientationAndStyleTests.test_a_line_stopping_short_of_its_column_ends_the_paragraph)
+The layout model returns a column, not a paragraph. ... ok
+test_a_long_run_of_words_is_body_text_not_a_subscript (test_inline_formula_layout.OrientationAndStyleTests.test_a_long_run_of_words_is_body_text_not_a_subscript)
+A caption's label is set larger than its body, so the body reads as ... ok
+test_a_name_merely_ending_in_those_letters_is_not_italic (test_inline_formula_layout.OrientationAndStyleTests.test_a_name_merely_ending_in_those_letters_is_not_italic) ... ok
+test_a_named_space_already_in_force_is_kept (test_inline_formula_layout.OrientationAndStyleTests.test_a_named_space_already_in_force_is_kept) ... ok
+test_a_real_subscript_is_still_preserved (test_inline_formula_layout.OrientationAndStyleTests.test_a_real_subscript_is_still_preserved) ... ok
+test_a_saved_colour_comes_back_with_the_graphics_state (test_inline_formula_layout.OrientationAndStyleTests.test_a_saved_colour_comes_back_with_the_graphics_state) ... ok
+test_adobe_pro_abbreviates_the_slanted_face (test_inline_formula_layout.OrientationAndStyleTests.test_adobe_pro_abbreviates_the_slanted_face)
+MinionPro-It never spells the word, but it is italic all the same. ... ok
+test_components_are_replayed_with_a_space_that_explains_them (test_inline_formula_layout.OrientationAndStyleTests.test_components_are_replayed_with_a_space_that_explains_them)
+`0 0 0 1 sc` is CMYK black, and DeviceGray 1 is white. ... ok
+test_first_line_indent_is_deducted_from_width_budget (test_inline_formula_layout.OrientationAndStyleTests.test_first_line_indent_is_deducted_from_width_budget) ... ok
+test_font_face_names_map_to_inline_styles (test_inline_formula_layout.OrientationAndStyleTests.test_font_face_names_map_to_inline_styles) ... ok
+test_missing_style_faces_fall_back_to_the_regular_font (test_inline_formula_layout.OrientationAndStyleTests.test_missing_style_faces_fall_back_to_the_regular_font) ... ok
+test_only_the_newest_colour_of_each_kind_is_replayed (test_inline_formula_layout.OrientationAndStyleTests.test_only_the_newest_colour_of_each_kind_is_replayed)
+`rg` and `g` write the same slot, so replaying both lets the older win. ... ok
+test_quarter_turn_matrices_are_classified (test_inline_formula_layout.OrientationAndStyleTests.test_quarter_turn_matrices_are_classified) ... ok
+test_reflected_upright_text_is_not_mistaken_for_rotation (test_inline_formula_layout.OrientationAndStyleTests.test_reflected_upright_text_is_not_mistaken_for_rotation) ... ok
+test_rotated_font_size_comes_from_matrix_not_glyph_advance (test_inline_formula_layout.OrientationAndStyleTests.test_rotated_font_size_comes_from_matrix_not_glyph_advance) ... ok
+test_rotated_vietnamese_headers_have_stable_terminology_and_style (test_inline_formula_layout.OrientationAndStyleTests.test_rotated_vietnamese_headers_have_stable_terminology_and_style) ... ok
+test_shrinking_a_paragraph_moves_its_runs_with_it (test_inline_formula_layout.OrientationAndStyleTests.test_shrinking_a_paragraph_moves_its_runs_with_it)
+A line that shrinks must close up, not spread out. ... ok
+test_shrinking_keeps_a_formula_together (test_inline_formula_layout.OrientationAndStyleTests.test_shrinking_keeps_a_formula_together)
+Formula glyphs already scaled; their offsets have to follow. ... ok
+test_shrinking_measures_every_line_from_its_own_left_edge (test_inline_formula_layout.OrientationAndStyleTests.test_shrinking_measures_every_line_from_its_own_left_edge)
+Only the first line may be indented; later lines start at x0. ... ok
+test_spaces_and_a_missing_font_are_never_preserved (test_inline_formula_layout.OrientationAndStyleTests.test_spaces_and_a_missing_font_are_never_preserved)
+Preserving a space would break a paragraph at every word. ... ok
+test_styled_runs_are_serialised_without_losing_text (test_inline_formula_layout.OrientationAndStyleTests.test_styled_runs_are_serialised_without_losing_text) ... ok
+test_synthetic_bold_strokes_in_the_colour_it_fills_with (test_inline_formula_layout.OrientationAndStyleTests.test_synthetic_bold_strokes_in_the_colour_it_fills_with)
+The stroke is our own thickening, not something the source drew. ... ok
+test_synthetic_italic_composes_with_rotation (test_inline_formula_layout.OrientationAndStyleTests.test_synthetic_italic_composes_with_rotation) ... ok
+test_the_font_descriptor_outranks_the_font_name (test_inline_formula_layout.OrientationAndStyleTests.test_the_font_descriptor_outranks_the_font_name)
+The embedded font says what it is; the name is only a label. ... ok
+test_a_larger_glyph_mid_paragraph_still_raises_the_size (test_inline_formula_layout.ParagraphSizeTests.test_a_larger_glyph_mid_paragraph_still_raises_the_size) ... ok
+test_a_tab_or_space_never_sets_the_size (test_inline_formula_layout.ParagraphSizeTests.test_a_tab_or_space_never_sets_the_size) ... ok
+test_body_text_no_longer_moves_the_size_once_the_paragraph_has_started (test_inline_formula_layout.ParagraphSizeTests.test_body_text_no_longer_moves_the_size_once_the_paragraph_has_started) ... ok
+test_the_first_real_letter_after_a_bullet_sets_the_size (test_inline_formula_layout.ParagraphSizeTests.test_the_first_real_letter_after_a_bullet_sets_the_size) ... ok
+test_the_second_letter_may_still_correct_the_first (test_inline_formula_layout.ParagraphSizeTests.test_the_second_letter_may_still_correct_the_first) ... ok
+test_formula_placeholder_uses_its_original_width (test_inline_formula_layout.TableCellFitTests.test_formula_placeholder_uses_its_original_width) ... ok
+test_short_translation_fits_at_half_size (test_inline_formula_layout.TableCellFitTests.test_short_translation_fits_at_half_size) ... ok
+test_translation_that_needs_too_many_lines_falls_back (test_inline_formula_layout.TableCellFitTests.test_translation_that_needs_too_many_lines_falls_back) ... ok
+test_a_file_the_repair_cannot_fix_is_reported_not_translated (test_large_document_finalization.LargeDocumentFinalizationTests.test_a_file_the_repair_cannot_fix_is_reported_not_translated) ... PDF structure issue detected in D:\DataAdmin\vp-pdf\tmp\audit-20261029-controlled\temp\tmpw_jnshtz\book.pdf; translating a repaired temporary copy
+ok
+test_app_translation_requests_only_the_mono_document (test_large_document_finalization.LargeDocumentFinalizationTests.test_app_translation_requests_only_the_mono_document) ... ok
+test_fonts_are_never_subset_at_any_size (test_large_document_finalization.LargeDocumentFinalizationTests.test_fonts_are_never_subset_at_any_size)
+Subsetting renumbers glyphs, and the content stream stores raw glyph ... ok
+test_large_document_uses_fast_serialization (test_large_document_finalization.LargeDocumentFinalizationTests.test_large_document_uses_fast_serialization) ... ok
+test_repair_follows_the_engine_rather_than_pikepdf (test_large_document_finalization.LargeDocumentFinalizationTests.test_repair_follows_the_engine_rather_than_pikepdf)
+pikepdf opens damage that MuPDF refuses on write, so probing with ... PDF structure issue detected in D:\DataAdmin\vp-pdf\tmp\audit-20261029-controlled\temp\tmpgzp7p03q\book.pdf; translating a repaired temporary copy
+ok
+test_address_row_does_not_split_horizontally_fragmented_ocr (test_ocr.OcrPreparationTests.test_address_row_does_not_split_horizontally_fragmented_ocr) ... ok
+test_any_detected_protected_region_preserves_the_page (test_ocr.OcrPreparationTests.test_any_detected_protected_region_preserves_the_page) ... ok
+test_center_inside_region_is_not_enough_for_cross_column_line (test_ocr.OcrPreparationTests.test_center_inside_region_is_not_enough_for_cross_column_line) ... ok
+test_code_heavy_page_is_preserved (test_ocr.OcrPreparationTests.test_code_heavy_page_is_preserved) ... ok
+test_cropped_ink_mask_matches_full_page_mask (test_ocr.OcrPreparationTests.test_cropped_ink_mask_matches_full_page_mask) ... ok
+test_crossing_rules_still_preserve_a_form_grid (test_ocr.OcrPreparationTests.test_crossing_rules_still_preserve_a_form_grid) ... ok
+test_dense_prose_requires_explicit_ownership_before_reflow (test_ocr.OcrPreparationTests.test_dense_prose_requires_explicit_ownership_before_reflow) ... ok
+test_dense_text_boxes_without_reflow_room_preserve_the_page (test_ocr.OcrPreparationTests.test_dense_text_boxes_without_reflow_room_preserve_the_page) ... ok
+test_formula_region_is_never_cleaned_or_added_to_the_sidecar (test_ocr.OcrPreparationTests.test_formula_region_is_never_cleaned_or_added_to_the_sidecar) ... ok
+test_fragmented_ocr_is_preserved_as_a_whole_page (test_ocr.OcrPreparationTests.test_fragmented_ocr_is_preserved_as_a_whole_page) ... ok
+test_high_level_replays_owned_regions_as_distinct_classes (test_ocr.OcrPreparationTests.test_high_level_replays_owned_regions_as_distinct_classes) ... ok
+test_image_only_requires_an_image_and_no_text (test_ocr.OcrPreparationTests.test_image_only_requires_an_image_and_no_text) ... ok
+test_layout_regions_prove_multi_column_ownership (test_ocr.OcrPreparationTests.test_layout_regions_prove_multi_column_ownership) ... ok
+test_layout_resolution_is_bounded_for_large_historical_scans (test_ocr.OcrPreparationTests.test_layout_resolution_is_bounded_for_large_historical_scans) ... ok
+test_long_scan_page_is_preserved_until_reflow_is_proven (test_ocr.OcrPreparationTests.test_long_scan_page_is_preserved_until_reflow_is_proven) ... ok
+test_mojibake_preserves_the_whole_page (test_ocr.OcrPreparationTests.test_mojibake_preserves_the_whole_page) ... ok
+test_multi_column_region_proof_fails_when_a_line_has_no_owner (test_ocr.OcrPreparationTests.test_multi_column_region_proof_fails_when_a_line_has_no_owner) ... ok
+test_numbered_verse_keeps_physical_lines_but_wrapped_prose_does_not (test_ocr.OcrPreparationTests.test_numbered_verse_keeps_physical_lines_but_wrapped_prose_does_not) ... ok
+test_ocr_fragment_merge_never_joins_columns_or_eats_a_bullet (test_ocr.OcrPreparationTests.test_ocr_fragment_merge_never_joins_columns_or_eats_a_bullet) ... ok
+test_ocr_paragraphs_keep_wrapped_short_lines_but_split_real_gaps (test_ocr.OcrPreparationTests.test_ocr_paragraphs_keep_wrapped_short_lines_but_split_real_gaps) ... ok
+not in git repo
+test_ocr_region_prevents_font_metric_induced_sentence_fragments (test_ocr.OcrPreparationTests.test_ocr_region_prevents_font_metric_induced_sentence_fragments) ... 
+  0%|          | 0/1 [00:00<?, ?it/s]
+100%|##########| 1/1 [00:00<00:00, 39.43it/s]
+
+  0%|          | 0/1 [00:00<?, ?it/s]
+100%|##########| 1/1 [00:00<00:00, 62.36it/s]
+ok
+test_owned_ocr_lines_do_not_overwrite_protected_pixels (test_ocr.OcrPreparationTests.test_owned_ocr_lines_do_not_overwrite_protected_pixels) ... ok
+test_ownership_tolerates_small_model_edge_errors_on_short_lines (test_ocr.OcrPreparationTests.test_ownership_tolerates_small_model_edge_errors_on_short_lines) ... ok
+test_paper_restoration_expands_sampling_for_dense_bands (test_ocr.OcrPreparationTests.test_paper_restoration_expands_sampling_for_dense_bands) ... ok
+test_paper_restoration_refuses_without_any_blank_samples (test_ocr.OcrPreparationTests.test_paper_restoration_refuses_without_any_blank_samples) ... ok
+test_paper_restoration_removes_ink_but_keeps_protected_mark_and_margin (test_ocr.OcrPreparationTests.test_paper_restoration_removes_ink_but_keeps_protected_mark_and_margin) ... ok
+test_postal_address_keeps_rows_and_uses_available_region_width (test_ocr.OcrPreparationTests.test_postal_address_keeps_rows_and_uses_available_region_width) ... ok
+test_postal_glyph_descender_cannot_take_ownership_of_following_row (test_ocr.OcrPreparationTests.test_postal_glyph_descender_cannot_take_ownership_of_following_row) ... ok
+test_prepares_sidecar_without_changing_the_source (test_ocr.OcrPreparationTests.test_prepares_sidecar_without_changing_the_source) ... ok
+test_protected_form_glyphs_and_rules_retain_source_geometry (test_ocr.OcrPreparationTests.test_protected_form_glyphs_and_rules_retain_source_geometry) ... 
+  0%|          | 0/1 [00:00<?, ?it/s]
+100%|##########| 1/1 [00:00<00:00, 84.77it/s]
+ok
+test_proven_region_ownership_releases_only_reflow_guards (test_ocr.OcrPreparationTests.test_proven_region_ownership_releases_only_reflow_guards) ... ok
+test_raster_bullets_split_model_merged_list_without_erasing_markers (test_ocr.OcrPreparationTests.test_raster_bullets_split_model_merged_list_without_erasing_markers) ... ok
+test_region_aware_order_keeps_spanning_header_before_two_columns (test_ocr.OcrPreparationTests.test_region_aware_order_keeps_spanning_header_before_two_columns) ... ok
+test_residual_ink_check_distinguishes_clean_and_dirty_regions (test_ocr.OcrPreparationTests.test_residual_ink_check_distinguishes_clean_and_dirty_regions) ... ok
+test_standalone_bullets_stay_in_the_source_raster (test_ocr.OcrPreparationTests.test_standalone_bullets_stay_in_the_source_raster) ... ok
+test_tiny_single_layout_detection_does_not_block_prose (test_ocr.OcrPreparationTests.test_tiny_single_layout_detection_does_not_block_prose) ... ok
+test_truth_fragments_on_one_baseline_are_joined (test_ocr.OcrPreparationTests.test_truth_fragments_on_one_baseline_are_joined) ... ok
+test_two_column_heading_rules_are_not_mistaken_for_a_form_grid (test_ocr.OcrPreparationTests.test_two_column_heading_rules_are_not_mistaken_for_a_form_grid) ... ok
+test_two_populated_columns_are_not_reflowed_as_one_page (test_ocr.OcrPreparationTests.test_two_populated_columns_are_not_reflowed_as_one_page) ... ok
+test_wholly_protected_rotated_page_keeps_original_content_stream (test_ocr.OcrPreparationTests.test_wholly_protected_rotated_page_keeps_original_content_stream) ... 
+  0%|          | 0/1 [00:00<?, ?it/s]
+100%|##########| 1/1 [00:00<00:00, 1538.63it/s]
+ok
+test_a_blank_page_is_not_called_a_scan (test_preservation_rules.ImageOnlyPageTests.test_a_blank_page_is_not_called_a_scan) ... ok
+test_a_page_is_judged_on_everything_it_contributed (test_preservation_rules.ImageOnlyPageTests.test_a_page_is_judged_on_everything_it_contributed)
+receive_layout runs once per nested container and only the last call ... ok
+test_a_page_of_text_alone_carries_no_image (test_preservation_rules.ImageOnlyPageTests.test_a_page_of_text_alone_carries_no_image) ... ok
+test_any_image_counts_even_when_no_single_tile_is_large (test_preservation_rules.ImageOnlyPageTests.test_any_image_counts_even_when_no_single_tile_is_large)
+Scanners emit a page as dozens of tiles, so the half-page rule that ... ok
+test_converter_accepts_every_registered_engine (test_preservation_rules.PreservationRuleTests.test_converter_accepts_every_registered_engine) ... ok
+test_converter_keeps_the_late_filled_cell_bounds_mapping (test_preservation_rules.PreservationRuleTests.test_converter_keeps_the_late_filled_cell_bounds_mapping) ... ok
+test_converter_rejects_an_unregistered_service (test_preservation_rules.PreservationRuleTests.test_converter_rejects_an_unregistered_service) ... ok
+test_every_target_can_be_typeset_without_lines_touching (test_preservation_rules.PreservationRuleTests.test_every_target_can_be_typeset_without_lines_touching) ... ok
+test_formula_rule_covers_math_and_monospace_code_fonts (test_preservation_rules.PreservationRuleTests.test_formula_rule_covers_math_and_monospace_code_fonts) ... ok
+test_full_page_image_is_classified_as_scanned (test_preservation_rules.PreservationRuleTests.test_full_page_image_is_classified_as_scanned) ... ok
+test_index_page_keeps_term_and_page_number_columns (test_preservation_rules.PreservationRuleTests.test_index_page_keeps_term_and_page_number_columns) ... ok
+test_merged_description_and_code_cell_splits_into_x_clusters (test_preservation_rules.PreservationRuleTests.test_merged_description_and_code_cell_splits_into_x_clusters) ... ok
+test_nomenclature_page_keeps_symbol_definition_pairs (test_preservation_rules.PreservationRuleTests.test_nomenclature_page_keeps_symbol_definition_pairs) ... ok
+test_normal_prose_is_not_misclassified (test_preservation_rules.PreservationRuleTests.test_normal_prose_is_not_misclassified) ... ok
+test_office_private_use_bullets_keep_their_dingbat_font (test_preservation_rules.PreservationRuleTests.test_office_private_use_bullets_keep_their_dingbat_font) ... ok
+test_operator_only_ordinary_font_block_is_protected_as_formula (test_preservation_rules.PreservationRuleTests.test_operator_only_ordinary_font_block_is_protected_as_formula) ... ok
+test_prose_containing_variables_is_not_protected_as_a_formula (test_preservation_rules.PreservationRuleTests.test_prose_containing_variables_is_not_protected_as_a_formula) ... ok
+test_reference_page_keeps_citation_numbering (test_preservation_rules.PreservationRuleTests.test_reference_page_keeps_citation_numbering) ... ok
+test_stacked_detection_does_not_cross_a_protected_table (test_preservation_rules.PreservationRuleTests.test_stacked_detection_does_not_cross_a_protected_table) ... ok
+test_stacked_numbered_identifiers_are_protected_inside_prose (test_preservation_rules.PreservationRuleTests.test_stacked_numbered_identifiers_are_protected_inside_prose) ... ok
+test_table_cells_require_a_half_area_model_match (test_preservation_rules.PreservationRuleTests.test_table_cells_require_a_half_area_model_match) ... ok
+test_table_codes_and_numbers_stay_as_original_glyphs (test_preservation_rules.PreservationRuleTests.test_table_codes_and_numbers_stay_as_original_glyphs) ... ok
+test_table_of_contents_page_keeps_number_alignment (test_preservation_rules.PreservationRuleTests.test_table_of_contents_page_keeps_number_alignment) ... ok
+test_trigonometric_functions_do_not_make_an_equation_look_like_prose (test_preservation_rules.PreservationRuleTests.test_trigonometric_functions_do_not_make_an_equation_look_like_prose) ... ok
+test_vietnamese_leading_never_goes_below_its_measured_ink (test_preservation_rules.PreservationRuleTests.test_vietnamese_leading_never_goes_below_its_measured_ink)
+Rendering every letter of the output font gives 0.890 em above the ... ok
+test_vietnamese_line_height_and_extended_bullets_are_preserved (test_preservation_rules.PreservationRuleTests.test_vietnamese_line_height_and_extended_bullets_are_preserved) ... ok
+test_wrapped_description_lines_stay_in_one_cluster (test_preservation_rules.PreservationRuleTests.test_wrapped_description_lines_stay_in_one_cluster) ... ok
+test_a_figure_caption_beside_a_formula_still_counts (test_preservation_rules.TranslatableSegmentTests.test_a_figure_caption_beside_a_formula_still_counts)
+A page of diagrams that carries one real line is not an image-only ... ok
+test_blank_and_placeholder_only_runs_are_not_work (test_preservation_rules.TranslatableSegmentTests.test_blank_and_placeholder_only_runs_are_not_work) ... ok
+test_preserved_segments_are_not_counted (test_preservation_rules.TranslatableSegmentTests.test_preserved_segments_are_not_counted) ... ok
+test_real_text_is_translatable (test_preservation_rules.TranslatableSegmentTests.test_real_text_is_translatable) ... ok
+test_an_over_long_segment_is_reported_as_its_own_reason (test_translate_pdf.FailureReportingTests.test_an_over_long_segment_is_reported_as_its_own_reason)
+Truncating it silently loses the tail; saying so lets the user act. ... ok
+test_each_kind_of_failure_gets_its_own_line (test_translate_pdf.FailureReportingTests.test_each_kind_of_failure_gets_its_own_line) ... ok
+test_a_document_at_or_under_the_limit_gets_no_advisory (test_translate_pdf.PageCountAdvisoryTests.test_a_document_at_or_under_the_limit_gets_no_advisory) ... ok
+test_a_document_past_the_limit_names_its_own_page_count (test_translate_pdf.PageCountAdvisoryTests.test_a_document_past_the_limit_names_its_own_page_count) ... ok
+test_peeking_a_missing_file_never_raises (test_translate_pdf.PageCountAdvisoryTests.test_peeking_a_missing_file_never_raises) ... ok
+test_copies_the_core_result_to_a_stable_vietnamese_name (test_translate_pdf.TranslatePdfTests.test_copies_the_core_result_to_a_stable_vietnamese_name) ... ok
+test_damaged_formula_markers_are_reported_as_their_own_cause (test_translate_pdf.TranslatePdfTests.test_damaged_formula_markers_are_reported_as_their_own_cause) ... ok
+test_each_cause_is_reported_separately (test_translate_pdf.TranslatePdfTests.test_each_cause_is_reported_separately) ... ok
+test_engine_contract_forwards_language_engine_and_handoff_files (test_translate_pdf.TranslatePdfTests.test_engine_contract_forwards_language_engine_and_handoff_files) ... ok
+test_handoff_engine_requires_a_segments_file (test_translate_pdf.TranslatePdfTests.test_handoff_engine_requires_a_segments_file) ... ok
+test_handoff_flags_are_rejected_for_the_google_engine (test_translate_pdf.TranslatePdfTests.test_handoff_flags_are_rejected_for_the_google_engine) ... ok
+test_layout_failures_are_not_reported_as_a_network_problem (test_translate_pdf.TranslatePdfTests.test_layout_failures_are_not_reported_as_a_network_problem)
+The bug this guards: every skipped segment blamed the translation service. ... ok
+test_ocr_profile_is_opt_in_at_the_cli_boundary (test_translate_pdf.TranslatePdfTests.test_ocr_profile_is_opt_in_at_the_cli_boundary) ... ok
+test_output_dir_is_optional_only_when_emitting_segments (test_translate_pdf.TranslatePdfTests.test_output_dir_is_optional_only_when_emitting_segments) ... ok
+test_output_name_follows_the_target_language (test_translate_pdf.TranslatePdfTests.test_output_name_follows_the_target_language) ... ok
+test_refuses_a_document_with_no_extractable_text (test_translate_pdf.TranslatePdfTests.test_refuses_a_document_with_no_extractable_text)
+An image-only scan must not be handed over as a finished translation. ... ok
+test_refuses_to_replace_output_without_authorization (test_translate_pdf.TranslatePdfTests.test_refuses_to_replace_output_without_authorization) ... ok
+test_rejects_a_non_pdf_payload (test_translate_pdf.TranslatePdfTests.test_rejects_a_non_pdf_payload) ... ok
+test_reports_image_only_pages_of_a_mixed_document (test_translate_pdf.TranslatePdfTests.test_reports_image_only_pages_of_a_mixed_document) ... ok
+test_reports_segments_the_engine_could_not_translate (test_translate_pdf.TranslatePdfTests.test_reports_segments_the_engine_could_not_translate) ... ok
+test_requires_the_bundled_core_instead_of_the_pypi_wheel (test_translate_pdf.TranslatePdfTests.test_requires_the_bundled_core_instead_of_the_pypi_wheel) ... ok
+test_target_language_is_limited_to_latin_script (test_translate_pdf.TranslatePdfTests.test_target_language_is_limited_to_latin_script) ... ok
+test_validates_and_converts_page_ranges (test_translate_pdf.TranslatePdfTests.test_validates_and_converts_page_ranges) ... ok
+test_audit_rejects_changes_on_unselected_page (test_translation_audit.TranslationAuditTests.test_audit_rejects_changes_on_unselected_page) ... ok
+test_common_punctuation_mojibake_is_forbidden (test_translation_audit.TranslationAuditTests.test_common_punctuation_mojibake_is_forbidden) ... ok
+test_correct_vietnamese_and_ranges_are_not_flagged (test_translation_audit.TranslationAuditTests.test_correct_vietnamese_and_ranges_are_not_flagged)
+┬ and ├ are Vietnamese letters; a marker search condemns a good page. ... ok
+test_damaged_vietnamese_letters_fail_the_structural_gate (test_translation_audit.TranslationAuditTests.test_damaged_vietnamese_letters_fail_the_structural_gate)
+FORBIDDEN knows seven punctuation sequences and none of these. ... ok
+test_postal_overlap_is_flagged_even_when_inside_canvas (test_translation_audit.TranslationAuditTests.test_postal_overlap_is_flagged_even_when_inside_canvas) ... ok
+test_rotated_page_uses_unrotated_text_coordinate_bounds (test_translation_audit.TranslationAuditTests.test_rotated_page_uses_unrotated_text_coordinate_bounds) ... ok
+test_unchanged_scan_is_structurally_valid_but_not_translation_success (test_translation_audit.TranslationAuditTests.test_unchanged_scan_is_structurally_valid_but_not_translation_success) ... ok
+test_a_junk_tag_is_no_update_rather_than_a_crash (test_update.CheckForUpdateTests.test_a_junk_tag_is_no_update_rather_than_a_crash) ... ok
+test_a_network_failure_is_no_update_rather_than_a_crash (test_update.CheckForUpdateTests.test_a_network_failure_is_no_update_rather_than_a_crash) ... ok
+test_a_newer_tag_is_returned_verbatim (test_update.CheckForUpdateTests.test_a_newer_tag_is_returned_verbatim) ... ok
+test_a_release_without_the_asset_still_reports_the_tag (test_update.CheckForUpdateTests.test_a_release_without_the_asset_still_reports_the_tag)
+Assets upload after the tag exists, and the release page still works. ... ok
+test_the_current_tag_reports_no_update (test_update.CheckForUpdateTests.test_the_current_tag_reports_no_update) ... ok
+test_the_shipped_version_is_a_parsable_tag (test_update.CheckForUpdateTests.test_the_shipped_version_is_a_parsable_tag) ... ok
+test_the_windows_asset_carries_the_download (test_update.CheckForUpdateTests.test_the_windows_asset_carries_the_download) ... ok
+test_a_truncated_download_is_refused_and_leaves_nothing (test_update.DownloadTests.test_a_truncated_download_is_refused_and_leaves_nothing)
+A short file that kept the archive name would stage as a broken build. ... ok
+test_cancelling_stops_the_download_and_leaves_nothing (test_update.DownloadTests.test_cancelling_stops_the_download_and_leaves_nothing) ... ok
+test_the_asset_lands_whole_and_reports_progress (test_update.DownloadTests.test_the_asset_lands_whole_and_reports_progress) ... ok
+test_a_real_payload_extracts (test_update.ExtractTests.test_a_real_payload_extracts) ... ok
+test_an_archive_of_the_wrong_thing_is_refused_and_removed (test_update.ExtractTests.test_an_archive_of_the_wrong_thing_is_refused_and_removed) ... ok
+test_staging_again_replaces_what_was_there (test_update.StageUpdateTests.test_staging_again_replaces_what_was_there) ... ok
+test_staging_leaves_a_payload_a_marker_and_no_archive (test_update.StageUpdateTests.test_staging_leaves_a_payload_a_marker_and_no_archive) ... ok
+test_the_install_folder_is_never_touched_by_staging (test_update.StageUpdateTests.test_the_install_folder_is_never_touched_by_staging) ... ok
+test_a_folder_missing_a_required_file_is_not_a_payload (test_update.StagingLayoutTests.test_a_folder_missing_a_required_file_is_not_a_payload) ... ok
+test_a_junk_marker_is_not_staged (test_update.StagingLayoutTests.test_a_junk_marker_is_not_staged) ... ok
+test_a_marker_with_the_payload_reports_the_tag (test_update.StagingLayoutTests.test_a_marker_with_the_payload_reports_the_tag) ... ok
+test_a_marker_without_the_payload_is_not_staged (test_update.StagingLayoutTests.test_a_marker_without_the_payload_is_not_staged) ... ok
+test_every_working_folder_is_a_sibling_of_the_install (test_update.StagingLayoutTests.test_every_working_folder_is_a_sibling_of_the_install)
+The swap is a rename, which only works within one volume and parent. ... ok
+test_no_marker_means_nothing_is_staged (test_update.StagingLayoutTests.test_no_marker_means_nothing_is_staged) ... ok
+test_a_failed_swap_rolls_the_old_build_back (test_update.UpdaterScriptTests.test_a_failed_swap_rolls_the_old_build_back)
+Holding a staged file open is what a virus scanner does to the real one. ... ok
+test_nothing_staged_leaves_the_install_alone (test_update.UpdaterScriptTests.test_nothing_staged_leaves_the_install_alone) ... ok
+test_the_launcher_really_starts_the_helper_and_the_swap_happens (test_update.UpdaterScriptTests.test_the_launcher_really_starts_the_helper_and_the_swap_happens)
+The app is gone by the time this matters, so it is proven here. ... ok
+test_the_new_build_replaces_the_old_one_and_the_old_one_is_deleted (test_update.UpdaterScriptTests.test_the_new_build_replaces_the_old_one_and_the_old_one_is_deleted) ... ok
+test_the_script_is_valid_powershell (test_update.UpdaterScriptTests.test_the_script_is_valid_powershell) ... ok
+test_a_higher_patch_is_newer (test_update.VersionCompareTests.test_a_higher_patch_is_newer) ... ok
+test_a_non_version_tag_is_rejected (test_update.VersionCompareTests.test_a_non_version_tag_is_rejected) ... ok
+test_a_prerelease_suffix_is_ignored (test_update.VersionCompareTests.test_a_prerelease_suffix_is_ignored) ... ok
+test_an_older_version_is_not_newer (test_update.VersionCompareTests.test_an_older_version_is_not_newer) ... ok
+test_shorter_and_longer_tags_compare_by_padding (test_update.VersionCompareTests.test_shorter_and_longer_tags_compare_by_padding) ... ok
+test_ten_beats_nine (test_update.VersionCompareTests.test_ten_beats_nine)
+String comparison gets this backwards, which is why we parse ints. ... ok
+test_the_same_version_is_not_newer (test_update.VersionCompareTests.test_the_same_version_is_not_newer) ... ok
+test_the_v_prefix_is_optional (test_update.VersionCompareTests.test_the_v_prefix_is_optional) ... ok
+
+----------------------------------------------------------------------
+Ran 299 tests in 10.406s
+
+OK

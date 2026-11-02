@@ -62,3 +62,13 @@ Người dùng đã chốt thứ tự; lượt này chỉ lập kế hoạch. Pr
 - Execution P4-T2: technical_verified; 22/22 restored; existing protected source hashes unchanged. Git persistence pending_user_scope.
 
 - Execution P4-T3: in_progress; Fresh baseline build and regression gate. Git persistence pending_user_scope.
+
+## Hợp nhất release/0.4.0 — 02/11/2026
+
+- Nhánh `release/0.4.0` gộp ba nguồn: engine offline (`backup/offline-engine-wip-2026-11-02`),
+  việc gỡ Tkinter và chân trang tác giả (`claude/vp-audit-codebase-review-74c1fe`), và phần việc
+  chưa commit của checkout IDE (`backup/main-checkout-2026-11-02`).
+- Phase `01-audit-bugfix` của checkout IDE: BUG-009, BUG-010, BUG-012 đã có sẵn ở engine offline;
+  BUG-011 (Android) và `PDF2ZH_CACHE_DIR` được gộp. P1-T5 vẫn chờ Android SDK platform 35.
+- Giao diện Tkinter, trình tự cập nhật và đóng gói PyInstaller đã bỏ; ứng dụng desktop chỉ còn Electron offline.
+- Tiếp theo: sắp xếp lại cây thư mục, rồi build hai bản Máy mạnh / Máy yếu.

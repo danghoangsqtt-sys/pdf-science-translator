@@ -1,0 +1,11 @@
+flowchart LR
+  SOURCE[Source PDF: immutable] --> CHECK[Preflight]
+  CHECK -->|ready| STAGE[Local staging]
+  CHECK -->|not ready| ERROR[Sanitized public error]
+  STAGE --> PROCESS[Layout / optional safe OCR / translation]
+  PROCESS --> GUARD[Formula / style / term / fit guards]
+  GUARD -->|safe| OUTPUT[Separate output PDF]
+  GUARD -->|unsafe segment| KEEP[Keep source + partial reason]
+  KEEP --> OUTPUT
+  OUTPUT --> REPORT[Public result report]
+  PROCESS --- CACHE[Revisioned local cache]

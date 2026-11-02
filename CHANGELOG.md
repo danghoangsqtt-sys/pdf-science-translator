@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased] — hợp nhất release/0.4.0 (02/11/2026)
+
+### Removed
+
+- Ứng dụng desktop Tkinter, trình tự cập nhật của nó, đóng gói PyInstaller và các workflow
+  phát hành chỉ build bản Tkinter. Ứng dụng desktop chỉ còn bản Electron offline.
+
+### Added
+
+- Chân trang bản quyền "© 2026 DHsystem" và hộp giới thiệu tác giả (số điện thoại, mã QR Zalo).
+
+### Fixed (gộp từ checkout IDE, 30/10/2026)
+
+- Android từ chối an toàn đoạn vượt giới hạn thay vì cắt mất phần đuôi (BUG-011).
+- Các bản sửa CORS cho Electron đóng gói, cảnh báo dịch một phần và cache marker
+  (BUG-009, BUG-010, BUG-012) đã có sẵn ở engine offline.
+
+### Changed
+
+- Hỗ trợ `PDF2ZH_CACHE_DIR` cho cache có vị trí ghi được.
+
 ## [Unreleased] — mục tiêu sản phẩm 0.4.0 (đã lập kế hoạch, chưa triển khai)
 
 - BUG-008: đã đối chiếu/phục hồi 22 tệp tracked, thêm build preflight fail-closed

@@ -92,7 +92,9 @@ class TranslationCache:
 
 
 def init_db(remove_exists=False):
-    cache_folder = os.path.join(os.path.expanduser("~"), ".cache", "pdf2zh")
+    cache_folder = os.environ.get("PDF2ZH_CACHE_DIR") or os.path.join(
+        os.path.expanduser("~"), ".cache", "pdf2zh"
+    )
     os.makedirs(cache_folder, exist_ok=True)
     # The current version does not support database migration, so add the version number to the file name.
     cache_db_path = os.path.join(cache_folder, "cache.v1.db")

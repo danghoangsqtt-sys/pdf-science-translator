@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-29",
+  "product_code_changed": false,
+  "python": "3.12.15",
+  "root_suite": {
+    "passed": 299,
+    "total": 299,
+    "seconds": 10.406
+  },
+  "offline_targeted": {
+    "passed": 64,
+    "total": 64,
+    "seconds": 0.686,
+    "modules": [
+      "test_offline_pack",
+      "test_offline_build",
+      "test_runtime_policy",
+      "test_ollama_translator"
+    ]
+  },
+  "offline_full_suite": "blocked at Windows asyncio socketpair accept; interrupted",
+  "offline_chromium": "geometry 1/1 and frontend build passed; browser incomplete, interrupted",
+  "pip_check": "passed (.venv312)",
+  "ruff_hard_errors": "passed (both trees incl backend)",
+  "git_diff_check": "passed (both trees)",
+  "pdf_qa": "retained scientific quality + scan, all pages rendered and inspected, canvas/source hashes preserved, 134/134 visible math-font glyphs",
+  "findings": [
+    "BUG-009",
+    "BUG-010",
+    "BUG-011",
+    "BUG-012",
+    "BUG-013"
+  ],
+  "evidence": {
+    "repro.json": {
+      "bytes": 485,
+      "sha256": "81d00e79e1ed8389d7be6c065ddfdc7b07d4a343151a5c6e4b9b31f210e68938"
+    },
+    "pdf-gate.json": {
+      "bytes": 1206,
+      "sha256": "281935bf5f8f3cda2f2bf30b79ca724c92d25bcc302a04b5b596df428de2bb13"
+    },
+    "root-unittest.log": {
+      "bytes": 53684,
+      "sha256": "db0a7c5a82bc5a7706e760c8530e5aa056429da3b0fd108aeaee7371074da297"
+    },
+    "offline-targeted.log": {
+      "bytes": 11928,
+      "sha256": "81c7925617d6835a24f8e470b37d14be0f1f59beff8f37ffa1d2b8e8486d7fcc"
+    },
+    "offline-full-blocked.log": {
+      "bytes": 13035,
+      "sha256": "cb25dcf7089fc6de14d019e2b21d19f3b10f3be63839662611eed7699aacb703"
+    },
+    "frontend-build-viewer-incomplete.log": {
+      "bytes": 2235,
+      "sha256": "c38cb94c8c9f73dbc6bf82e55f1868d010c2fa716827282bd2920620bad13edc"
+    },
+    "audit_runner.py": {
+      "bytes": 1435,
+      "sha256": "7b3a5697b55264e040fa132591fa1f654e3b14f6d1eac9ba98145cd9ca12dc95"
+    }
+  }
+}

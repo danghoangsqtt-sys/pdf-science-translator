@@ -325,6 +325,24 @@ class TranslatePdfTests(unittest.TestCase):
         with self.assertRaisesRegex(translate_pdf.TranslationError, "--model"):
             translate_pdf._validate_arguments(args)
 
+    def test_refuses_output_when_every_segment_was_kept_in_source(self):
+        def untranslated(source, temp_output, *_args):
+            (Path(temp_output) / f"{Path(source).stem}-mono.pdf").write_bytes(b"%PDF")
+            return TranslationReport(
+                failures=["a"] * 4,
+                reasons=Counter({"FormulaPlaceholderError": 4}),
+                translatable_segments=4,
+            )
+
+        with (
+            mock.patch.object(translate_pdf, "_require_core"),
+            mock.patch.object(translate_pdf, "_run_engine", side_effect=untranslated),
+        ):
+            with self.assertRaisesRegex(translate_pdf.TranslationError, "Không dịch được đoạn nào"):
+                translate_pdf.translate_pdf(self.source, self.output)
+
+        self.assertFalse((self.output / "guide-vi.pdf").exists())
+
     def test_refuses_a_document_with_no_extractable_text(self):
         """An image-only scan must not be handed over as a finished translation."""
         def scanned(source, temp_output, *_args):

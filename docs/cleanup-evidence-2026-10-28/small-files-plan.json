@@ -1,0 +1,290 @@
+[
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\capture_electron.py",
+    "sha256": "4b14526fe47fbb1c3a0f636cf9c6c5f0e03be7935040a7cfb2f8a80aa577635a",
+    "bytes": 676,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/capture_electron.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\capture_electron_check.py",
+    "sha256": "1867a89d725f9a684a8a8a9ff46485727d645b22897ebef6b05a0e132da03f84",
+    "bytes": 814,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/capture_electron_check.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\capture_electron_topmost.py",
+    "sha256": "f575039334f79dd517d6f4ede6c9ffc1062aedeeb3aec2bd2a914c099d0b4a5d",
+    "bytes": 814,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/capture_electron_topmost.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\capture_presentation_app.py",
+    "sha256": "e23329c16f5819b0d774c3d217d1b614943612f34730636f5a823fab953e891a",
+    "bytes": 996,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/capture_presentation_app.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\capture_presentation_app_final.py",
+    "sha256": "234976c35454d0098d29c97e61bd4a669b7f079b5d52dda667919869172e5dc6",
+    "bytes": 1007,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/capture_presentation_app_final.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\create_presentation_sample.py",
+    "sha256": "fdfe01ec9f96abd6f90bb7cc1edc06de05c43852769da7a86d1240238b50920b",
+    "bytes": 2924,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/create_presentation_sample.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\create_presentation_sample_v2.py",
+    "sha256": "c25d884b9595eb5b375d064b0dd9bdef83fd3b965cac083e767481aefeb6efbc",
+    "bytes": 2936,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/create_presentation_sample_v2.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\create_presentation_sample_v3.py",
+    "sha256": "9d8c722c44f4ccc253f7986f4eeb66b4210bfd319ecf6ac89a780c7fb73b7ed6",
+    "bytes": 2817,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/create_presentation_sample_v3.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\download_science_benchmark.py",
+    "sha256": "03d2094fc61f684d5d181561a55a0d694a27ed29b12145cfa58c4aa42a4fabdd",
+    "bytes": 943,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/download_science_benchmark.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\extract_science_p1.py",
+    "sha256": "f1c9d2f73cdfdf67059ab02ae91f7f738097f6d88630ba386b9df6bcf5404553",
+    "bytes": 810,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/extract_science_p1.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\extract_science_samples.py",
+    "sha256": "9ef03ccc7e28a0b3cc028a4c2cc134815231513c0c3d3acff85cafdce9d444b2",
+    "bytes": 1347,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/extract_science_samples.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\paste_electron_dialog.py",
+    "sha256": "42e19cceeb21f9ec767f358d9cf82f2b2808014959f35a54aa19f8cbdad9b852",
+    "bytes": 836,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/paste_electron_dialog.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\plot_science_benchmark.py",
+    "sha256": "34fde23abe9380b120322e538525ece260f9d6bfae3065d0c8e0e02608a22ccd",
+    "bytes": 4661,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/plot_science_benchmark.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\qa_presentation_pdf.py",
+    "sha256": "b569f0fea6165e9950538f84dd4e8a65ddb771bc8e49377f953936eda37a7f03",
+    "bytes": 1364,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/qa_presentation_pdf.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\qa_science_benchmark.py",
+    "sha256": "29dd069ad639829e83c2bf69c221ae15d9051ad8a8284cca174e897354adb2b3",
+    "bytes": 2368,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/qa_science_benchmark.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\rebuild_science_samples.py",
+    "sha256": "844b41f986130a3f59a9086b8aa88e557bc5e2d3dfb1c9b3d5a4dcebe6a6d968",
+    "bytes": 5124,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/rebuild_science_samples.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\render_science_benchmark.py",
+    "sha256": "77686d958c53d17a3952d035e0db371bd15b0d465f2cf455278f244a342e3604",
+    "bytes": 566,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/render_science_benchmark.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\render_science_translations.py",
+    "sha256": "c93c88849ae1794ac47e3b72dbcfbec193eac07a19778b145ad5da66f855f0d2",
+    "bytes": 770,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/render_science_translations.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\run_short_electron.py",
+    "sha256": "529005e85b390fc49d0192182c9e6b9b3b6094aeec08bbf7114faba121ccde34",
+    "bytes": 1064,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/run_short_electron.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\select_pdf_electron.py",
+    "sha256": "8b2adf3731c76249912d0ebc9cece5238f914e70f53870ccf4220a9a430bff3b",
+    "bytes": 2446,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/select_pdf_electron.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\select_pdf_electron_v2.py",
+    "sha256": "c924cb7a33451a4e4a2c63a1b28aeec0f9938046f66a59091f05532eab567853",
+    "bytes": 2426,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/select_pdf_electron_v2.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\select_pdf_electron_v3.py",
+    "sha256": "9c191c7e5baa18c2f625905f7a676e7e519fbcdcfb2f3d4a60867eb9efa30291",
+    "bytes": 2451,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/select_pdf_electron_v3.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\select_science_short_electron.py",
+    "sha256": "552f3b5ccc36ca6eeec6d402d58785d511bd46690ac0c2200b8054bb5f916444",
+    "bytes": 2461,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/select_science_short_electron.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\time_science_extraction.py",
+    "sha256": "7ed9cbfff786d1a2dd82453400a38a31fc74e173941b68da858003bbc2acdc70",
+    "bytes": 1401,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/time_science_extraction.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\write_presentation_translations.py",
+    "sha256": "d8d3deb4d45c0e82e64f47203ec8281e1282f37ad6d644b85338d8cd73dc7db1",
+    "bytes": 2022,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/write_presentation_translations.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\tmp\\write_presentation_translations_final.py",
+    "sha256": "fd956cf8de0a1193e567af611af0741b4c912311ea703c513adeb34b983c917b",
+    "bytes": 1827,
+    "kind": "archived_old_scratch_tool",
+    "retained_copy": "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip",
+    "archive_member": "tmp/write_presentation_translations_final.py"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\01_short_article-vi.pdf",
+    "sha256": "611f10d6a4f493184761c868297baab09a227676fcc4b8f1fed383b317fb68e7",
+    "bytes": 2441772,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\01_short_article.pdf",
+    "source_sha256": "ba3d4233378dc551b6e5ee4b1fe4b042febd5fae2e4c98bf5b8727ca72c6025a"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\02_academic_paper_with_tables-vi.pdf",
+    "sha256": "ed59ad804746a01309371519eaf0c6d1522b014e7d439c8279d440f058d82296",
+    "bytes": 2444926,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\02_academic_paper_with_tables.pdf",
+    "source_sha256": "8233949fc674f36e0e421f1eb920e96879edd604f36c54181b074c5053d3c7f4"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\03_technical_manual_multi_page-vi.pdf",
+    "sha256": "2e99c5661b8c1ed956507720257f9d68ac068e1fda577d9bcc181968824f588f",
+    "bytes": 2461676,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\03_technical_manual_multi_page.pdf",
+    "source_sha256": "c5a7a843b0bf6b4dafa835da0440327f96478ee7e05bc8fda2fae3e908846254"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\04_scanned_book_page-vi.pdf",
+    "sha256": "a177951c66f895af558b435c805021ed7ad7de7a7a1c61cd2c28b79a05639ba7",
+    "bytes": 2597277,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\04_scanned_book_page.pdf",
+    "source_sha256": "7da6fee8cde9b851f2232707c2132c575a097c32b31d23d4e9607ced595b494d"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\05_arxiv_small_mond-vi.pdf",
+    "sha256": "8fc360f349ba8abc42d18653dc53ad0592ae84af1ce017f6cfe888a0754f9ab5",
+    "bytes": 2830389,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\05_arxiv_small_mond.pdf",
+    "source_sha256": "bc7b9d94ca00736229fe8024c0d7ce96df23a167a9dbb0fb45fb7f57b931881f"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\06_arxiv_medium_cosmology-vi.pdf",
+    "sha256": "79ed046a51b4543a3c3c4159a49201545cc52f69f8ebdc6ada9ae7a63bb6374d",
+    "bytes": 3200051,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\06_arxiv_medium_cosmology.pdf",
+    "source_sha256": "b8044b423718d1e2fefedbc2e3a62deeadd08a4e84efbff8ecab955d3140e444"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\07_arxiv_large_datacenters-vi.pdf",
+    "sha256": "24b1e6a18579e23b4dabb01b84afcd4698be258760ae0b9b51abea7365451ad3",
+    "bytes": 2855361,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\07_arxiv_large_datacenters.pdf",
+    "source_sha256": "cc50d3a0c80aa82902031b49081c5ac6ac6c30ce89c40286e1044b6fb547515c"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\08_arxiv_xlarge_llm_survey-vi.pdf",
+    "sha256": "ef99dc1141cd7e95f8246d7a1964affe3b601980f2d27ef5bdb96b596332446d",
+    "bytes": 7511474,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\08_arxiv_xlarge_llm_survey.pdf",
+    "source_sha256": "585551fe1a17793d141f6bff3e595e63151e867a53353991c3c9891facc72377"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\debug\\07_arxiv_large_datacenters-vi.pdf",
+    "sha256": "9fd8366ef0b996e7e142e72beb03959f48bc660f40abefc1c19daaa6907bf3a4",
+    "bytes": 2775173,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\07_arxiv_large_datacenters.pdf",
+    "source_sha256": "cc50d3a0c80aa82902031b49081c5ac6ac6c30ce89c40286e1044b6fb547515c"
+  },
+  {
+    "path": "D:\\DataAdmin\\vp-pdf\\test_output\\debug\\08_arxiv_xlarge_llm_survey-vi.pdf",
+    "sha256": "71ca631c851a909578a6839d494bbdd2c865d7b88b06a6b4b08df9a73a7f87c9",
+    "bytes": 8947399,
+    "kind": "old_translation_test_result",
+    "retained_source": "D:\\DataAdmin\\vp-pdf\\test_samples\\08_arxiv_xlarge_llm_survey.pdf",
+    "source_sha256": "585551fe1a17793d141f6bff3e595e63151e867a53353991c3c9891facc72377"
+  }
+]

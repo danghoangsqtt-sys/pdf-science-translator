@@ -1,0 +1,30 @@
+[
+  {
+    "sample": "scientific",
+    "source": "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\output\\pdf\\owned-profiles-2026-10-28\\scientific-source.pdf",
+    "target": "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\output\\pdf\\owned-profiles-2026-10-28\\quality\\scientific-source-vi.pdf",
+    "pages_source": 1,
+    "pages_target": 1,
+    "same_canvas": true,
+    "forbidden_text_pages": [],
+    "source_unchanged": true,
+    "math_source_glyphs": 134,
+    "math_output_glyphs": 134,
+    "math_missing_glyphs": 0,
+    "missing_nonspace": []
+  },
+  {
+    "sample": "scan",
+    "source": "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\output\\pdf\\packaged-scan-fixed-2026-10-28\\image-source.pdf",
+    "target": "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\output\\pdf\\packaged-scan-fixed-2026-10-28\\translated\\image-source-vi.pdf",
+    "pages_source": 1,
+    "pages_target": 1,
+    "same_canvas": true,
+    "forbidden_text_pages": [],
+    "source_unchanged": true,
+    "math_source_glyphs": 0,
+    "math_output_glyphs": 0,
+    "math_missing_glyphs": 0,
+    "missing_nonspace": []
+  }
+]

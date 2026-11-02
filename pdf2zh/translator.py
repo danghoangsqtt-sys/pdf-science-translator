@@ -870,6 +870,10 @@ def markers_intact(sent: str, translated: str) -> bool:
         translated
     ):
         return False
+    # A stray unpaired <tN> survives the paired comparison above, but
+    # restore_domain_terms refuses it, so caching it would replay a rejected answer.
+    if DOMAIN_TERM_PATTERN.search(PAIRED_DOMAIN_TERM_PATTERN.sub("", translated)):
+        return False
     try:
         validate_style_tags(sent, translated)
     except FormulaPlaceholderError:
