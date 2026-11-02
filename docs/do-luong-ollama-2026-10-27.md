@@ -67,3 +67,16 @@ Trong thư mục `ket-qua-thu-nghiem` của người dùng (không nằm trong r
 - `Inception Score - trich 3 trang-vi-translategemma-4b.pdf`
 - `Inception Score - trich 3 trang-vi-translategemma-12b-lan1-chua-thu-lai.pdf`
   (bản trước khi có cơ chế thử lại, để so sánh)
+
+## Đo tiếp bản đầy đủ 9 trang
+
+Audit tiếp nối đã hoàn tất trên Python 3.12.15: 787,74 giây, 98/99 đoạn có thể
+dịch, qwen3.5:9b cứu 12 đoạn; heading `3.1. Inception v3` giữ gốc vì fit.
+Trang tham khảo 7 giữ nguyên từng pixel, 428 glyph toán được đối chiếu không
+mất glyph nào. Có một NUL trích xuất đã có trong font CMEX10 của nguồn, giữ
+cùng bbox ở đầu ra. Số đo này dùng model đã có trên máy, không áp dụng điều
+kiện khởi động nguội của bảng thử 3 trang phía trên.
+
+Xem [báo cáo đầy đủ](../.viepilot/audit-report.md) để biết đường dẫn PDF, hash,
+gate kiểm chứng và giới hạn thuật ngữ. Tỷ lệ đoạn không chứng minh toàn bộ
+nội dung PDF hoặc thuật ngữ đều được dịch đúng.

@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "tasks_checked": 12,
+  "relative_paths_checked": 71,
+  "dependency_order": "passed",
+  "required_diagram_sources": "passed",
+  "master_links": "passed",
+  "missing_files_still_not_restored": 22,
+  "product_source_files_unchanged": 123,
+  "runtime_version_unchanged": "0.3.0",
+  "feature_implementation": "not_started"
+}

@@ -1,5 +1,14 @@
 # Proven Regression Patterns
 
+## Offline packaged OCR font (28/10/2026)
+
+Recognition-only smoke can pass while a real image-only PDF fails writing the
+OCR sidecar: its separate BeVietnamPro font was absent from the portable package.
+Require `ocr_font` in the offline manifest, set `PDF_TRANSLATE_OCR_FONT` from the
+verified pack and resolve it when inserting sidecar text. Keep the OFL notice.
+Regression: missing legacy font path plus a valid verified font must still insert
+extractable text on the same canvas. Validate a complete packaged scan too.
+
 Use this as a cause map, not a substitute for inspecting the failing PDF.
 
 | Symptom | Proven cause | Guard / regression location |
@@ -62,6 +71,9 @@ Use this as a cause map, not a substitute for inspecting the failing PDF.
 | Formulas wrapped in backticks, headings gain a full stop | translategemma quotes `{0}` as code and turns headings into sentences | Remove backticks and a final period the source did not have; `test_ollama_translator.py` |
 | A re-run keeps exactly the segments the first run lost, instantly | `BaseTranslator.translate` cached every engine answer, including ones the marker check then rejected, so later runs replayed the damage and never retried (17 entries on the Inception Score paper) | Cache only, and serve only, answers that pass `markers_intact`; `TranslationCacheSafetyTests` in `test_ollama_translator.py` |
 | 4b translates "Inception Score" as "chỉ số khởi đầu" | A small model reads a proper noun as the word | Not guarded: 12b is the default and 4b is documented as needing review; use `--domain` glossaries for known terms |
+| A bibliography without a heading is translated as prose | Authors-first references put the year on a later line without parentheses | Dense entry-start/year evidence protects the whole page; mixed pages protect individual entries; `ReferenceEntryTests` in `test_preservation_rules.py` |
+| An incomplete Ollama prefix is accepted with intact markers | Token exhaustion can occur after the last formula; converting JSON null to a string also passes marker checks | Refuse non-text responses, `done=false` and `done_reason=length` before caching; revision 3; `test_ollama_translator.py` |
+| Paired PDF panes jump a few pixels when dragged across a page gutter | Reading offsets were clamped at the end of the page, discarding the gap before mirroring | Preserve gutter offsets in `pdfViewport.ts`; native drag/sync regression in `webui/frontend/tests/pdf-viewer.electron.cjs` |
 
 When adding a new guard, reproduce the smallest failing geometry in a unit test
 and validate the real document visually. Do not encode a filename-specific fix.

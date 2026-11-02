@@ -1,0 +1,16 @@
+flowchart LR
+    U["Người dùng Windows"] --> UI["Electron + React\n3 mức xử lý"]
+    UI -->|token / private loopback| API["FastAPI"]
+    API --> C["Capabilities theo profile"]
+    C --> P["Manifest v1/v2\ncommon + dependency từng mức"]
+    C --> H["Snapshot CPU / RAM / VRAM / driver / disk"]
+    C --> Q["Probe nền hữu hạn\nchỉ own worker khi idle"]
+    API --> J["Queue một job\nEffectivePolicy bất biến"]
+    J --> E["PDF core + guard\nmarker / glyph / fit / OCR"]
+    E --> W["Worker riêng\nlocal-only / cloud disabled"]
+    P --> D["Pack local đã xác minh\nfull hoặc lite"]
+    UI --> I["Chọn thư mục gói offline"]
+    I --> API
+    API --> S["App-data staging / SHA / quota\natomic catalog, chọn lần mở sau"]
+    S --> D
+

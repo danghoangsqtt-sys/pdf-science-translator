@@ -2,13 +2,22 @@
 
 ## Structure
 
+For the end-to-end component map and desktop/API/Android boundaries, see
+[`docs/codebase-architecture.md`](../docs/codebase-architecture.md).
+
 - `app/`: CustomTkinter GUI, the self-updater, UI fonts, icons, bundled assets.
   `app/update.py` also carries the PowerShell helper that performs the swap.
 - `scripts/translate_pdf.py`: supported CLI and stable output staging.
 - `webui/`: Electron + React frontend (`frontend/src`) and the FastAPI backend
-  (`backend/main.py`, `backend/services/`) it starts on 127.0.0.1:8089.
-  `/api/engines` reports engine readiness; jobs report the translated share.
+  (`backend/main.py`, `backend/services/`) it starts on a private 127.0.0.1 port.
+  `/api/capabilities` reports the three public profiles; `/api/engines` returns 410.
+  Jobs accept `profile`, refuse engine/model/unknown fields, and report the translated share.
+  The development launcher prefers `.venv312` before `.venv`; the packaged
+  app continues to use its bundled `python_runtime`.
 - `scripts/fetch_assets.py`: downloads the layout model and Unicode PDF font.
+- `scripts/prepare_offline_pack.py`: assembles verified resources already on disk.
+- `scripts/build_offline_windows.py`: fresh portable Electron/Python 3.12/data assembly;
+  no network fetch, no overwrite of an existing destination. See the offline handoff doc.
 - `pdf2zh/`: bundled extraction, translation, preservation, and PDF rendering.
 - `tests/`: standard-library `unittest` regressions.
 - `references/`: product preservation contract.
@@ -17,6 +26,11 @@
 - `.github/workflows/`: release and on-demand macOS builds.
 
 ## Commands
+
+For the Windows offline edition use `.venv312/Scripts/python.exe` (Python 3.12).
+Build frontend first, prepare a pack from local resources, then run the portable
+assembly script. The commands below also document the legacy desktop workflow.
+The offline packaged marker and backend launcher prohibit cloud/update paths.
 
 Windows PowerShell:
 

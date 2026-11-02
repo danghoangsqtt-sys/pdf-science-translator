@@ -9,29 +9,25 @@ import {
   RefreshCw,
   XCircle,
 } from 'lucide-react';
-import { PdfViewerBox } from './components/PdfViewerBox.tsx';
-import {
-  EnginePicker,
-  OllamaStatusNotice,
-  RemoteEngineNotice,
-} from './components/EnginePicker.tsx';
+import { PdfComparison } from './components/PdfComparison.tsx';
+import { ProfilePicker, LocalStatusNotice } from './components/EnginePicker.tsx';
 import { TranslationWarningBanner } from './components/TranslationWarningBanner.tsx';
 import {
   createTranslationJob,
   cancelTranslationJob,
-  fetchEngines,
+  fetchCapabilities,
   fetchJobStatus,
   fetchJobResultBlob,
   checkHealth,
   POLL_INTERVAL_MS,
-  type EnginesResponse,
+  type CapabilitiesResponse,
+  type ProcessingProfile,
   type JobProgress,
   type JobStatusResponse,
 } from './services/api.ts';
 
-// How often to re-ask Ollama while it is not ready, so starting it or
-// finishing `ollama pull` shows up without a click.
-const ENGINE_RECHECK_MS = 10000;
+// Refresh local resource readiness without any remote service.
+const ENGINE_RECHECK_MS = 2500;
 
 const TARGET_LANGUAGES = [
   { code: 'vi', name: 'Tiếng Việt (vi)' },
@@ -92,9 +88,8 @@ export const App: React.FC = () => {
   const [errorText, setErrorText] = useState<string | null>(null);
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [engine, setEngine] = useState<string>('ollama');
-  const [ollamaModel, setOllamaModel] = useState<string>('translategemma:12b');
-  const [engineInfo, setEngineInfo] = useState<EnginesResponse | null>(null);
+  const [profile, setProfile] = useState<ProcessingProfile>('balanced');
+  const [engineInfo, setEngineInfo] = useState<CapabilitiesResponse | null>(null);
   const [checkingEngines, setCheckingEngines] = useState<boolean>(false);
   const [finishedJob, setFinishedJob] = useState<JobStatusResponse | null>(null);
   const [isCancelling, setIsCancelling] = useState<boolean>(false);
@@ -103,40 +98,19 @@ export const App: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pollingTimerRef = useRef<number | null>(null);
   const jobIdRef = useRef<string | null>(null);
-  const modelChosenRef = useRef<boolean>(false);
-
-  const refreshEngines = async (model: string = ollamaModel) => {
+  const refreshCapabilities = async () => {
     setCheckingEngines(true);
-    try {
-      const info = await fetchEngines(model);
-      setEngineInfo(info);
-      // Until the user picks one, prefer a model that is already downloaded:
-      // a weak machine that only pulled the 4B should not be told to pull 12B.
-      const installed = info.ollama.installed_models;
-      if (!modelChosenRef.current && installed.length > 0 && !installed.includes(model)) {
-        setOllamaModel(installed[0]);
-      }
-    } catch {
-      setEngineInfo(null);
-    } finally {
-      setCheckingEngines(false);
-    }
+    try { setEngineInfo(await fetchCapabilities()); }
+    catch { setEngineInfo(null); }
+    finally { setCheckingEngines(false); }
   };
 
   useEffect(() => {
-    if (!backendReady) return;
-    refreshEngines(ollamaModel);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backendReady, ollamaModel]);
-
-  const ollamaReady = engineInfo?.ollama.ready ?? false;
-
-  useEffect(() => {
-    if (!backendReady || engine !== 'ollama' || ollamaReady || isTranslating) return;
-    const timer = window.setInterval(() => refreshEngines(ollamaModel), ENGINE_RECHECK_MS);
+    if (!backendReady || isTranslating) return;
+    refreshCapabilities();
+    const timer = window.setInterval(refreshCapabilities, ENGINE_RECHECK_MS);
     return () => window.clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backendReady, engine, ollamaReady, ollamaModel, isTranslating]);
+  }, [backendReady, isTranslating]);
 
   // Poll backend health until ready
   useEffect(() => {
@@ -208,8 +182,7 @@ export const App: React.FC = () => {
         selectedFile,
         targetLanguage,
         domain,
-        engine,
-        ollamaModel,
+        profile,
       );
       jobIdRef.current = job_id;
 
@@ -237,7 +210,7 @@ export const App: React.FC = () => {
             pollingTimerRef.current = window.setTimeout(poll, POLL_INTERVAL_MS);
           }
         } catch (err: any) {
-          const msg = err.response?.data?.detail || err.message || 'Lỗi khi kiểm tra tiến độ dịch.';
+          const msg = 'Không thể kiểm tra tiến độ. Vui lòng kiểm tra lại trạng thái ứng dụng.';
           setErrorText(msg);
           setIsTranslating(false);
         }
@@ -245,7 +218,7 @@ export const App: React.FC = () => {
 
       pollingTimerRef.current = window.setTimeout(poll, POLL_INTERVAL_MS);
     } catch (err: any) {
-      const msg = err.response?.data?.detail || err.message || 'Không thể bắt đầu tác vụ dịch.';
+      const msg = 'Không thể bắt đầu xử lý. Hãy kiểm tra dữ liệu cục bộ và thử lại.';
       setErrorText(msg);
       setIsTranslating(false);
     }
@@ -258,15 +231,12 @@ export const App: React.FC = () => {
     try {
       await cancelTranslationJob(jobId);
     } catch (err: any) {
-      setErrorText(err.response?.data?.detail || err.message || 'Không thể hủy tác vụ.');
+      setErrorText('Không thể gửi yêu cầu hủy. Vui lòng thử lại.');
       setIsCancelling(false);
     }
   };
 
-  const engineBlocked =
-    engineInfo !== null &&
-    ((engine === 'ollama' && !ollamaReady) ||
-      (engine === 'azure' && !engineInfo.azure.configured));
+  const engineBlocked = !engineInfo?.profiles.some(item => item.id === profile && item.available);
 
   const handleDownload = () => {
     if (!resultBlob || !selectedFile) return;
@@ -303,14 +273,14 @@ export const App: React.FC = () => {
           <div className="flex items-center gap-2 text-xs bg-black/20 px-2.5 py-1 rounded-full">
             <span
               className={`w-2 h-2 rounded-full ${
-                backendReady ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                backendReady && !engineBlocked ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
               }`}
             />
             <span className="text-emerald-50">
-              {backendReady ? 'Backend sẵn sàng' : 'Đang kết nối backend...'}
+              {backendReady && !engineBlocked ? 'Bộ xử lý sẵn sàng' : backendReady ? 'Đang chuẩn bị dữ liệu...' : 'Đang kết nối bộ xử lý...'}
             </span>
           </div>
-          <img src="/icon.png" alt="PDF Translate" className="w-8 h-8 rounded-md object-cover" />
+          <img src="./icon.png" alt="PDF Translate" className="w-8 h-8 rounded-md object-cover" />
         </div>
       </header>
 
@@ -378,7 +348,7 @@ export const App: React.FC = () => {
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
                 disabled={isTranslating}
-                title="Ép đúng thuật ngữ chuyên ngành thay vì để engine tự dịch (tùy chọn)"
+                title="Ép đúng thuật ngữ chuyên ngành thay vì để bộ xử lý tự dịch (tùy chọn)"
                 className="text-sm bg-white border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
               >
                 {DOMAINS.map((item) => (
@@ -389,24 +359,13 @@ export const App: React.FC = () => {
               </select>
             </div>
 
-            <EnginePicker
-              engine={engine}
-              model={ollamaModel}
-              info={engineInfo}
-              checking={checkingEngines}
-              disabled={isTranslating}
-              onEngineChange={setEngine}
-              onModelChange={(model) => {
-                modelChosenRef.current = true;
-                setOllamaModel(model);
-              }}
-              onRefresh={() => refreshEngines(ollamaModel)}
-            />
+            <ProfilePicker profile={profile} info={engineInfo} checking={checkingEngines}
+              disabled={isTranslating} onChange={setProfile} onRefresh={refreshCapabilities} />
 
             <button
               onClick={startTranslation}
               disabled={!selectedFile || isTranslating || !backendReady || engineBlocked}
-              title={engineBlocked ? 'Bộ dịch chưa sẵn sàng – xem hướng dẫn bên dưới' : undefined}
+              title={engineBlocked ? 'Mức xử lý chưa sẵn sàng – xem thông báo bên dưới' : undefined}
               className="flex items-center gap-2 bg-[#14452F] hover:bg-[#0f3624] text-white text-sm font-medium px-6 py-2 rounded-md shadow transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isTranslating ? (
@@ -435,7 +394,7 @@ export const App: React.FC = () => {
               <span>
                 {progress.total > 0
                   ? `Đã dịch ${progress.done} / ${progress.total} trang (${progressPercent}%)`
-                  : 'Đang chuẩn bị mô hình...'}
+                  : 'Đang chuẩn bị bộ xử lý...'}
               </span>
               <button
                 onClick={cancelTranslation}
@@ -458,8 +417,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {engine === 'ollama' && !isTranslating && <OllamaStatusNotice info={engineInfo} />}
-        {!isTranslating && <RemoteEngineNotice engine={engine} info={engineInfo} />}
+        {!isTranslating && <LocalStatusNotice info={engineInfo} profile={profile} />}
 
         {finishedJob && <TranslationWarningBanner result={finishedJob} />}
 
@@ -479,24 +437,15 @@ export const App: React.FC = () => {
       </div>
 
       {/* Main Workspace (Dual PDF Viewers or Drag & Drop Area) */}
-      <main className="flex-1 p-4 overflow-hidden">
+      <main className="flex-1 min-h-0 p-4 overflow-hidden">
         {selectedFile ? (
-          <div className="grid grid-cols-2 gap-4 h-full">
-            {/* Left Viewer: Original Document */}
-            <div className="h-full overflow-hidden">
-              <PdfViewerBox title="Tài liệu gốc (Original)" file={selectedFile} />
-            </div>
-
-            {/* Right Viewer: Translated Document */}
-            <div className="h-full overflow-hidden">
-              <PdfViewerBox
-                title={`Tài liệu đã dịch (${targetLanguage.toUpperCase()})`}
-                file={resultBlob}
-                onDownload={resultBlob ? handleDownload : undefined}
-                downloadFilename={selectedFile ? `${selectedFile.name.replace(/\.[^/.]+$/, '')}-${targetLanguage}.pdf` : undefined}
-              />
-            </div>
-          </div>
+          <PdfComparison
+            key={selectedFile.name + ':' + selectedFile.lastModified}
+            original={selectedFile}
+            translated={resultBlob}
+            language={targetLanguage}
+            onDownload={handleDownload}
+          />
         ) : (
           /* Empty state: Drag and drop dropzone */
           <div

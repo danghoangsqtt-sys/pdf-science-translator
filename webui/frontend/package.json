@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test:viewer": "node --experimental-strip-types --test tests/pdfViewport.test.ts && npm run build && node tests/run-viewer.cjs",
     "preview": "vite preview"
   },
   "build": {

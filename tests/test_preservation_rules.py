@@ -15,6 +15,7 @@ from pdf2zh.rules import (
     is_formula_font,
     is_scanned_page,
     line_height_for_language,
+    looks_like_reference_entry,
     page_has_image,
     matching_table_cells,
     min_line_height_for_language,
@@ -241,6 +242,73 @@ class TranslatableSegmentTests(unittest.TestCase):
         """A page of diagrams that carries one real line is not an image-only
         page, so a scan-heavy textbook is never refused for needing OCR."""
         self.assertTrue(is_translatable_segment("Figure 3: the lever arm", {"{v1}"}))
+
+    def test_a_bibliography_entry_is_never_sent_for_translation(self):
+        """A References section that starts mid-page shares the page with prose."""
+        self.assertFalse(
+            is_translatable_segment(
+                "Chollet, F. et al. Keras. https://github.com/ fchollet/keras, 2015.", set()
+            )
+        )
+        self.assertFalse(
+            is_translatable_segment(
+                "Arjovsky, M., Chintala, S., and Bottou, L. Wasserstein gan. "
+                "<s2>arXiv preprint arXiv:1701.07875</s2>, 2017.",
+                set(),
+            )
+        )
+
+
+class ReferenceEntryTests(unittest.TestCase):
+    """Authors-first entries with a bare year (ICML, NeurIPS, ACL styles)."""
+
+    def test_entries_from_the_inception_score_paper(self):
+        for entry in (
+            "Arjovsky, M., Chintala, S., and Bottou, L. Wasserstein gan. arXiv, 2017.",
+            "Chollet, F. et al. Keras. https://github.com/ fchollet/keras, 2015.",
+            "Esteban, C., Hyland, S. L., and R{v1}atsch, G. Real-valued (Medical) Time "
+            "Series Generation. ArXiv e-prints, June 2017.",
+            "Li, L.-J., Li, K., and Fei-Fei, L. Imagenet. CVPR 2009.",
+            "van den Oord, A. and Dambre, J. Locally-connected transformations, 2015.",
+            "Theis, L., Oord, A. v. d., and Bethge, M. A note on the evaluation, 2015.",
+            "[12] Szegedy, C. Rethinking the inception architecture. CVPR, 2016.",
+        ):
+            with self.subTest(entry=entry[:30]):
+                self.assertTrue(looks_like_reference_entry(entry))
+
+    def test_prose_that_cites_authors_is_still_translated(self):
+        for prose in (
+            "As mentioned earlier, Salimans et al. (2016) introduced the Inception Score.",
+            "The Inception v3 Network (Szegedy et al., 2016) is a deep convolutional network.",
+            "4.1. Suboptimalities of the Inception Score Itself",
+            "Table 1. Inception Scores on 50k CIFAR-10 training images, 2017 results.",
+            "Smith showed in 2019 that the bound is tight.",
+            "Chollet, F. et al.",  # an entry's first line alone has no year
+        ):
+            with self.subTest(prose=prose[:30]):
+                self.assertFalse(looks_like_reference_entry(prose))
+
+    def test_a_headerless_continuation_page_of_references_is_preserved(self):
+        authors = ["Deng, J.", "Esteban, C.", "Farimani, A. B.", "Goodfellow, I.",
+                   "Guo, J.", "Heusel, M.", "Im, D. J.", "Isola, P.", "Karras, T.",
+                   "Ledig, C."]
+        lines = ["A Note on the Inception Score"]
+        # Three lines per entry, as the paper's page 7 wraps them: authors,
+        # title, then venue and year.
+        for index, author in enumerate(authors):
+            lines += [f"{author}, Other, B., and Third, C. A title",
+                      "of the paper that wraps onto a second line.",
+                      f"In Advances in Neural Information Processing Systems {2010 + index}."]
+        decision = classify_preserved_page("\n".join(lines))
+        self.assertIsNotNone(decision)
+        self.assertEqual(decision.kind, "REFERENCES")
+
+    def test_a_prose_page_with_a_few_entries_is_not_preserved_whole(self):
+        lines = [f"Body text line {index} discussing results without citations."
+                 for index in range(40)]
+        lines += ["References", "Arjovsky, M., and Bottou, L. Wasserstein gan. 2017.",
+                  "Breuleux, O., Bengio, Y. Unlearning. 2011."]
+        self.assertIsNone(classify_preserved_page("\n".join(lines)))
 
 
 class ImageOnlyPageTests(unittest.TestCase):

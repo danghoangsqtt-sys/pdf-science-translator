@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -9,6 +10,7 @@ from pathlib import Path
 from typing import Literal
 
 from scripts.translate_pdf import Translation, TranslationCancelled, translate_pdf
+from webui.backend.services.offline_service import public_failure, require_profile
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +40,7 @@ def translation_warnings(translation: Translation) -> list[str]:
     """
     warnings: list[str] = []
     if translation.service_failure:
-        warnings.append(translation.service_failure)
+        warnings.append("Bộ xử lý cục bộ chưa hoàn tất một số đoạn; các đoạn đó được giữ nguyên.")
     kept = translation.kept_by_reason
     if kept.get("service"):
         warnings.append(
@@ -62,7 +64,8 @@ def translation_warnings(translation: Translation) -> list[str]:
         warnings.append(
             f"Trang {_pages(translation.image_only_pages)} là ảnh quét, chưa được dịch."
         )
-    warnings.extend(f"OCR: {warning}" for warning in translation.ocr_warnings)
+    if translation.ocr_warnings:
+        warnings.append("Một số vùng ảnh được giữ nguyên vì chưa đủ điều kiện xử lý an toàn.")
     return warnings
 
 
@@ -80,11 +83,11 @@ class TranslationJob:
     output_dir: Path
     target_language: str
     domain: str | None = None
-    engine: str = "ollama"
-    model: str | None = None
+    profile: str = "balanced"
     status: JobStatus = "queued"
     progress: dict[str, int] = field(default_factory=lambda: {"done": 0, "total": 0})
     error: str | None = None
+    error_code: str | None = None
     result_path: Path | None = None
     translated_ratio: float | None = None
     segments: dict[str, object] | None = None
@@ -98,15 +101,14 @@ class TranslationJob:
             "status": self.status,
             "progress": self.progress,
             "error": self.error,
-            "engine": self.engine,
-            "model": self.model,
+            "profile": self.profile,
+            "error_code": self.error_code,
             "translated_ratio": self.translated_ratio,
             "segments": self.segments,
             "warnings": self.warnings,
         }
 
     def record(self, translation: Translation) -> None:
-        self.model = translation.model or self.model
         self.translated_ratio = round(translation.translated_ratio, 4)
         self.segments = {
             "total": translation.total_segments,
@@ -137,8 +139,7 @@ class TranslationJobManager:
         output_dir: Path,
         target_language: str,
         domain: str | None = None,
-        engine: str = "ollama",
-        model: str | None = None,
+        profile: str = "balanced",
     ) -> TranslationJob:
         await self.start()
         job = TranslationJob(
@@ -148,8 +149,7 @@ class TranslationJobManager:
             output_dir=output_dir,
             target_language=target_language,
             domain=domain,
-            engine=engine,
-            model=model,
+            profile=profile,
         )
         self._jobs[job_id] = job
         await self._queue.put(job_id)
@@ -180,8 +180,8 @@ class TranslationJobManager:
                 if job is None or job.status == "cancelled":
                     continue
                 await self._run_job(job)
-            except Exception as exc:
-                logger.exception("Unexpected error in worker loop for job %s: %s", job_id, exc)
+            except Exception:
+                logger.error("Unexpected local job failure")
             finally:
                 self._queue.task_done()
 
@@ -189,8 +189,8 @@ class TranslationJobManager:
         job.status = "running"
         job.updated_at = _utc_now()
         logger.info(
-            "Starting translation job %s (target=%s, engine=%s, file=%s)",
-            job.job_id, job.target_language, job.engine, job.original_filename,
+            "Starting local job %s (target=%s, profile=%s)",
+            job.job_id, job.target_language, job.profile,
         )
 
         def on_progress(done: int, total: int) -> None:
@@ -198,14 +198,17 @@ class TranslationJobManager:
             job.updated_at = _utc_now()
 
         try:
+            policy = await asyncio.to_thread(require_profile, job.profile)
+            os.environ["PDF_TRANSLATE_PROCESSING_PROFILE"] = policy.id
             translation = await asyncio.to_thread(
                 translate_pdf,
                 input_pdf=job.upload_path,
                 output_dir=job.output_dir,
                 target_language=job.target_language,
                 domain=job.domain,
-                engine=job.engine,
-                model=job.model,
+                engine="ollama",
+                model=policy.model,
+                ocr="standard",
                 overwrite=True,
                 on_progress=on_progress,
                 cancel_event=job.cancel_event,
@@ -217,9 +220,9 @@ class TranslationJobManager:
             return
         except Exception as exc:
             job.status = "error"
-            job.error = str(exc)
+            job.error_code, job.error = public_failure(exc)
             job.updated_at = _utc_now()
-            logger.exception("Job %s failed: %s", job.job_id, exc)
+            logger.error("Local job %s failed (%s)", job.job_id, job.error_code)
             return
 
         job.record(translation)

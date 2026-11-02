@@ -543,6 +543,11 @@ def translate_pdf(
     cancel_event: object | None = None,
 ) -> Translation:
     """Translate one PDF, reporting any segments the engine could not translate."""
+    from pdf2zh.offline import active, enforce_engine, install_network_guard
+
+    enforce_engine(engine, model)
+    if active():
+        install_network_guard()
     _require_core()
     if ocr not in OCR_MODES:
         raise TranslationError(f"Unsupported OCR mode: {ocr}")

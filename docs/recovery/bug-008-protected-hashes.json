@@ -1,0 +1,1946 @@
+{
+  "source_files": [
+    {
+      "checkout": "ide",
+      "path": ".claude/skills/pdf-translate/SKILL.md",
+      "sha256": "876cd8534a9099d9b633231b8951695825cb2401821ed3db8b5d1eedc21634b1"
+    },
+    {
+      "checkout": "ide",
+      "path": ".gitattributes",
+      "sha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c"
+    },
+    {
+      "checkout": "ide",
+      "path": ".github/assets/logo.png",
+      "sha256": "e07983bef9b50d57c8f3c89ed6da222dc669d36a4cabd598f335af48ffc39641"
+    },
+    {
+      "checkout": "ide",
+      "path": ".github/workflows/android-build.yml",
+      "sha256": "5769dfef5b52305278f7dfc46f248ebb490affa3b88959397e782cfd567002cb"
+    },
+    {
+      "checkout": "ide",
+      "path": ".github/workflows/macos-artifacts.yml",
+      "sha256": "051a2149d1602f1870e7668e3ad737e53c137daf6651ef7e39c945697e180fe4"
+    },
+    {
+      "checkout": "ide",
+      "path": ".github/workflows/release.yml",
+      "sha256": "dfa87d1a76316a2fb47373f73914a04f5b7668ce14f88ee6252f4f81f8b8463a"
+    },
+    {
+      "checkout": "ide",
+      "path": ".gitignore",
+      "sha256": "869b9321e00a91ca1781616a62735ff779ba2356f2d03e6c14428f07c8ed3913"
+    },
+    {
+      "checkout": "ide",
+      "path": "AGENTS.md",
+      "sha256": "77f77991ccf2f2b39229aa5c55df6631ab093a9e062541f4750aea4402e7724a"
+    },
+    {
+      "checkout": "ide",
+      "path": "CITATION.cff",
+      "sha256": "c64eeaa5fdeec64b5ca2903c335e9c4a48e5832237283850b05c24d873a430af"
+    },
+    {
+      "checkout": "ide",
+      "path": "CLAUDE.md",
+      "sha256": "7a1ceb05e4b91f3349a2cf8fd5e4b525775b0774c9c0abe882c8d17e6d04ff58"
+    },
+    {
+      "checkout": "ide",
+      "path": "LICENSE",
+      "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+    },
+    {
+      "checkout": "ide",
+      "path": "README.md",
+      "sha256": "531511c1318c8962fcd6036f1d3ec7f9bc38c91a13c0040148f79f0d7a13ac2d"
+    },
+    {
+      "checkout": "ide",
+      "path": "SKILL.md",
+      "sha256": "5d435a54652b427f63ef9fb8e44838c35e65542a51aadf88b3ec4ee895bf2723"
+    },
+    {
+      "checkout": "ide",
+      "path": "THIRD_PARTY_NOTICES.md",
+      "sha256": "775153e8c35b6d003f0f0fd90c432707e6af6d544f75eadfec23b48a8a732488"
+    },
+    {
+      "checkout": "ide",
+      "path": "agent-knowledge/android.md",
+      "sha256": "a818ea433b6064cef6106e5f1166fa99438ca7440778c80d3382dc91a85fcc63"
+    },
+    {
+      "checkout": "ide",
+      "path": "agent-knowledge/index.md",
+      "sha256": "a079eb02632ca88c26ea0f2b119d0111d67829b02e659aab9cf914649c9c4baa"
+    },
+    {
+      "checkout": "ide",
+      "path": "agent-knowledge/pdf-engine.md",
+      "sha256": "2186e0f58a791c5ba05f06558c1e27a68df954560071135cd270860e941b9129"
+    },
+    {
+      "checkout": "ide",
+      "path": "agent-knowledge/regressions.md",
+      "sha256": "fdcbf4ffdc6f432af68b16fa4a9f5dc1c72b388559517ce4ada7f28e854bdf6a"
+    },
+    {
+      "checkout": "ide",
+      "path": "agent-knowledge/release.md",
+      "sha256": "0fbae8064330183cb19b402b469efde47d8cf9ae63f6a262a11b6eb1b2b56fe7"
+    },
+    {
+      "checkout": "ide",
+      "path": "agent-knowledge/repository.md",
+      "sha256": "694fb06b039b5992baaa9c3b0259ffcbb0260fc648ea80876e2a8046c6189dfc"
+    },
+    {
+      "checkout": "ide",
+      "path": "agent-knowledge/validation.md",
+      "sha256": "0c999a83a352116e9c2f87c0ec15d383d85cb1dfd48b2605ad809630cce2fc83"
+    },
+    {
+      "checkout": "ide",
+      "path": "agents/openai.yaml",
+      "sha256": "9cb623bd01b573fb1cc60e3678e553ba988feeb8e99fb49f0a11819733a90a9d"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/build.gradle.kts",
+      "sha256": "4a9b97892f26722f9f993e826b59fcbcc990ce92c77c107be5e4bde4370310f3"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/proguard-rules.pro",
+      "sha256": "bf84a53cb29cea9308fa379ab19e402cb59a26d4a3ab8c439cd21c4ce98ab9fb"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/androidTest/java/com/vitranslate/pdf/LaunchSmokeTest.kt",
+      "sha256": "031f36abfcbc56846fb1dc9052e1920923d20dc21fda907bf951d373a1bdcc7d"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/AndroidManifest.xml",
+      "sha256": "03e0a5be222912699f2fbca376927316da031de292bb58c320a1eea452950a89"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/assets/fonts/NotoSans-Regular.ttf",
+      "sha256": "f3961a9cde016d41a4879aecda1474d3a36d6bf54fa0e4643de029cc2248b0e8"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/MainActivity.kt",
+      "sha256": "55f9faf120144625caa94995e70cb66966edc144997df45d7e4add1cf9e96b0f"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/model/QueueItem.kt",
+      "sha256": "0382054169c28963167bf972be4ae5af713ef3c773222bebeb4f4f6e9723eead"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/model/TargetLanguage.kt",
+      "sha256": "d76c0d5c4d19f6f4b4f45fc65f18c4139bfa3bd43e4b2c9f5750388d2886ef35"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/model/UpdateInfo.kt",
+      "sha256": "f7507fdbccd08221a4d9360bb14ee1ea5c478a899a0932c977e4374efac1ef57"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/FormulaPlaceholder.kt",
+      "sha256": "1fba864202e30e4c470fd2af16f4c7831d93dd74ccffe09dceab6c5b5d724fa1"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/GoogleTranslateEngine.kt",
+      "sha256": "a403e1bfd6281138bee5cf5aea865667392c93d96616763e94be60cc9c83aa52"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/PdfLayoutPreserver.kt",
+      "sha256": "4736ecb270b3be8a3d01e58add26aa694dea252a3f985f0c7a67a3cd3aa52b77"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/SourceTextNormaliser.kt",
+      "sha256": "45c016ef4f5c8ecf272220502fda3cb357d97fc3046fd85fe05566e25d17729e"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/TranslationController.kt",
+      "sha256": "050c559e56c14916d89225b0ff4b7abf55ed40cce60c53759ff32bbb19d5a002"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/UpdateChecker.kt",
+      "sha256": "e9f6b79178a1b8e9bc3f12182cd32e5f46c05ab1bacceb790b2dab428bb47627"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/service/TranslationService.kt",
+      "sha256": "df4747aac5320346df93463f5bb4b222e6ea8171e036afab324066fc84ed08ed"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/AboutDialog.kt",
+      "sha256": "fa213138738274ed6dff279519536e062c9aaa5c8fd7dbfb52c4d96b792e5aaa"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/ControlsView.kt",
+      "sha256": "4560c418e580e0015972a8d3d64e1d84fcd43263f4f7817942e5c74e9629e116"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/FilePickerView.kt",
+      "sha256": "ab06239b5c770dd1bc1d986b4eb7b866dc992edee3bbbceca2122b4a37be10d8"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/FooterView.kt",
+      "sha256": "974fd3ad3a1fea9e98a8babeee9788520854a035d12953b547bd5758076157c3"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/HeaderView.kt",
+      "sha256": "ee78704418a42d0ee01669fa25b0c73b31aae3d4ab007a92840bb673cbb466c9"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/LogViewerDialog.kt",
+      "sha256": "a3b1a2a31fba201181fa14fecf7256e1f94a1b048e26acacd7300ac5abad99bc"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/OpenTranslatedPdf.kt",
+      "sha256": "29d0e025de361823eba94ef6d41c27966223937012596bb4723efde912142f4c"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/QueueView.kt",
+      "sha256": "841e1dac8ca7e65bf00d42f80c99a0233198e5b9679e3fb3ffdbebbf87dad3c8"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/theme/Color.kt",
+      "sha256": "22b32f67d7197aca9418429bb4ae22e913e38c9029302ee73c4b8c3f21e943cd"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/theme/Theme.kt",
+      "sha256": "fe59017abe40e5ad04b21c3cae9ed3c0c26ca8db381bbee2d8468c31ac61071d"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/theme/Type.kt",
+      "sha256": "e5cb9cb41e5c94ac08e3dfa599d93d27c5d39c21553f150098ea4e3e1515b466"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/viewmodel/MainViewModel.kt",
+      "sha256": "a4795eb91477aabb2dfeddb7fa84cae16b8d7f5508c6f4c5b5a73e7b686d72f7"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/drawable-hdpi/ic_app_mark.png",
+      "sha256": "756c10b632de76f7602072bf5795a4309d20e6234c38afb2e4e8927234a92e15"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/drawable-mdpi/ic_app_mark.png",
+      "sha256": "d1206902fac7c4f2e0ba62148b4d44159d60a1d44485cb9080c31626326998ac"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/drawable-xhdpi/ic_app_mark.png",
+      "sha256": "c16278333055fdde74b4ba74cb430780f2651e6f67ddaeecffceb78461a45b48"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/drawable-xxhdpi/ic_app_mark.png",
+      "sha256": "35895ca452f578fa69d1104e2cef8f54802637b745fdad0948880daa7846a6ba"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/drawable-xxxhdpi/ic_app_mark.png",
+      "sha256": "572aeaf43103f154d14a199e456f02bf8c1616dbfeffbcfab76dfb2fde55ad17"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "sha256": "5bef67e3eba5c56f6ca0f96173c76e654977bce5ea91f0161fce94c5f52bbef7"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "sha256": "5bef67e3eba5c56f6ca0f96173c76e654977bce5ea91f0161fce94c5f52bbef7"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "sha256": "086391a2f52dfa9fe6d34fbde32015023ed388437aa884f28137810791cf2ddb"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+      "sha256": "ad60df3cdbc563bf65a19ea16287f065ef66f335c957302a683a3ca484774ab1"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher_monochrome.png",
+      "sha256": "c8cce00bf671f57bd71448744ff60ff900d1593b4d06c5ed5e343a975a7ee91e"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "sha256": "4e8be712cb32d21afdb2901f12ed6d58b7208af893e3d249c10690ef03d58d5b"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "sha256": "c21af3a0c804fb1b9719325f1adb99d4dc2d0922ad1fc724ea0520641330f3af"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+      "sha256": "290a0dece2784a32693672596e610399b17de002dd6f0e6b7ec399aa402da42c"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher_monochrome.png",
+      "sha256": "b8bf75aa020a3443e4438dbb1dd1aa06ab9dc71899a6a710a7cea3d789995596"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "sha256": "3a6e6347527d91183ba2b5b7cc6a7586c4fd0570f581b8dbf522380751e3ffa4"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "sha256": "658907179b0224e1dfa334e8aadd9bc3a371d2c3a9a0ca57be11529f6049a564"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+      "sha256": "184b8e3e4add0a13f37bc5f85cc040eddde34d4dc8a05ca52139cbc04857d4ed"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher_monochrome.png",
+      "sha256": "e44342aa811fd2347f7d61cb60216845826a5665e2dfb584cbf04d0d04b1dac9"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "sha256": "67ae98eb5ab662794cfa588c427cdeda954f024dc3c95cedfca950b6509c894d"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "sha256": "bf4b2167b1387d4244967259a8aa4f572a5e5dcdd1c3bcc38060df2c939b7552"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+      "sha256": "272ad32268f9101f8e98849e6f89daf20aafcff73ab6b56c311ff96a92a06015"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png",
+      "sha256": "71e17e0eb6f470ece6590e2bad9b1545b6fe6ae9f6adf64edb748ab9892dd534"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "sha256": "5c75e8562bda001f776d0aaa47c93ae54921d5086985f4617e40495d1ce5090a"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "sha256": "4dd139ea6f17e8ea9ace6662f878b31f6b4604b04dfe29191b7cd7792803a34a"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+      "sha256": "cce49ef30aa596d40d39a4a243041bcfbf9051e6663541b88c21ff055985c124"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png",
+      "sha256": "55a2ca10b728dfbef83240d08b3a004383ed097eb1fe010e365c233ca0219061"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+      "sha256": "326efb0187afdfaeb8566c0b93580111a37bf2043d9f458da19fec9b07e251b4"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/values-night/colors.xml",
+      "sha256": "968c010608324a6e08606f2feba9c7b069b1244f5a29f868befb1950048154f8"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/values-night/themes.xml",
+      "sha256": "956391805ae0bd6c702de8a7db6da56224a5b77c94f1e332e80ac08cfb1ed395"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/values/colors.xml",
+      "sha256": "d616761f11d9665ee10299b3ae9a655ceaabf1e01c84809bc1285ef2663ce39c"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/values/strings.xml",
+      "sha256": "b547b2920274fb16df98c8aed8dd23221ecff9a911034a790e2afc0d15ae0985"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/values/themes.xml",
+      "sha256": "620b55c94a43e70e9260f6155b0b4d653c6ed805f28bae40c9821a924683caa5"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/main/res/xml/file_paths.xml",
+      "sha256": "7d35eb120ca7e910faa5daecd37955a4ef713cf01686c20517732ad21b72d685"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/FormulaPlaceholderTest.kt",
+      "sha256": "4e594c2dcbe112cbbde102c9b489885e5d4fe8e32de20bd787c6a37101b87ff8"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/PdfLayoutPreserverTest.kt",
+      "sha256": "0c04151dbba908a9d5116ea7f7eb8b955af9fd9a80dcaca1f5e65776cd1d1396"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/SourceTextNormaliserTest.kt",
+      "sha256": "6f4a7478dfa477ed6073282e2644bfbf2c2293c296a298f43260030102537273"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/TargetLanguageTest.kt",
+      "sha256": "fde0d581cf86a91b3d222c1b4837cb9e91477ffd98c563a429ffe4c79042ab47"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/UpdateCheckerTest.kt",
+      "sha256": "6697eab224375fbc5a2dafb44286a2e7907fe1c911d6c9366948daa3285ad6b4"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/build.gradle.kts",
+      "sha256": "7af865aea3e2dde810363caa1c3f9eed33324aa47f1c7e281034d4bd69129b3d"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/gradle.properties",
+      "sha256": "5ff4359bb22b9436ec644207f9240f4e47b9a733fe03ba402c77944a05283574"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/gradle/libs.versions.toml",
+      "sha256": "96ed28bcad8c43de54ec5e5757e42d00a7dd3faa96c83d95726fad23c6ad5dc0"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/gradle/wrapper/gradle-wrapper.properties",
+      "sha256": "50103368c28a1d07d846d19e053b5a85f64aabd8c47c7b6100c9f40a002bc2de"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/gradlew",
+      "sha256": "a5a5c199ba02189ae8c46a334223371a20599d9c298ef65e7540ede4a3f72d59"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/gradlew.bat",
+      "sha256": "59328c7a17f673b1a63040bfb380a0c749e5d6df3406f7f18641060314cd9aa1"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/settings.gradle.kts",
+      "sha256": "a9f4318fcc815c66496047cfcffc4b9d4c1a237b921e11b5c12bbf30c7186836"
+    },
+    {
+      "checkout": "ide",
+      "path": "android/tools/generate_launcher_icons.py",
+      "sha256": "1412ceadb61ade42c03431146bae5b5981e0ea51f39196a18e7fb8176555a43f"
+    },
+    {
+      "checkout": "ide",
+      "path": "app-macos.spec",
+      "sha256": "8d011bbd252e785e55e0f46ce84ecd2fc3431d2cb22ee2a2a8c9929ce62ca1f4"
+    },
+    {
+      "checkout": "ide",
+      "path": "app.spec",
+      "sha256": "7d4f716926ebfb706ecf759e32924879c9522f2bdd34c093c2f1e1d52be91d51"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/assets/README.md",
+      "sha256": "594898c54dfa925f72fc187a145e023a650651e1b7adff7a320469cf195d560c"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/assets/icon.ico",
+      "sha256": "1bc7c5e064a8ee94d0427ab91cd65dd6312c93ae96e286717ac0d298ca874504"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/assets/icon.png",
+      "sha256": "29176a7de31f286e3e15f307049cc7533bf936071f162538a6e512a722738a3d"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/errors.py",
+      "sha256": "fdbcc1fb52e0c65850b198d3323516b1759e83efcb5a12f37fccbce6d5170f09"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/fonts/BeVietnamPro-Bold.ttf",
+      "sha256": "7f738fe5c43c8872807b20e2d30d42163618de8a4daf7f48a939adac32c16847"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/fonts/BeVietnamPro-OFL.txt",
+      "sha256": "6b7f8f73609a25ea78c891e34cf37b06f8a676b7ea986e941e43b009110f2a85"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/fonts/BeVietnamPro-Regular.ttf",
+      "sha256": "cd1ef6e9d7db28ad5cdb88a65ccbe693870e60d340b791f349d248342b4fe4c3"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/fonts/JetBrainsMono-OFL.txt",
+      "sha256": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/fonts/JetBrainsMono.ttf",
+      "sha256": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/fonts/README.md",
+      "sha256": "dc72cb14af989066f55a6eea602d3a753254b8423d9a832d6f2a822cf10919f8"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/gui.py",
+      "sha256": "5aece85826b8338e5e079cacc6077565df92ef34aa4ddd36d6b2d375bf6154fd"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/runtime_hook_dlls.py",
+      "sha256": "1b035c651d03d32debdf19e3d6a8f7e027a6dc848b96fb96324efd58953502c4"
+    },
+    {
+      "checkout": "ide",
+      "path": "app/update.py",
+      "sha256": "102df9c91cd76034e8e433288edf05f78f5b3b3ede5e204353b29f351d30ba52"
+    },
+    {
+      "checkout": "ide",
+      "path": "build-macos.sh",
+      "sha256": "4488c72558fd60852e67c3875f34d0194b0e58e9957007b9e4f8b9794540c6fa"
+    },
+    {
+      "checkout": "ide",
+      "path": "build.ps1",
+      "sha256": "d6cb5a60fa1e5fdaec520c8f16c0e438cf0475cc9d397e57146f58e80759833e"
+    },
+    {
+      "checkout": "ide",
+      "path": "docs/android-release.md",
+      "sha256": "0052ef0589426b31b8123fe6e4a9b3fc1d584d9a1d4e042c2ade5270f94834eb"
+    },
+    {
+      "checkout": "ide",
+      "path": "docs/implementation-plan-2026-09-10.md",
+      "sha256": "cd61ff9726f2db5a6c770194cfccf60ced3cc0fd9c6392a5df1ab8cfd022351b"
+    },
+    {
+      "checkout": "ide",
+      "path": "docs/installation-guide.md",
+      "sha256": "1bc0edae156787052de45f1c98715fa386cf7d4fc4b802eb0075beaa0577a1a8"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/__init__.py",
+      "sha256": "0dff6ef131f775ac21c3d9f6b4f0603046f4e0c9425ced9c20a9806db3d641ba"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/cache.py",
+      "sha256": "0428ec8cae5cf6ddd99d8d83dbc8e210ad79310d0918385e72718e3a1c610feb"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/converter.py",
+      "sha256": "fe933ec0e4229ebcc69f520085b9fa3c5ebd8de25764949005ea50f76ddfac4e"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/doclayout.py",
+      "sha256": "eddc39a4af70df68dbac05e13e57ff177d85d4854f28edac5d76d7a7146afdca"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/glossaries/medicine.json",
+      "sha256": "e9d799e5ea792bacbbd1086b1fedabcdba26b065b8b1313636381cf356ea0ba9"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/glossaries/natural_sciences.json",
+      "sha256": "6ae94d9cc9489ff799831135049757f8be38ba273c56367ec11e4f7d81578e47"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/glossaries/technology.json",
+      "sha256": "761b36210eab65b278509d44eddfb12058e0c879da45594c063d8a4d5e16a2c4"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/high_level.py",
+      "sha256": "451b454bb912e53153066a30037c80da0b8c4d0231fb33fc38abc72276b09917"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/ocr.py",
+      "sha256": "12b3bdcacd117fb2a5ffd62af002b156706f27e35c7626f675d7566b85e43f8a"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/pdfinterp.py",
+      "sha256": "ff1e333e80c517da9074bc889f5994ac7a8af46f577e4abd3349caa042b0d560"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/rules.py",
+      "sha256": "23e46c614681324ec261af9fc8ff71f4ae5390b2f88cc2b2f43d48d8da8db516"
+    },
+    {
+      "checkout": "ide",
+      "path": "pdf2zh/translator.py",
+      "sha256": "479a27fc3427c6a139a1dd38b2c6fd123e0f283c040f879775f598bb4d3a655c"
+    },
+    {
+      "checkout": "ide",
+      "path": "references/preservation-rules.md",
+      "sha256": "81b5fb9b8edcf6d3467380e63961f4ce17f7213c1a7322fc11f7eb7a4addf991"
+    },
+    {
+      "checkout": "ide",
+      "path": "requirements-app.txt",
+      "sha256": "b18885bdb7e0607fe0deed3fdb4de3d401432904b93761158e4eca475b4c5166"
+    },
+    {
+      "checkout": "ide",
+      "path": "requirements-ocr.txt",
+      "sha256": "c69500dc1cf9cec288ab66fc61746e0adc07d1b90565f481fa4fab8f6803fa6c"
+    },
+    {
+      "checkout": "ide",
+      "path": "requirements-webui.txt",
+      "sha256": "42d5b656614a03962508722657b8e4c3f87e566fad21619c87d9764549b2ab05"
+    },
+    {
+      "checkout": "ide",
+      "path": "requirements.txt",
+      "sha256": "970e5be616204c1fb52243c9354e88db8f546cdc5b5f722ba80fdd54547e365a"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/FINDINGS.md",
+      "sha256": "879ffcb42cb9e8b9ccd6eff48d7112ffc074c87748b32bfe6223a054a10f66e7"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/OCR_BENCHMARK.md",
+      "sha256": "1989748ae506638699a4433c5dcee12075a7705e58ecdebb0835e5e92b873c48"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/audit_translation.py",
+      "sha256": "d70287bade6077173289f73ff27d7aa87b5b7499f9a74af27f7dcffe4e34b954"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/benchmark_paths.py",
+      "sha256": "bb30a7a4cde4911d9cd3a1c0dbf874ed3595415e67f540d27452cdb8afad412f"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/benchmark_sources.json",
+      "sha256": "2827ea8bf58b81aca1ba6d5d9808d7b63d2bdffab1516358c093b75a9fbbe8ac"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/fetch_benchmark.py",
+      "sha256": "7576288ca8d7c26130b1bb1a8b3479ab0b010d8a26edcac6364bfdcc1ea0c1b2"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/fix_feasibility.py",
+      "sha256": "72a5b2cd1ab5c2326125a5f69eafa81ea30ebe77a459c8f58133fe99a1694a27"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/layout.py",
+      "sha256": "c4dbd10c3763766daf03dfe1104c4c474f0b115fa9d8479a26bfeef9d3357b39"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/layout_probe.py",
+      "sha256": "c9a289c07f822a569d048baaf2d7c6890cc6669e55949348bfa39370f01c9b59"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/make_benchmark.py",
+      "sha256": "b34f5d5d1e6cb05acd5d199c2024e208af34fcb6e69ad6292762c0c3abcef58a"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/make_corpus.py",
+      "sha256": "984d11446d557056a2b12f7ce95cb302633753837dbb5b89c71caf42c37610e1"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/ocrjson.py",
+      "sha256": "6159150f4221c90ef661c9176f014a0d3db2211f8ad806b857b9e600447038c7"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/oracle.py",
+      "sha256": "2051e1e8352684a2369fa74dbd95d9a9eb456c83fa85951f5338d1197b8ff197"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/paths.py",
+      "sha256": "e64a3a984dd93f69e76a9d790227f4b6e3691f3c8c226fd10037f59bbe1c2106"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/run_benchmark.py",
+      "sha256": "cb3227a5d91bf6ebb18aa0eb85a49e7a8acafaefcdf49ce1f0c2952ded601138"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/run_ocr.py",
+      "sha256": "04f647e9fe5a80b16e0e6b28ed939cde34371d294f4892168a7b877d0d225ea8"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/run_pipeline.py",
+      "sha256": "6b7169691e5ea20f206db8aff5f2fdabf99782d53017573d3371796d13e2b18e"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/score_lines.py",
+      "sha256": "717344c698a583c451b827af8e340f0c4ff34437c50ae0a757919fe50f99deeb"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/score_text.py",
+      "sha256": "6f93d7a3bba5a05801a223a9aaab776f5be240aff0550df72588050020de4955"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/score_visual.py",
+      "sha256": "f5c844a7760001233e906b677dd30c17e98969392f1dca3b94db49cba38da2eb"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/sidecar.py",
+      "sha256": "bfe6a1ae706f1c02c99f3455e0d47749f01a1f7850dd486f8109e798641db3a4"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/survey.py",
+      "sha256": "70a349675cac184913f7cdc35d4e08a22c227e4698cfc292f14089ab73698569"
+    },
+    {
+      "checkout": "ide",
+      "path": "research/ocr-spike/visual_samples.json",
+      "sha256": "870f27bf4dc98ce5ea66f2054163f834c5ca56898757665fe1a3d9cf8f40bb15"
+    },
+    {
+      "checkout": "ide",
+      "path": "scripts/fetch_assets.py",
+      "sha256": "c36c94c64e0f3cca6a85b5670ecee1e388f8b11f55096a32ca707f0c2c266697"
+    },
+    {
+      "checkout": "ide",
+      "path": "scripts/fetch_ocr_assets.py",
+      "sha256": "9d53fdb0a90169a68cb111346aed161cf1776f84de504325ef9a20ac26c7fe9a"
+    },
+    {
+      "checkout": "ide",
+      "path": "scripts/translate_pdf.py",
+      "sha256": "37ceb63d8cb5c48f2135c5227a7d7cc5ff6dde39f6c3f73bd7f9daefa131d4ba"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_app_errors.py",
+      "sha256": "79c8f5ae3eeea6adb554e872242ca11ad5765699e4189bc83fd6df01baa42008"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_app_gui.py",
+      "sha256": "58bdcac2e2fdd4bc64a815fd827228a7398011c2dc0e1f35ce955c8300ae7da7"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_colorspace_resources.py",
+      "sha256": "6e8c89bb30b9a62a73e5760dd8d57d63c7e5ecf76de536ca496bd56fc4a2fa7f"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_doclayout.py",
+      "sha256": "fd1ac74d5aa3d76cd63e3ff471d92578e228f6ab552c6b1d29be5bd712306793"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_domain_glossary.py",
+      "sha256": "d6cf8fd1a0a0988fc344543d795d349d8ee819082c52bea802998dd200b8d8a5"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_handoff_translator.py",
+      "sha256": "83de07fb8134e41b2956a2436a057fe9e54e6e43c3b69bdca0a9bae5e2396af1"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_inline_formula_layout.py",
+      "sha256": "c086ecdfa216be271731a9ba8b777e0b03e329fe7b50423581ea8370a790a9aa"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_large_document_finalization.py",
+      "sha256": "fdc6f15260bf1e25ad47d6c702209a9cbb3c83256a0aa7c0d46b09bde5d0bf4b"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_ocr.py",
+      "sha256": "72ae2c8623458b3c995c479248a2d903f0094047af562d74138f88fb3b0cd1bb"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_preservation_rules.py",
+      "sha256": "52d48c30ff6c4d54c557ffa061f08f225d022e09761962c75a166eafa54c95f7"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_translate_pdf.py",
+      "sha256": "73fb54dc21589e80bf2a93e1497bb4582c6896a69b63a1fecff401e04eefe713"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_translation_audit.py",
+      "sha256": "7d0d19648a6695b4d6b7612fbad3aae0c19e0647cb7cced6fa03b12c9e910555"
+    },
+    {
+      "checkout": "ide",
+      "path": "tests/test_update.py",
+      "sha256": "30149ff772e1cfcdd5baea7f8302aaba087a9900aee5f9e32affc30d43731eb2"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/.gitignore",
+      "sha256": "c10b49375e4b076c643cca12243b869030fbc8796b8efdd0920561f4ccc230e8"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/backend/__init__.py",
+      "sha256": "63752dcdc1238c3535cd3a931dfdf88e7ba08d68adb42df086e59a52d817c816"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/backend/main.py",
+      "sha256": "c2337d81ef4dcd19a3d3609bf037be42851f8fe6c0596c623fa4b575bf326976"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/backend/run_server.py",
+      "sha256": "e9857fee9b5ff206a09d0027cb7d2543e6930c416e1528cac702cc03ff713e5e"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/backend/services/__init__.py",
+      "sha256": "1c94ad5d9c88f7e41d5b679cf2ff73a0791153c1241a64bf9261ab469751cb4c"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/backend/services/job_service.py",
+      "sha256": "818a621b4deb8aaa35c6c81ea6c5460eb4c9413d5fb96a5674d7f3fd8c87c66c"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/electron/main.ts",
+      "sha256": "1a9e6ffb023cb3c43160e987fe6e8c6cfc1078f69f0a77513e5bffb74ed7932b"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/electron/preload.ts",
+      "sha256": "623dd8fa515e5d980ab8fe3e86e07fcd8c89db7aa7576298bf0aa6125b4bfac9"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/index.html",
+      "sha256": "49139617358224a57b09e189135a20658bea73bce8bc7aa387485958818b144d"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/package-lock.json",
+      "sha256": "c9eec7f0a4b3972bbca424034b060616b0ba5e1ef2e6015be3b63ce8563fd115"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/package.json",
+      "sha256": "90c585e8fdebec242d237037fc5a08b0a8789988c615f42c83db4cb05225a504"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/postcss.config.js",
+      "sha256": "190c877db466995bf1482f4a16abd06e04a89ede3119341e2a86ff96e1737b27"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/public/icon.png",
+      "sha256": "4ec3513cf2e8f12ae48c9c6816825256b3d94e4902dff5cb67d2ebfdcf125531"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/src/App.tsx",
+      "sha256": "d15659e68f1a3bb43867544b2da4601bad045aaf5335215a38180ed34faa3274"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/src/components/PdfViewerBox.tsx",
+      "sha256": "be05946273a393769cc7c0b33fb3e5408015715a76cc5beaec8945a47b7e6157"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/src/electron.d.ts",
+      "sha256": "f3796829c0d52067916e348688cd61334297a7cef2fd1a4de4bc939dde39adfe"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/src/index.css",
+      "sha256": "2b0a7273cad787f35cc4c47c0f9ff8c06df907c42ad5602df831038151b7de31"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/src/main.tsx",
+      "sha256": "85a2cdedf2c9899103739aabe9576c7e52eda0c0fff19cbc4679d424e573cd68"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/src/services/api.ts",
+      "sha256": "1e55905c7c162b3a8b3fe6f57917b8a6df282206c5614223b56975ea666af29b"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/src/vite-env.d.ts",
+      "sha256": "8fe0789ba5f059f5d9dc0e5c5b638b404388ad3f830cd76f2304d5beb4e3768d"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/tailwind.config.js",
+      "sha256": "dfa25d088eb27dcd15fbc24732751a76efdeb735a7c107fa42cebaf2a960d4d5"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/tsconfig.app.json",
+      "sha256": "6cc20fd5e7e7fa0deccb8307819a4cae62b80e4543ddf3ab43feefdaee56c846"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/tsconfig.json",
+      "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/tsconfig.node.json",
+      "sha256": "5e67a8714b295bead86a15b7e555f5079ede72eac4415e5adc11684eecb966f0"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/frontend/vite.config.ts",
+      "sha256": "ae73f12d413031b1056fb23e1d853f0001f9fabd1c144628bda66d898906f3f3"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/icon.png",
+      "sha256": "4ec3513cf2e8f12ae48c9c6816825256b3d94e4902dff5cb67d2ebfdcf125531"
+    },
+    {
+      "checkout": "ide",
+      "path": "webui/requirements-webui.txt",
+      "sha256": "f0bcd5add5fae14ab8f088d22c0ac21e71ad1826ed15cad2fb6b817c98dbb52c"
+    },
+    {
+      "checkout": "offline",
+      "path": "agent-knowledge/android.md",
+      "sha256": "a818ea433b6064cef6106e5f1166fa99438ca7440778c80d3382dc91a85fcc63"
+    },
+    {
+      "checkout": "offline",
+      "path": "agent-knowledge/index.md",
+      "sha256": "a079eb02632ca88c26ea0f2b119d0111d67829b02e659aab9cf914649c9c4baa"
+    },
+    {
+      "checkout": "offline",
+      "path": "agent-knowledge/pdf-engine.md",
+      "sha256": "d4170c63250920d08676631f806b17040ce809a351c40c681fe6f3353fe89916"
+    },
+    {
+      "checkout": "offline",
+      "path": "agent-knowledge/regressions.md",
+      "sha256": "d579dc4c8d66c0751666e70cfdc70566d7a4c8a3cb6f93f6d6c9bb80693e0d46"
+    },
+    {
+      "checkout": "offline",
+      "path": "agent-knowledge/release.md",
+      "sha256": "c26dd008c391757357a3a9045105f4184e7ed4b41b232724983bfe7dd2623def"
+    },
+    {
+      "checkout": "offline",
+      "path": "agent-knowledge/repository.md",
+      "sha256": "c31de165ef1b33deec3868cb6bbd56c918d4f08de9e81d94970795389576cc10"
+    },
+    {
+      "checkout": "offline",
+      "path": "agent-knowledge/validation.md",
+      "sha256": "8b92bcd9587dd900ad1f2ad26b77bc8f340bacaa00be0cf9751eec6e739662b0"
+    },
+    {
+      "checkout": "offline",
+      "path": "agents/openai.yaml",
+      "sha256": "9cb623bd01b573fb1cc60e3678e553ba988feeb8e99fb49f0a11819733a90a9d"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/build.gradle.kts",
+      "sha256": "4a9b97892f26722f9f993e826b59fcbcc990ce92c77c107be5e4bde4370310f3"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/proguard-rules.pro",
+      "sha256": "bf84a53cb29cea9308fa379ab19e402cb59a26d4a3ab8c439cd21c4ce98ab9fb"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/androidTest/java/com/vitranslate/pdf/LaunchSmokeTest.kt",
+      "sha256": "031f36abfcbc56846fb1dc9052e1920923d20dc21fda907bf951d373a1bdcc7d"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/AndroidManifest.xml",
+      "sha256": "03e0a5be222912699f2fbca376927316da031de292bb58c320a1eea452950a89"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/assets/fonts/NotoSans-Regular.ttf",
+      "sha256": "f3961a9cde016d41a4879aecda1474d3a36d6bf54fa0e4643de029cc2248b0e8"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/MainActivity.kt",
+      "sha256": "55f9faf120144625caa94995e70cb66966edc144997df45d7e4add1cf9e96b0f"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/model/QueueItem.kt",
+      "sha256": "0382054169c28963167bf972be4ae5af713ef3c773222bebeb4f4f6e9723eead"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/model/TargetLanguage.kt",
+      "sha256": "d76c0d5c4d19f6f4b4f45fc65f18c4139bfa3bd43e4b2c9f5750388d2886ef35"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/model/UpdateInfo.kt",
+      "sha256": "f7507fdbccd08221a4d9360bb14ee1ea5c478a899a0932c977e4374efac1ef57"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/FormulaPlaceholder.kt",
+      "sha256": "1fba864202e30e4c470fd2af16f4c7831d93dd74ccffe09dceab6c5b5d724fa1"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/GoogleTranslateEngine.kt",
+      "sha256": "a403e1bfd6281138bee5cf5aea865667392c93d96616763e94be60cc9c83aa52"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/PdfLayoutPreserver.kt",
+      "sha256": "4736ecb270b3be8a3d01e58add26aa694dea252a3f985f0c7a67a3cd3aa52b77"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/SourceTextNormaliser.kt",
+      "sha256": "45c016ef4f5c8ecf272220502fda3cb357d97fc3046fd85fe05566e25d17729e"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/TranslationController.kt",
+      "sha256": "050c559e56c14916d89225b0ff4b7abf55ed40cce60c53759ff32bbb19d5a002"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/repository/UpdateChecker.kt",
+      "sha256": "6d6c3f6fac7b1e67b0b507f3c71f128d5484bc84612625ab2ff4e24e68f41949"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/service/TranslationService.kt",
+      "sha256": "df4747aac5320346df93463f5bb4b222e6ea8171e036afab324066fc84ed08ed"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/AboutDialog.kt",
+      "sha256": "123ce23b2f2de00c51bbd86b84ab961167c20a60359406d5b1888b90c678fba4"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/ControlsView.kt",
+      "sha256": "4560c418e580e0015972a8d3d64e1d84fcd43263f4f7817942e5c74e9629e116"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/FilePickerView.kt",
+      "sha256": "ab06239b5c770dd1bc1d986b4eb7b866dc992edee3bbbceca2122b4a37be10d8"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/FooterView.kt",
+      "sha256": "974fd3ad3a1fea9e98a8babeee9788520854a035d12953b547bd5758076157c3"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/HeaderView.kt",
+      "sha256": "ee78704418a42d0ee01669fa25b0c73b31aae3d4ab007a92840bb673cbb466c9"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/LogViewerDialog.kt",
+      "sha256": "a3b1a2a31fba201181fa14fecf7256e1f94a1b048e26acacd7300ac5abad99bc"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/OpenTranslatedPdf.kt",
+      "sha256": "29d0e025de361823eba94ef6d41c27966223937012596bb4723efde912142f4c"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/components/QueueView.kt",
+      "sha256": "841e1dac8ca7e65bf00d42f80c99a0233198e5b9679e3fb3ffdbebbf87dad3c8"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/theme/Color.kt",
+      "sha256": "651b5add9dab0900020cb9b23ad5a25b1b09a513063f9e88c4a2a1052622b4e0"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/theme/Theme.kt",
+      "sha256": "fe59017abe40e5ad04b21c3cae9ed3c0c26ca8db381bbee2d8468c31ac61071d"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/ui/theme/Type.kt",
+      "sha256": "e5cb9cb41e5c94ac08e3dfa599d93d27c5d39c21553f150098ea4e3e1515b466"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/java/com/vitranslate/pdf/viewmodel/MainViewModel.kt",
+      "sha256": "a4795eb91477aabb2dfeddb7fa84cae16b8d7f5508c6f4c5b5a73e7b686d72f7"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/drawable-hdpi/ic_app_mark.png",
+      "sha256": "1956b49a025d6909cabeef1fdff9e90de8d319e2ee1ccb64779991a92876fd28"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/drawable-mdpi/ic_app_mark.png",
+      "sha256": "4f39fde26b391b47d9341184fba35d5623da0afb8258082dc60985ac755664db"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/drawable-xhdpi/ic_app_mark.png",
+      "sha256": "756823f7439938e8d8125ebe0354a62281ec265a8a6208ea87fd8c5a5f2fa561"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/drawable-xxhdpi/ic_app_mark.png",
+      "sha256": "c6fec41ec76cacd6690283c14d5ad05553ab3bd674ad2af4719ef074234210f9"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/drawable-xxxhdpi/ic_app_mark.png",
+      "sha256": "81c71923d823a5291b485654c50b981be4ba820183a0023232d1f3c57f5deeae"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "sha256": "5bef67e3eba5c56f6ca0f96173c76e654977bce5ea91f0161fce94c5f52bbef7"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "sha256": "5bef67e3eba5c56f6ca0f96173c76e654977bce5ea91f0161fce94c5f52bbef7"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "sha256": "086391a2f52dfa9fe6d34fbde32015023ed388437aa884f28137810791cf2ddb"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+      "sha256": "ad60df3cdbc563bf65a19ea16287f065ef66f335c957302a683a3ca484774ab1"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher_monochrome.png",
+      "sha256": "c8cce00bf671f57bd71448744ff60ff900d1593b4d06c5ed5e343a975a7ee91e"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "sha256": "4e8be712cb32d21afdb2901f12ed6d58b7208af893e3d249c10690ef03d58d5b"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "sha256": "c21af3a0c804fb1b9719325f1adb99d4dc2d0922ad1fc724ea0520641330f3af"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+      "sha256": "290a0dece2784a32693672596e610399b17de002dd6f0e6b7ec399aa402da42c"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher_monochrome.png",
+      "sha256": "b8bf75aa020a3443e4438dbb1dd1aa06ab9dc71899a6a710a7cea3d789995596"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "sha256": "3a6e6347527d91183ba2b5b7cc6a7586c4fd0570f581b8dbf522380751e3ffa4"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "sha256": "658907179b0224e1dfa334e8aadd9bc3a371d2c3a9a0ca57be11529f6049a564"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+      "sha256": "184b8e3e4add0a13f37bc5f85cc040eddde34d4dc8a05ca52139cbc04857d4ed"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher_monochrome.png",
+      "sha256": "e44342aa811fd2347f7d61cb60216845826a5665e2dfb584cbf04d0d04b1dac9"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "sha256": "67ae98eb5ab662794cfa588c427cdeda954f024dc3c95cedfca950b6509c894d"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "sha256": "bf4b2167b1387d4244967259a8aa4f572a5e5dcdd1c3bcc38060df2c939b7552"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+      "sha256": "272ad32268f9101f8e98849e6f89daf20aafcff73ab6b56c311ff96a92a06015"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png",
+      "sha256": "71e17e0eb6f470ece6590e2bad9b1545b6fe6ae9f6adf64edb748ab9892dd534"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "sha256": "5c75e8562bda001f776d0aaa47c93ae54921d5086985f4617e40495d1ce5090a"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "sha256": "4dd139ea6f17e8ea9ace6662f878b31f6b4604b04dfe29191b7cd7792803a34a"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+      "sha256": "cce49ef30aa596d40d39a4a243041bcfbf9051e6663541b88c21ff055985c124"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png",
+      "sha256": "55a2ca10b728dfbef83240d08b3a004383ed097eb1fe010e365c233ca0219061"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+      "sha256": "326efb0187afdfaeb8566c0b93580111a37bf2043d9f458da19fec9b07e251b4"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/values-night/colors.xml",
+      "sha256": "968c010608324a6e08606f2feba9c7b069b1244f5a29f868befb1950048154f8"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/values-night/themes.xml",
+      "sha256": "956391805ae0bd6c702de8a7db6da56224a5b77c94f1e332e80ac08cfb1ed395"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/values/colors.xml",
+      "sha256": "d616761f11d9665ee10299b3ae9a655ceaabf1e01c84809bc1285ef2663ce39c"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/values/strings.xml",
+      "sha256": "b547b2920274fb16df98c8aed8dd23221ecff9a911034a790e2afc0d15ae0985"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/values/themes.xml",
+      "sha256": "620b55c94a43e70e9260f6155b0b4d653c6ed805f28bae40c9821a924683caa5"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/main/res/xml/file_paths.xml",
+      "sha256": "7d35eb120ca7e910faa5daecd37955a4ef713cf01686c20517732ad21b72d685"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/FormulaPlaceholderTest.kt",
+      "sha256": "4e594c2dcbe112cbbde102c9b489885e5d4fe8e32de20bd787c6a37101b87ff8"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/PdfLayoutPreserverTest.kt",
+      "sha256": "0c04151dbba908a9d5116ea7f7eb8b955af9fd9a80dcaca1f5e65776cd1d1396"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/SourceTextNormaliserTest.kt",
+      "sha256": "6f4a7478dfa477ed6073282e2644bfbf2c2293c296a298f43260030102537273"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/TargetLanguageTest.kt",
+      "sha256": "fde0d581cf86a91b3d222c1b4837cb9e91477ffd98c563a429ffe4c79042ab47"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/app/src/test/java/com/vitranslate/pdf/UpdateCheckerTest.kt",
+      "sha256": "6697eab224375fbc5a2dafb44286a2e7907fe1c911d6c9366948daa3285ad6b4"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/build.gradle.kts",
+      "sha256": "7af865aea3e2dde810363caa1c3f9eed33324aa47f1c7e281034d4bd69129b3d"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/gradle.properties",
+      "sha256": "5ff4359bb22b9436ec644207f9240f4e47b9a733fe03ba402c77944a05283574"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/gradle/libs.versions.toml",
+      "sha256": "96ed28bcad8c43de54ec5e5757e42d00a7dd3faa96c83d95726fad23c6ad5dc0"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/gradle/wrapper/gradle-wrapper.properties",
+      "sha256": "50103368c28a1d07d846d19e053b5a85f64aabd8c47c7b6100c9f40a002bc2de"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/gradlew",
+      "sha256": "a5a5c199ba02189ae8c46a334223371a20599d9c298ef65e7540ede4a3f72d59"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/gradlew.bat",
+      "sha256": "59328c7a17f673b1a63040bfb380a0c749e5d6df3406f7f18641060314cd9aa1"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/settings.gradle.kts",
+      "sha256": "a9f4318fcc815c66496047cfcffc4b9d4c1a237b921e11b5c12bbf30c7186836"
+    },
+    {
+      "checkout": "offline",
+      "path": "android/tools/generate_launcher_icons.py",
+      "sha256": "1412ceadb61ade42c03431146bae5b5981e0ea51f39196a18e7fb8176555a43f"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/assets/README.md",
+      "sha256": "594898c54dfa925f72fc187a145e023a650651e1b7adff7a320469cf195d560c"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/assets/icon.ico",
+      "sha256": "835a19bf12218afa628b877a0519a39c64f8a9b0f2a3145a4f8da1f8b913678b"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/assets/icon.png",
+      "sha256": "0748d8f84de7ed9bdc06261dcdda7149cc00be95aa435cc13c5bc40c4f79c92e"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/errors.py",
+      "sha256": "fdbcc1fb52e0c65850b198d3323516b1759e83efcb5a12f37fccbce6d5170f09"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/fonts/BeVietnamPro-Bold.ttf",
+      "sha256": "7f738fe5c43c8872807b20e2d30d42163618de8a4daf7f48a939adac32c16847"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/fonts/BeVietnamPro-OFL.txt",
+      "sha256": "6b7f8f73609a25ea78c891e34cf37b06f8a676b7ea986e941e43b009110f2a85"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/fonts/BeVietnamPro-Regular.ttf",
+      "sha256": "cd1ef6e9d7db28ad5cdb88a65ccbe693870e60d340b791f349d248342b4fe4c3"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/fonts/JetBrainsMono-OFL.txt",
+      "sha256": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/fonts/JetBrainsMono.ttf",
+      "sha256": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/fonts/README.md",
+      "sha256": "dc72cb14af989066f55a6eea602d3a753254b8423d9a832d6f2a822cf10919f8"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/gui.py",
+      "sha256": "94242669d7b29cb2578f61ab84296f76030eefecdb0993263eaa1a3776e01e44"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/runtime_hook_dlls.py",
+      "sha256": "1b035c651d03d32debdf19e3d6a8f7e027a6dc848b96fb96324efd58953502c4"
+    },
+    {
+      "checkout": "offline",
+      "path": "app/update.py",
+      "sha256": "d725db7c0c95b288d7e8098137047198ffcd2527bd2fbf8129c027227400a3c8"
+    },
+    {
+      "checkout": "offline",
+      "path": "docs/android-release.md",
+      "sha256": "0052ef0589426b31b8123fe6e4a9b3fc1d584d9a1d4e042c2ade5270f94834eb"
+    },
+    {
+      "checkout": "offline",
+      "path": "docs/do-luong-ollama-2026-10-27.md",
+      "sha256": "6288ea217e7fc8d9e408ca70ca92b52308caf5c2ae0316768dc1812f9668bd8d"
+    },
+    {
+      "checkout": "offline",
+      "path": "docs/implementation-plan-2026-09-10.md",
+      "sha256": "cd61ff9726f2db5a6c770194cfccf60ced3cc0fd9c6392a5df1ab8cfd022351b"
+    },
+    {
+      "checkout": "offline",
+      "path": "docs/installation-guide.md",
+      "sha256": "1bc0edae156787052de45f1c98715fa386cf7d4fc4b802eb0075beaa0577a1a8"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/__init__.py",
+      "sha256": "f4e9db2ee7bc0fc4e82b2127f0a62beabbcf12487198683dfb945cde46debdd1"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/cache.py",
+      "sha256": "0428ec8cae5cf6ddd99d8d83dbc8e210ad79310d0918385e72718e3a1c610feb"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/converter.py",
+      "sha256": "f29b9a1590e8b94bc50afe5741d914d5f8d3093ba9ae8237faebb57e78eda56f"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/doclayout.py",
+      "sha256": "eddc39a4af70df68dbac05e13e57ff177d85d4854f28edac5d76d7a7146afdca"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/glossaries/medicine.json",
+      "sha256": "e9d799e5ea792bacbbd1086b1fedabcdba26b065b8b1313636381cf356ea0ba9"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/glossaries/natural_sciences.json",
+      "sha256": "6ae94d9cc9489ff799831135049757f8be38ba273c56367ec11e4f7d81578e47"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/glossaries/technology.json",
+      "sha256": "761b36210eab65b278509d44eddfb12058e0c879da45594c063d8a4d5e16a2c4"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/high_level.py",
+      "sha256": "f76c5282680f76dd4477be49ccacc8c199044cb0cd54ee9207542e35d555a6d7"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/ocr.py",
+      "sha256": "e314584774d1307887f0967605d2e9b23dd9ea4d8a55b806434a3ce5cfd069a0"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/pdfinterp.py",
+      "sha256": "ff1e333e80c517da9074bc889f5994ac7a8af46f577e4abd3349caa042b0d560"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/rules.py",
+      "sha256": "7580cad26f9b5e61d001f73856f36a1d035a86ed2fe5a9d17823f52c75434991"
+    },
+    {
+      "checkout": "offline",
+      "path": "pdf2zh/translator.py",
+      "sha256": "c244a562b5cebb42d8dc9bca70d4b5e8bd2481c17e48d7c142f8251ad648efe2"
+    },
+    {
+      "checkout": "offline",
+      "path": "references/preservation-rules.md",
+      "sha256": "5d81b9e9c33f7309383eab7d7b1baa499fab90ea3ecd5960c0c6eff8332cd3cc"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/FINDINGS.md",
+      "sha256": "879ffcb42cb9e8b9ccd6eff48d7112ffc074c87748b32bfe6223a054a10f66e7"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/OCR_BENCHMARK.md",
+      "sha256": "1989748ae506638699a4433c5dcee12075a7705e58ecdebb0835e5e92b873c48"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/audit_translation.py",
+      "sha256": "d70287bade6077173289f73ff27d7aa87b5b7499f9a74af27f7dcffe4e34b954"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/benchmark_paths.py",
+      "sha256": "bb30a7a4cde4911d9cd3a1c0dbf874ed3595415e67f540d27452cdb8afad412f"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/benchmark_sources.json",
+      "sha256": "2827ea8bf58b81aca1ba6d5d9808d7b63d2bdffab1516358c093b75a9fbbe8ac"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/fetch_benchmark.py",
+      "sha256": "7576288ca8d7c26130b1bb1a8b3479ab0b010d8a26edcac6364bfdcc1ea0c1b2"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/fix_feasibility.py",
+      "sha256": "72a5b2cd1ab5c2326125a5f69eafa81ea30ebe77a459c8f58133fe99a1694a27"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/layout.py",
+      "sha256": "c4dbd10c3763766daf03dfe1104c4c474f0b115fa9d8479a26bfeef9d3357b39"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/layout_probe.py",
+      "sha256": "c9a289c07f822a569d048baaf2d7c6890cc6669e55949348bfa39370f01c9b59"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/make_benchmark.py",
+      "sha256": "b34f5d5d1e6cb05acd5d199c2024e208af34fcb6e69ad6292762c0c3abcef58a"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/make_corpus.py",
+      "sha256": "984d11446d557056a2b12f7ce95cb302633753837dbb5b89c71caf42c37610e1"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/ocrjson.py",
+      "sha256": "6159150f4221c90ef661c9176f014a0d3db2211f8ad806b857b9e600447038c7"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/oracle.py",
+      "sha256": "2051e1e8352684a2369fa74dbd95d9a9eb456c83fa85951f5338d1197b8ff197"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/paths.py",
+      "sha256": "e64a3a984dd93f69e76a9d790227f4b6e3691f3c8c226fd10037f59bbe1c2106"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/run_benchmark.py",
+      "sha256": "cb3227a5d91bf6ebb18aa0eb85a49e7a8acafaefcdf49ce1f0c2952ded601138"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/run_ocr.py",
+      "sha256": "04f647e9fe5a80b16e0e6b28ed939cde34371d294f4892168a7b877d0d225ea8"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/run_pipeline.py",
+      "sha256": "6b7169691e5ea20f206db8aff5f2fdabf99782d53017573d3371796d13e2b18e"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/score_lines.py",
+      "sha256": "717344c698a583c451b827af8e340f0c4ff34437c50ae0a757919fe50f99deeb"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/score_text.py",
+      "sha256": "6f93d7a3bba5a05801a223a9aaab776f5be240aff0550df72588050020de4955"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/score_visual.py",
+      "sha256": "f5c844a7760001233e906b677dd30c17e98969392f1dca3b94db49cba38da2eb"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/sidecar.py",
+      "sha256": "bfe6a1ae706f1c02c99f3455e0d47749f01a1f7850dd486f8109e798641db3a4"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/survey.py",
+      "sha256": "70a349675cac184913f7cdc35d4e08a22c227e4698cfc292f14089ab73698569"
+    },
+    {
+      "checkout": "offline",
+      "path": "research/ocr-spike/visual_samples.json",
+      "sha256": "870f27bf4dc98ce5ea66f2054163f834c5ca56898757665fe1a3d9cf8f40bb15"
+    },
+    {
+      "checkout": "offline",
+      "path": "scripts/fetch_assets.py",
+      "sha256": "c36c94c64e0f3cca6a85b5670ecee1e388f8b11f55096a32ca707f0c2c266697"
+    },
+    {
+      "checkout": "offline",
+      "path": "scripts/fetch_ocr_assets.py",
+      "sha256": "9d53fdb0a90169a68cb111346aed161cf1776f84de504325ef9a20ac26c7fe9a"
+    },
+    {
+      "checkout": "offline",
+      "path": "scripts/translate_pdf.py",
+      "sha256": "09fc1e0209892595874feba951a67b397d8791504540c069534808be46b93511"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_app_errors.py",
+      "sha256": "79c8f5ae3eeea6adb554e872242ca11ad5765699e4189bc83fd6df01baa42008"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_app_gui.py",
+      "sha256": "58bdcac2e2fdd4bc64a815fd827228a7398011c2dc0e1f35ce955c8300ae7da7"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_colorspace_resources.py",
+      "sha256": "6e8c89bb30b9a62a73e5760dd8d57d63c7e5ecf76de536ca496bd56fc4a2fa7f"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_doclayout.py",
+      "sha256": "fd1ac74d5aa3d76cd63e3ff471d92578e228f6ab552c6b1d29be5bd712306793"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_domain_glossary.py",
+      "sha256": "d6cf8fd1a0a0988fc344543d795d349d8ee819082c52bea802998dd200b8d8a5"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_handoff_translator.py",
+      "sha256": "83de07fb8134e41b2956a2436a057fe9e54e6e43c3b69bdca0a9bae5e2396af1"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_inline_formula_layout.py",
+      "sha256": "93175e3897c4e1fe83eac12a1e8a0238eb3703625dbea63afe86cc4a2c49230f"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_large_document_finalization.py",
+      "sha256": "fdc6f15260bf1e25ad47d6c702209a9cbb3c83256a0aa7c0d46b09bde5d0bf4b"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_ocr.py",
+      "sha256": "72ae2c8623458b3c995c479248a2d903f0094047af562d74138f88fb3b0cd1bb"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_ollama_translator.py",
+      "sha256": "59d0a703051020487436825bb2bf10ce89d104bff9ab9404869874d3a91bf754"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_preservation_rules.py",
+      "sha256": "680dc6ca40d3f6d9a36ffac7ff440c76e5b7fc56466b44dc939965d38eeceec0"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_remote_translators.py",
+      "sha256": "6353382071da9eb5bf7298ea3c12016c964190f67082283c15066735575ae4de"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_translate_pdf.py",
+      "sha256": "4f5d823755c412d96387655076e7110906009cb758c1efff4d49b81625fe927c"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_translation_audit.py",
+      "sha256": "7d0d19648a6695b4d6b7612fbad3aae0c19e0647cb7cced6fa03b12c9e910555"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_update.py",
+      "sha256": "30149ff772e1cfcdd5baea7f8302aaba087a9900aee5f9e32affc30d43731eb2"
+    },
+    {
+      "checkout": "offline",
+      "path": "tests/test_webui_backend.py",
+      "sha256": "3957f836c84dab873df52c576193a51490da3ee57d3c06d6ae714017b29aad1d"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/.gitignore",
+      "sha256": "c10b49375e4b076c643cca12243b869030fbc8796b8efdd0920561f4ccc230e8"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/backend/__init__.py",
+      "sha256": "63752dcdc1238c3535cd3a931dfdf88e7ba08d68adb42df086e59a52d817c816"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/backend/main.py",
+      "sha256": "c2205d1e12c243427c96ac62986ecaaeda46b0bb7c1a5ca6e0e249ed148b1430"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/backend/run_server.py",
+      "sha256": "3eae2d442625c5a2cba6e86286b47cb5b1b42890ac57e8c72c2c605c37d1e17b"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/backend/services/__init__.py",
+      "sha256": "1c94ad5d9c88f7e41d5b679cf2ff73a0791153c1241a64bf9261ab469751cb4c"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/backend/services/engine_service.py",
+      "sha256": "75aef4ffb9c2ac61b4300e844afc2d150d910f8079a1fe933ea759cd5308f178"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/backend/services/job_service.py",
+      "sha256": "6d60262e3cabb3cc1d18b86a976dff670a3f8e087e59a441b03f17e92a4f6842"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/electron/main.ts",
+      "sha256": "0cf94c1df5eebff1abde8d4c012ab87c4981decfc9b4ea029c504f5fdf9deaea"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/electron/preload.ts",
+      "sha256": "6dcf33bc15bae1bd75da1b8319a202f692e056f3ea724cf3b36293d03d984258"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/index.html",
+      "sha256": "71e1c9e45783351f66fb7b025fd59443a991dc0906ae7f64d9df845df2dafc6f"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/package-lock.json",
+      "sha256": "c9eec7f0a4b3972bbca424034b060616b0ba5e1ef2e6015be3b63ce8563fd115"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/package.json",
+      "sha256": "620fc5137e3901674427ab76d51b38ec294b61fa490acf26772b7cc300415b39"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/postcss.config.js",
+      "sha256": "190c877db466995bf1482f4a16abd06e04a89ede3119341e2a86ff96e1737b27"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/public/icon.png",
+      "sha256": "4ec3513cf2e8f12ae48c9c6816825256b3d94e4902dff5cb67d2ebfdcf125531"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/App.tsx",
+      "sha256": "c5f7a1683d660f8c3870aedccb8623e0520f288a6e8bbef8a0ebac945c99a4b4"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/components/EnginePicker.tsx",
+      "sha256": "c2517ce251461c4db36772d2991bc25b18fc33875e9c2d63e76c169c5def0487"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/components/PdfViewerBox.tsx",
+      "sha256": "91e4a85bcc7aeee27a393ef2a714130fb6a5bd34d8a73916bb85313879c6d8bf"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/components/TranslationWarningBanner.tsx",
+      "sha256": "8028671f45fee616ac7c84f458b2e4eea41af0925eb146bc97da306f1463468d"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/electron.d.ts",
+      "sha256": "9ef157c046ca57ccc3dc5a076e134a12e0e079acbedb25cae6ac733f1de84296"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/index.css",
+      "sha256": "2b0a7273cad787f35cc4c47c0f9ff8c06df907c42ad5602df831038151b7de31"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/main.tsx",
+      "sha256": "85a2cdedf2c9899103739aabe9576c7e52eda0c0fff19cbc4679d424e573cd68"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/services/api.ts",
+      "sha256": "0f4e16c82104988524e2631cbe952710d73bf849caac471b257a309233fbf930"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/src/vite-env.d.ts",
+      "sha256": "8fe0789ba5f059f5d9dc0e5c5b638b404388ad3f830cd76f2304d5beb4e3768d"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/tailwind.config.js",
+      "sha256": "dfa25d088eb27dcd15fbc24732751a76efdeb735a7c107fa42cebaf2a960d4d5"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/tsconfig.app.json",
+      "sha256": "6cc20fd5e7e7fa0deccb8307819a4cae62b80e4543ddf3ab43feefdaee56c846"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/tsconfig.json",
+      "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/tsconfig.node.json",
+      "sha256": "5e67a8714b295bead86a15b7e555f5079ede72eac4415e5adc11684eecb966f0"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/frontend/vite.config.ts",
+      "sha256": "ae73f12d413031b1056fb23e1d853f0001f9fabd1c144628bda66d898906f3f3"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/icon.png",
+      "sha256": "4ec3513cf2e8f12ae48c9c6816825256b3d94e4902dff5cb67d2ebfdcf125531"
+    },
+    {
+      "checkout": "offline",
+      "path": "webui/requirements-webui.txt",
+      "sha256": "f0bcd5add5fae14ab8f088d22c0ac21e71ad1826ed15cad2fb6b817c98dbb52c"
+    }
+  ],
+  "baseline_pack_manifest_sha256": "2c5b6838509985b9f7f04bb9d6bf3bf872d41d2455de096ac86d3cf9c95d7535",
+  "protected_directories": [
+    "D:/DataAdmin/OllamaModels",
+    "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\build\\windows-offline-2026-10-28"
+  ],
+  "snapshot": "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\bug-008-source-snapshot-20261028.zip",
+  "snapshot_sha256": "e6dfb32e77aecbdebceaf1d6c83a224f8bbbecf58086afdbdf25d8d10d3082d3"
+}

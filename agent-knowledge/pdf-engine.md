@@ -2,6 +2,22 @@
 
 ## Pipeline
 
+The Windows offline edition runs `pdf2zh/offline.py` policy before translation.
+Only three private local profile aliases are accepted; no arbitrary engine/model.
+`offline-edition.json` makes the policy permanent for a packaged copy even if
+its data directory disappears. Python blocks external DNS/TCP/UDP, renderer
+allows only its own API port/local assets, and the owned worker runs with cloud
+features disabled. This is application policy, not a Windows firewall sandbox.
+Every startup verifies resource hashes; every job checks for changed/missing files.
+
+Public profiles have different budgets: fast 1 attempt/no rescue, balanced 2
+attempts/1 rescue, quality 3 attempts/3 rescues plus a private fallback. Marker,
+length and fit guards apply equally. Profile/policy revision participate in cache
+keys along with the verified data manifest digest, so changing the resource pack
+cannot reuse older alias-based translations. The API enables safe standard OCR on image-only pages; explicit local OCR
+paths prevent the dependency downloader from selecting missing remote assets.
+Legacy translator defaults described below apply outside the offline edition.
+
 1. `scripts/translate_pdf.py` validates a text-based PDF and stages output.
 2. `pdf2zh/high_level.py` loads fonts/model, predicts layout, matches tables,
    detects preserved structures, patches pages, and serializes the mono PDF.
@@ -17,6 +33,19 @@ translatable at all. Callers must report the reason rather than the count -
 a fit failure, a damaged formula marker, and a dead connection each need the
 user to do something different. The layout model's stride and class names
 come from the onnxruntime session, so nothing imports `onnx` directly.
+
+Ollama uses TranslateGemma first, then marker-preserving retries and an optional
+general fallback (`qwen3.5:9b`, only if already installed on the same server).
+The fallback is disabled by an empty `PDF_TRANSLATE_OLLAMA_FALLBACK_MODEL`.
+It must satisfy the same marker and length guards. Ollama's cache key includes
+`OLLAMA_CACHE_REVISION` and the configured fallback; bump the revision when
+answer processing changes. Non-string or explicitly incomplete API answers
+are refused before rendering/caching, even when every marker is intact.
+
+Authors-first bibliography entries with bare years are protected individually
+on mixed prose/reference pages. A dense continuation bibliography without a
+heading is protected as a whole page; ordinary prose citing authors remains
+translatable. The source page stream stays exact for wholly protected pages.
 
 ## Preservation Invariants
 

@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-28",
+  "objective": "Recover BUG-008 safely, then implement ENH-002 for Windows RTX3050 4GB laptop; fully offline and model-anonymous",
+  "phase": 6,
+  "task": "P6-T1",
+  "status": "phase5_technical_verified_ready_for_phase6",
+  "implementation_root": "D:/DataAdmin/vp-pdf/.claude/worktrees/frosty-ritchie-f4e306",
+  "branch": "feature/offline-engine",
+  "source_session": "D:/DataAdmin/vp-pdf/docs/brainstorm/session-2026-10-27.md",
+  "verification": {
+    "implementation": "phase5_technical_verified",
+    "plan_consistency": "passed",
+    "plan_evidence": ".viepilot/plan-verification-2026-10-28.json",
+    "unchanged_runtime_baseline": {
+      "unittest": "421/421",
+      "seconds": 126.095,
+      "pip_check": "passed",
+      "hard_ruff": "passed",
+      "source_files_unchanged": 123,
+      "note": "Planning-time baseline only; Phase 4 restoration/build and ENH-002 are not implemented; BUG-007 remains open"
+    }
+  },
+  "portable_app": "build/windows-offline-2026-10-28/PDFTranslate.exe",
+  "portable_bytes_measured": 22657569711,
+  "data_bytes": 21232118945,
+  "data_files": 1017,
+  "app_left_open": false,
+  "report": "docs/offline-windows-2026-10-28.md",
+  "git_persistence": "pending_user_scope",
+  "pass_gate": "pending; unrelated dirty changes retained; no commit/push/tag/merge",
+  "remaining_acceptance": [
+    "Clean Windows/VM with physical network isolation",
+    "CPU/RAM/GPU compatibility and minimum configuration",
+    "Distribution license review and signing/installer scope before public release"
+  ],
+  "next": "Implement P6-T1 immutable policy propagation through job, translator and cache",
+  "user_confirmed_application_good": true,
+  "latest_audit": "D:/DataAdmin/vp-pdf/docs/audit-don-dep-va-laptop-2026-10-28.md",
+  "last_cleanup": {
+    "logical_bytes_removed": 21345852541,
+    "protected_files_unchanged": 500,
+    "unit_tests": "421/421",
+    "new_requests": [
+      "BUG-008",
+      "ENH-002"
+    ],
+    "receipt": "D:/DataAdmin/vp-pdf/docs/cleanup-evidence-2026-10-28/deletion-receipt.json"
+  },
+  "baseline_verification": {
+    "unittest": "421/421",
+    "chromium": "16/16",
+    "pip_check": "passed",
+    "ruff_hard_errors": "passed",
+    "native_smoke": "passed",
+    "scientific_math_glyphs": "123/123 each profile",
+    "packaged_scan": "4/4 segments; rendered and source immutable"
+  },
+  "current_product_version": "0.3.0",
+  "target_product_version": "0.4.0",
+  "version_change_task": "P7-T1",
+  "execution_plan": ".viepilot/execution-plan-2026-10-28.json",
+  "planned_task_count": 12,
+  "planning_scope": "No shipping code, model, original PDF or existing portable changed"
+}

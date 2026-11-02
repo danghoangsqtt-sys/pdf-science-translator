@@ -27,6 +27,7 @@ from pdf2zh.rules import (
     is_bullet_character,
     is_formula_font,
     line_height_for_language,
+    looks_like_reference_entry,
     min_line_height_for_language,
 )
 from pdf2zh.translator import (
@@ -492,6 +493,10 @@ def is_translatable_segment(segment: str, preserved: Iterable[str]) -> bool:
     if segment in preserved:
         return False
     visible = strip_style_tags(segment).strip()
+    if looks_like_reference_entry(visible):
+        # A bibliography entry on a page that also carries prose, such as the
+        # first page of a References section; see rules.looks_like_reference_entry.
+        return False
     return bool(visible) and PLACEHOLDER_ONLY_PATTERN.fullmatch(visible) is None
 
 

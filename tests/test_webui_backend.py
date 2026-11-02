@@ -22,7 +22,8 @@ if HAS_FASTAPI:
     from fastapi.testclient import TestClient
 
     from webui.backend import main as backend
-    from webui.backend.services import engine_service, job_service
+    from webui.backend.services import offline_service, job_service
+    from pdf2zh.offline import profile_for
 
 TOKEN = {"X-PDFTranslate-Token": "dev-token"}
 PDF = b"%PDF-1.7\n%test\n"
@@ -69,7 +70,7 @@ class JobOutcomeTests(unittest.TestCase):
         )
         warnings = job_service.translation_warnings(result)
         self.assertEqual(len(warnings), 6)
-        self.assertTrue(warnings[0].startswith("Không kết nối được Ollama"))
+        self.assertTrue(warnings[0].startswith("Bộ xử lý cục bộ"))
         self.assertIn("Trang 3, 7 là ảnh quét", warnings[-1])
 
 
@@ -79,9 +80,27 @@ class BackendApiTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         # One client for the class: the job queue belongs to the event loop
         # the app started on, as it does in the real single-loop server.
+        for patcher in (
+            mock.patch.object(offline_service, 'require_profile', side_effect=profile_for),
+            mock.patch.object(job_service, 'require_profile', side_effect=profile_for),
+            mock.patch.object(offline_service.runtime, 'require', return_value=mock.Mock()),
+        ):
+            patcher.start()
+            cls.addClassCleanup(patcher.stop)
         cls.client = TestClient(backend.app)
         cls.client.__enter__()
         cls.addClassCleanup(cls.client.__exit__, None, None, None)
+
+    def test_packaged_file_origin_is_allowed_but_public_schema_is_disabled(self):
+        response = self.client.options('/api/capabilities', headers={
+            'Origin': 'null', 'Access-Control-Request-Method': 'GET',
+            'Access-Control-Request-Headers': 'X-PDFTranslate-Token',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers['access-control-allow-origin'], 'null')
+        self.assertEqual(self.client.get('/api/capabilities', headers={'Origin': 'null'}).status_code, 401)
+        for route in ('/docs', '/redoc', '/openapi.json'):
+            self.assertEqual(self.client.get(route).status_code, 404)
 
     def _submit(self, **form) -> str:
         response = self.client.post(
@@ -113,16 +132,19 @@ class BackendApiTests(unittest.TestCase):
     def test_status_reports_engine_ratio_and_warnings(self):
         fake = mock.Mock(side_effect=self._writes_output(10, {"FormulaPlaceholderError": 6}))
         with mock.patch.object(job_service, "translate_pdf", fake):
-            job_id = self._submit(engine="ollama", model="translategemma:4b")
+            job_id = self._submit(profile="fast")
             body = self._wait(job_id)
 
         self.assertEqual(body["status"], "complete_with_warnings")
-        self.assertEqual(body["engine"], "ollama")
+        self.assertEqual(body["profile"], "fast")
+        self.assertNotIn("model", body)
+        self.assertNotIn("engine", body)
         self.assertEqual(body["translated_ratio"], 0.4)
         self.assertEqual(body["segments"]["kept"]["formula"], 6)
         self.assertTrue(body["warnings"])
         self.assertEqual(fake.call_args.kwargs["engine"], "ollama")
-        self.assertEqual(fake.call_args.kwargs["model"], "translategemma:4b")
+        self.assertEqual(fake.call_args.kwargs["model"], "local-fast:latest")
+        self.assertEqual(fake.call_args.kwargs["ocr"], "standard")
         result = self.client.get(f"/api/jobs/{job_id}/result", headers=TOKEN)
         self.assertEqual(result.status_code, 200)
 
@@ -133,6 +155,7 @@ class BackendApiTests(unittest.TestCase):
 
         self.assertEqual(body["status"], "complete")
         self.assertEqual(body["translated_ratio"], 1.0)
+        self.assertEqual(body["profile"], "balanced")
         self.assertEqual(body["warnings"], [])
         self.assertEqual(fake.call_args.kwargs["engine"], "ollama")
 
@@ -140,11 +163,12 @@ class BackendApiTests(unittest.TestCase):
         """The 26/10/2026 incident: Google blocked the IP, the app said done."""
         fake = mock.Mock(side_effect=TranslationError("Google đã tạm chặn máy này."))
         with mock.patch.object(job_service, "translate_pdf", fake):
-            job_id = self._submit(engine="google")
+            job_id = self._submit(profile="balanced")
             body = self._wait(job_id)
 
         self.assertEqual(body["status"], "error")
-        self.assertIn("Google", body["error"])
+        self.assertNotIn("Google", body["error"])
+        self.assertEqual(body["error_code"], "PROCESSING_FAILED")
         result = self.client.get(f"/api/jobs/{job_id}/result", headers=TOKEN)
         self.assertEqual(result.status_code, 409)
 
@@ -184,36 +208,36 @@ class BackendApiTests(unittest.TestCase):
                 )
                 self.assertEqual(response.status_code, 400)
 
-    def test_engines_lists_choices_and_ollama_state(self):
-        from pdf2zh.translator import OllamaStatus
+    def test_capabilities_only_returns_public_profiles(self):
+        response = self.client.get('/api/capabilities', headers=TOKEN)
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertTrue(body['offline'])
+        self.assertEqual([p['id'] for p in body['profiles']], ['fast','balanced','quality'])
+        self.assertTrue(all(p['available'] for p in body['profiles']))
+        for forbidden in ('ollama','translategemma','qwen','pull_command','base_url'):
+            self.assertNotIn(forbidden, response.text.lower())
 
-        status = OllamaStatus(
-            "model_missing", "http://127.0.0.1:11434", "translategemma:12b",
-            ("translategemma:4b",), "chưa tải",
-        )
-        with mock.patch.object(engine_service, "ollama_status", return_value=status):
-            body = self.client.get("/api/engines", headers=TOKEN).json()
+    def test_missing_data_is_neutral_and_not_downloaded(self):
+        from pdf2zh.offline import OfflineError
+        with mock.patch.object(offline_service.runtime, 'require', side_effect=OfflineError('LOCAL_DATA_MISSING')):
+            body = self.client.get('/api/capabilities', headers=TOKEN).json()
+        self.assertTrue(all(not p['available'] for p in body['profiles']))
+        self.assertTrue(all(p['reason_code']=='LOCAL_DATA_MISSING' for p in body['profiles']))
 
-        self.assertEqual(body["default"], "ollama")
-        self.assertEqual(
-            [engine["id"] for engine in body["engines"]], ["ollama", "azure", "google"]
-        )
-        self.assertEqual(body["ollama"]["state"], "model_missing")
-        self.assertEqual(body["ollama"]["pull_command"], "ollama pull translategemma:12b")
-        self.assertEqual(body["ollama"]["installed_models"], ["translategemma:4b"])
+    def test_old_engine_route_does_not_disclose_identity(self):
+        response = self.client.get('/api/engines', headers=TOKEN)
+        self.assertEqual(response.status_code, 410)
+        self.assertNotIn('ollama', response.text.lower())
 
-    def test_a_stopped_server_on_a_machine_without_ollama_says_install_it(self):
-        from pdf2zh.translator import OllamaStatus
+    def test_arbitrary_profile_is_rejected(self):
+        response = self.client.post('/api/jobs', headers=TOKEN,
+            files={'file':('paper.pdf',PDF,'application/pdf')}, data={'profile':'PRIVATE_MODEL'})
+        self.assertIn(response.status_code, (400,503))
+        self.assertNotIn('PRIVATE_MODEL', response.text)
 
-        status = OllamaStatus("not_running", "http://127.0.0.1:11434", "translategemma:12b")
-        with (
-            mock.patch.object(engine_service, "ollama_status", return_value=status),
-            mock.patch.object(engine_service, "ollama_installed", return_value=False),
-        ):
-            body = self.client.get("/api/engines", headers=TOKEN).json()
-
-        self.assertEqual(body["ollama"]["state"], "not_installed")
-        self.assertIn("ollama.com/download", body["ollama"]["message"])
+    def test_capabilities_needs_token(self):
+        self.assertEqual(self.client.get('/api/capabilities').status_code,401)
 
     def test_engines_needs_the_api_token(self):
         self.assertEqual(self.client.get("/api/engines").status_code, 401)

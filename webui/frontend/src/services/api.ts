@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'http://127.0.0.1:8089/api';
+export const API_BASE_URL = window.pdftranslate?.apiBaseUrl || 'http://127.0.0.1:8089/api';
 export const API_TOKEN_HEADER = 'X-PDFTranslate-Token';
 export const POLL_INTERVAL_MS = 750;
 
@@ -29,42 +29,26 @@ export interface JobStatusResponse {
   status: JobStatus;
   progress: JobProgress;
   error?: string | null;
-  engine?: string;
-  model?: string | null;
+  profile?: ProcessingProfile;
+  error_code?: string | null;
   translated_ratio?: number | null;
   segments?: JobSegments | null;
   warnings?: string[];
 }
 
-export type OllamaState = 'ready' | 'not_installed' | 'not_running' | 'model_missing';
-
-export interface OllamaInfo {
-  state: OllamaState;
-  ready: boolean;
-  model: string;
-  base_url: string;
+export type ProcessingProfile = 'fast' | 'balanced' | 'quality';
+export interface ProfileInfo {
+  id: ProcessingProfile;
+  label: string;
+  description: string;
+  available: boolean;
+  reason_code?: string | null;
   message: string;
-  pull_command: string;
-  download_url: string;
-  models: string[];
-  installed_models: string[];
 }
-
-export interface AzureInfo {
-  configured: boolean;
-  region: string | null;
-  source: string | null;
-  message: string;
-  key_env: string;
-  region_env: string;
-  config_path: string;
-}
-
-export interface EnginesResponse {
-  default: string;
-  engines: { id: string; label: string }[];
-  ollama: OllamaInfo;
-  azure: AzureInfo;
+export interface CapabilitiesResponse {
+  offline: boolean;
+  default_profile: ProcessingProfile;
+  profiles: ProfileInfo[];
 }
 
 const getApiToken = (): string => {
@@ -82,11 +66,9 @@ export const checkHealth = async (): Promise<{ status: string }> => {
   return res.data;
 };
 
-export const fetchEngines = async (model: string = ''): Promise<EnginesResponse> => {
-  const res = await axios.get<EnginesResponse>(`${API_BASE_URL}/engines`, {
-    headers: authHeaders(),
-    params: model ? { model } : undefined,
-    timeout: 10000,
+export const fetchCapabilities = async (): Promise<CapabilitiesResponse> => {
+  const res = await axios.get<CapabilitiesResponse>(`${API_BASE_URL}/capabilities`, {
+    headers: authHeaders(), timeout: 10000,
   });
   return res.data;
 };
@@ -95,8 +77,7 @@ export const createTranslationJob = async (
   file: File,
   targetLanguage: string = 'vi',
   domain: string = '',
-  engine: string = 'ollama',
-  model: string = '',
+  profile: ProcessingProfile = 'balanced',
 ): Promise<{ job_id: string }> => {
   const formData = new FormData();
   formData.append('file', file);
@@ -106,11 +87,7 @@ export const createTranslationJob = async (
   if (domain) {
     formData.append('domain', domain);
   }
-  formData.append('engine', engine);
-  // Only Ollama has a model choice; the backend refuses one for other engines.
-  if (engine === 'ollama' && model) {
-    formData.append('model', model);
-  }
+  formData.append('profile', profile);
 
   const res = await axios.post<{ job_id: string }>(`${API_BASE_URL}/jobs`, formData, {
     headers: {

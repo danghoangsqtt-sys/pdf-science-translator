@@ -46,3 +46,12 @@ desktop.ini
 # tracked in AGENTS.md, CLAUDE.md, .claude/skills/, and agent-knowledge/.
 /CLAUDE.local.md
 /.claude/settings.local.json
+
+# Offline development and native/model outputs.
+.venv312/
+node_modules/
+webui/frontend/dist/
+webui/frontend/dist-electron/
+models/
+.cache/
+*.gguf

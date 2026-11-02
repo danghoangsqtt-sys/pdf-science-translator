@@ -1,0 +1,166 @@
+{
+  "status": "ready_for_execution",
+  "mode": "feature_with_recovery_prerequisite",
+  "date": "2026-10-28",
+  "working_directory": "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306",
+  "branch": "feature/offline-engine",
+  "source_requests": [
+    "BUG-008",
+    "ENH-002"
+  ],
+  "scope": "planning_only_this_turn",
+  "product_version_current": "0.3.0",
+  "product_version_target": "0.4.0",
+  "frontend_component_version_observed": "1.0.0",
+  "version_source_change_task": "P7-T1",
+  "first_task": "P4-T1",
+  "tasks": [
+    {
+      "id": "P4-T1",
+      "phase": 4,
+      "path": ".viepilot/phases/04-recovery/tasks/P4-T1.md",
+      "depends_on": [],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P4-T2",
+      "phase": 4,
+      "path": ".viepilot/phases/04-recovery/tasks/P4-T2.md",
+      "depends_on": [
+        "P4-T1"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P4-T3",
+      "phase": 4,
+      "path": ".viepilot/phases/04-recovery/tasks/P4-T3.md",
+      "depends_on": [
+        "P4-T2"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P5-T1",
+      "phase": 5,
+      "path": ".viepilot/phases/05-device-foundation/tasks/P5-T1.md",
+      "depends_on": [
+        "P4-T3"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P5-T2",
+      "phase": 5,
+      "path": ".viepilot/phases/05-device-foundation/tasks/P5-T2.md",
+      "depends_on": [
+        "P5-T1"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P5-T3",
+      "phase": 5,
+      "path": ".viepilot/phases/05-device-foundation/tasks/P5-T3.md",
+      "depends_on": [
+        "P5-T1",
+        "P5-T2"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P6-T1",
+      "phase": 6,
+      "path": ".viepilot/phases/06-laptop-integration/tasks/P6-T1.md",
+      "depends_on": [
+        "P5-T3"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P6-T2",
+      "phase": 6,
+      "path": ".viepilot/phases/06-laptop-integration/tasks/P6-T2.md",
+      "depends_on": [
+        "P6-T1"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P6-T3",
+      "phase": 6,
+      "path": ".viepilot/phases/06-laptop-integration/tasks/P6-T3.md",
+      "depends_on": [
+        "P6-T2"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P6-T4",
+      "phase": 6,
+      "path": ".viepilot/phases/06-laptop-integration/tasks/P6-T4.md",
+      "depends_on": [
+        "P6-T1",
+        "P6-T2",
+        "P6-T3"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P7-T1",
+      "phase": 7,
+      "path": ".viepilot/phases/07-laptop-acceptance/tasks/P7-T1.md",
+      "depends_on": [
+        "P6-T4"
+      ],
+      "status": "planned",
+      "external_gate": null
+    },
+    {
+      "id": "P7-T2",
+      "phase": 7,
+      "path": ".viepilot/phases/07-laptop-acceptance/tasks/P7-T2.md",
+      "depends_on": [
+        "P7-T1"
+      ],
+      "status": "planned",
+      "external_gate": "real_target_laptop_report"
+    }
+  ],
+  "technical_gate": "P4-T3 must be verified before ENH-002 work",
+  "target_hardware": {
+    "os": "Windows",
+    "gpu": "RTX 3050 laptop",
+    "vram_gb": 4,
+    "ram_gb": 24,
+    "cpu": "Core i7 generation 12"
+  },
+  "network_policy": "offline-only; local/USB pack import; no download or telemetry",
+  "public_profiles": [
+    "Nhanh",
+    "Cân bằng",
+    "Chất lượng cao"
+  ],
+  "lite_initial_profiles": [
+    "fast"
+  ],
+  "forbidden_without_scope": [
+    "commit",
+    "push",
+    "tag",
+    "merge",
+    "publish",
+    "sign",
+    "overwrite user PDF/app/model output"
+  ]
+}

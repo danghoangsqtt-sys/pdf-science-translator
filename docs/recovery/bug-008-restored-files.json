@@ -1,0 +1,112 @@
+[
+  {
+    "path": ".gitignore",
+    "sha256": "874608837d94b3c10c1a3ecc4422c1e87d655c669fdc29df3136a9a64a2eb30d",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": ".claude/skills/pdf-translate/SKILL.md",
+    "sha256": "876cd8534a9099d9b633231b8951695825cb2401821ed3db8b5d1eedc21634b1",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": ".gitattributes",
+    "sha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": ".github/assets/logo.png",
+    "sha256": "e07983bef9b50d57c8f3c89ed6da222dc669d36a4cabd598f335af48ffc39641",
+    "reason": "IDE user branding preserved"
+  },
+  {
+    "path": ".github/workflows/android-build.yml",
+    "sha256": "5769dfef5b52305278f7dfc46f248ebb490affa3b88959397e782cfd567002cb",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": ".github/workflows/macos-artifacts.yml",
+    "sha256": "051a2149d1602f1870e7668e3ad737e53c137daf6651ef7e39c945697e180fe4",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": ".github/workflows/release.yml",
+    "sha256": "dfa87d1a76316a2fb47373f73914a04f5b7668ce14f88ee6252f4f81f8b8463a",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "AGENTS.md",
+    "sha256": "77f77991ccf2f2b39229aa5c55df6631ab093a9e062541f4750aea4402e7724a",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "CITATION.cff",
+    "sha256": "c64eeaa5fdeec64b5ca2903c335e9c4a48e5832237283850b05c24d873a430af",
+    "reason": "IDE user branding preserved"
+  },
+  {
+    "path": "CLAUDE.md",
+    "sha256": "7a1ceb05e4b91f3349a2cf8fd5e4b525775b0774c9c0abe882c8d17e6d04ff58",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "LICENSE",
+    "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "README.md",
+    "sha256": "70c4a33bc96baad1bfe53f740f601cc14c8df733e309b176524a5453077219e9",
+    "reason": "IDE user branding preserved; current offline entrypoint added, legacy content explicitly scoped"
+  },
+  {
+    "path": "SKILL.md",
+    "sha256": "de629047c534f93c16dc39702583f9bd2dc465a1e08fae6c6981d058506654fb",
+    "reason": "IDE user branding preserved; offline contract overrides archived standalone defaults"
+  },
+  {
+    "path": "THIRD_PARTY_NOTICES.md",
+    "sha256": "775153e8c35b6d003f0f0fd90c432707e6af6d544f75eadfec23b48a8a732488",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "app-macos.spec",
+    "sha256": "8d011bbd252e785e55e0f46ce84ecd2fc3431d2cb22ee2a2a8c9929ce62ca1f4",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "app.spec",
+    "sha256": "7d4f716926ebfb706ecf759e32924879c9522f2bdd34c093c2f1e1d52be91d51",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "build-macos.sh",
+    "sha256": "4488c72558fd60852e67c3875f34d0194b0e58e9957007b9e4f8b9794540c6fa",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "build.ps1",
+    "sha256": "d6cb5a60fa1e5fdaec520c8f16c0e438cf0475cc9d397e57146f58e80759833e",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "requirements-app.txt",
+    "sha256": "b18885bdb7e0607fe0deed3fdb4de3d401432904b93761158e4eca475b4c5166",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "requirements-ocr.txt",
+    "sha256": "c69500dc1cf9cec288ab66fc61746e0adc07d1b90565f481fa4fab8f6803fa6c",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "requirements-webui.txt",
+    "sha256": "42d5b656614a03962508722657b8e4c3f87e566fad21619c87d9764549b2ab05",
+    "reason": "verified offline HEAD"
+  },
+  {
+    "path": "requirements.txt",
+    "sha256": "970e5be616204c1fb52243c9354e88db8f546cdc5b5f722ba80fdd54547e365a",
+    "reason": "verified offline HEAD"
+  }
+]

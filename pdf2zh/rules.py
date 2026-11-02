@@ -411,6 +411,31 @@ def is_scanned_page(blocks: Iterable[Mapping[str, Any]], page_area: float) -> bo
     return False
 
 
+# "Surname, I." or "van den Oord, A." at the start of a bibliography entry, as
+# ICML/NeurIPS/ACL styles print them: authors first, the year bare, not in
+# parentheses ("..., 2017."), so the "(2017)" signal below never fires.
+REFERENCE_ENTRY_START = re.compile(
+    r"^(?:\[\d{1,3}\]\s*|\d{1,3}\.\s+)?"
+    r"(?:(?:van|von|der|den|de|da|di|du|le|la|del)\s+)*"
+    r"[A-Z][A-Za-zÀ-ɏ'’-]+(?:\s[A-Z][A-Za-zÀ-ɏ'’-]+)?,\s"
+    r"[A-Z]\.(?:\s?-?[A-Z]\.)*"
+    r"(?=[,\s]|$)"
+)
+BARE_YEAR = re.compile(r"\b(?:19|20)\d{2}[a-z]?\b")
+
+
+def looks_like_reference_entry(text: str) -> bool:
+    """A bibliography entry: authors as "Surname, I." first, and a year.
+
+    Such entries must keep their source text: translating them turns
+    "Chollet, F. et al." into "Chollet, F. và các tác giả khác" and mixes
+    Vietnamese into titles and venues the reader has to look up in English.
+    Prose that mentions an author starts with a word, not "Surname, I.".
+    """
+    text = text.strip()
+    return bool(REFERENCE_ENTRY_START.match(text)) and bool(BARE_YEAR.search(text))
+
+
 def classify_preserved_page(page_text: str) -> PreservationDecision | None:
     """Classify pages whose number-heavy structure must not be reflowed."""
     lines = [line.strip() for line in page_text.splitlines() if line.strip()]
@@ -510,6 +535,9 @@ def classify_preserved_page(page_text: str) -> PreservationDecision | None:
         1 for line in lines if re.match(r"^[A-Z][a-z]+,?\s.*\(\d{4}\)", line)
     )
     bracketed_refs = sum(1 for line in lines if re.match(r"^\[\d{1,3}\]", line))
+    # Authors-first entries with a bare year; one line per entry start.
+    author_initial_refs = sum(1 for line in lines if REFERENCE_ENTRY_START.match(line))
+    bare_year_lines = sum(1 for line in lines if BARE_YEAR.search(line))
     year_parentheses = sum(1 for line in lines if re.search(r"\(\d{4}\)", line))
     isbn_doi = sum(
         1
@@ -527,5 +555,19 @@ def classify_preserved_page(page_text: str) -> PreservationDecision | None:
         return PreservationDecision(
             "REFERENCES",
             f"refs={all_refs}, years={year_parentheses}, isbn_doi={isbn_doi}",
+        )
+    # A continuation page of an authors-first bibliography: no header, years
+    # bare. Entries wrap, so a year often sits on a later line than the
+    # authors; the Inception Score paper's page 7 had 29 entry starts and 25
+    # lines with a year.
+    if (
+        len(lines) >= 10
+        and author_initial_refs >= 8
+        and bare_year_lines >= 0.6 * author_initial_refs
+        and author_initial_refs / len(lines) >= 0.15
+    ):
+        return PreservationDecision(
+            "REFERENCES",
+            f"author_initial={author_initial_refs}/{len(lines)}, bare_years={bare_year_lines}",
         )
     return None

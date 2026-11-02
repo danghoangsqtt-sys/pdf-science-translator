@@ -1,0 +1,229 @@
+{
+  "status": "planning_observation_only",
+  "date": "2026-10-28",
+  "offline_head": "600a04c84471f65e6447fc2d87eae4436ec86d57",
+  "missing_count": 22,
+  "files": [
+    {
+      "path": ".claude/skills/pdf-translate/SKILL.md",
+      "offline_target_exists": false,
+      "offline_head_sha256": "876cd8534a9099d9b633231b8951695825cb2401821ed3db8b5d1eedc21634b1",
+      "offline_head_git_blob": "f856fe40d296304fee1d4beb4e981dfd908b2e8a",
+      "ide_current_sha256": "876cd8534a9099d9b633231b8951695825cb2401821ed3db8b5d1eedc21634b1",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": ".gitattributes",
+      "offline_target_exists": false,
+      "offline_head_sha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
+      "offline_head_git_blob": "6313b56c57848efce05faa7aa7e901ccfc2886ea",
+      "ide_current_sha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": ".github/assets/logo.png",
+      "offline_target_exists": false,
+      "offline_head_sha256": "bdabd7f5af13974fd1d4263beaa9fe7478f35ad0dcbde8c7a7290fee931b6c24",
+      "offline_head_git_blob": "454b11b76d72334e62b2536e740840a8eaa1aad7",
+      "ide_current_sha256": "e07983bef9b50d57c8f3c89ed6da222dc669d36a4cabd598f335af48ffc39641",
+      "ide_matches_offline_head": false,
+      "planning_candidate": "needs_semantic_reconciliation",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": ".github/workflows/android-build.yml",
+      "offline_target_exists": false,
+      "offline_head_sha256": "5769dfef5b52305278f7dfc46f248ebb490affa3b88959397e782cfd567002cb",
+      "offline_head_git_blob": "25ddce10e786f4fa69490d5a7bf207dc5fcd5fe4",
+      "ide_current_sha256": "5769dfef5b52305278f7dfc46f248ebb490affa3b88959397e782cfd567002cb",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": ".github/workflows/macos-artifacts.yml",
+      "offline_target_exists": false,
+      "offline_head_sha256": "051a2149d1602f1870e7668e3ad737e53c137daf6651ef7e39c945697e180fe4",
+      "offline_head_git_blob": "61b5f893e30e1e91463734f92f71288acfe163b3",
+      "ide_current_sha256": "051a2149d1602f1870e7668e3ad737e53c137daf6651ef7e39c945697e180fe4",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "offline_target_exists": false,
+      "offline_head_sha256": "dfa87d1a76316a2fb47373f73914a04f5b7668ce14f88ee6252f4f81f8b8463a",
+      "offline_head_git_blob": "ec891d493689bca547e675dd06de106541face83",
+      "ide_current_sha256": "dfa87d1a76316a2fb47373f73914a04f5b7668ce14f88ee6252f4f81f8b8463a",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": ".gitignore",
+      "offline_target_exists": false,
+      "offline_head_sha256": "869b9321e00a91ca1781616a62735ff779ba2356f2d03e6c14428f07c8ed3913",
+      "offline_head_git_blob": "30eb49649ee521ceb46e5d8e6aecb5c021e9b79f",
+      "ide_current_sha256": "869b9321e00a91ca1781616a62735ff779ba2356f2d03e6c14428f07c8ed3913",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "AGENTS.md",
+      "offline_target_exists": false,
+      "offline_head_sha256": "77f77991ccf2f2b39229aa5c55df6631ab093a9e062541f4750aea4402e7724a",
+      "offline_head_git_blob": "f6abc6835521cd7ac496e8c164b31449e59b06e4",
+      "ide_current_sha256": "77f77991ccf2f2b39229aa5c55df6631ab093a9e062541f4750aea4402e7724a",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "CITATION.cff",
+      "offline_target_exists": false,
+      "offline_head_sha256": "0dc7741602cb3aa264bf7e10dbae3d91540c512a01a12ca5948068ff63c1e955",
+      "offline_head_git_blob": "bcae959bb91bfa858a79c140bd89dd4bc613b99d",
+      "ide_current_sha256": "c64eeaa5fdeec64b5ca2903c335e9c4a48e5832237283850b05c24d873a430af",
+      "ide_matches_offline_head": false,
+      "planning_candidate": "needs_semantic_reconciliation",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "CLAUDE.md",
+      "offline_target_exists": false,
+      "offline_head_sha256": "7a1ceb05e4b91f3349a2cf8fd5e4b525775b0774c9c0abe882c8d17e6d04ff58",
+      "offline_head_git_blob": "e9dcda6f87ea179e88420878cdaa82cdac3fdc96",
+      "ide_current_sha256": "7a1ceb05e4b91f3349a2cf8fd5e4b525775b0774c9c0abe882c8d17e6d04ff58",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "LICENSE",
+      "offline_target_exists": false,
+      "offline_head_sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+      "offline_head_git_blob": "0ad25db4bd1d86c452db3f9602ccdbe172438f52",
+      "ide_current_sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "README.md",
+      "offline_target_exists": false,
+      "offline_head_sha256": "cdbd2960892f2dc2a911eb2b5fa292639a9119b5ae83a05a6e6bee5c6a25307b",
+      "offline_head_git_blob": "7d704872c877a6052f923830c127336a7bdea6c0",
+      "ide_current_sha256": "531511c1318c8962fcd6036f1d3ec7f9bc38c91a13c0040148f79f0d7a13ac2d",
+      "ide_matches_offline_head": false,
+      "planning_candidate": "needs_semantic_reconciliation",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "SKILL.md",
+      "offline_target_exists": false,
+      "offline_head_sha256": "eae435db2ec84e77057a5bb45fb28ed89114519cb1f1e70b427269520852ac41",
+      "offline_head_git_blob": "24c54fc6e8a0b875ab98804f91c727b731645afe",
+      "ide_current_sha256": "5d435a54652b427f63ef9fb8e44838c35e65542a51aadf88b3ec4ee895bf2723",
+      "ide_matches_offline_head": false,
+      "planning_candidate": "needs_semantic_reconciliation",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "offline_target_exists": false,
+      "offline_head_sha256": "775153e8c35b6d003f0f0fd90c432707e6af6d544f75eadfec23b48a8a732488",
+      "offline_head_git_blob": "17b8f4fa537092a2ba1d864361330f80f6540c03",
+      "ide_current_sha256": "775153e8c35b6d003f0f0fd90c432707e6af6d544f75eadfec23b48a8a732488",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "app-macos.spec",
+      "offline_target_exists": false,
+      "offline_head_sha256": "8d011bbd252e785e55e0f46ce84ecd2fc3431d2cb22ee2a2a8c9929ce62ca1f4",
+      "offline_head_git_blob": "6d156367d1fd2d8a469e2da13880d41d5e9f9f83",
+      "ide_current_sha256": "8d011bbd252e785e55e0f46ce84ecd2fc3431d2cb22ee2a2a8c9929ce62ca1f4",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "app.spec",
+      "offline_target_exists": false,
+      "offline_head_sha256": "7d4f716926ebfb706ecf759e32924879c9522f2bdd34c093c2f1e1d52be91d51",
+      "offline_head_git_blob": "43f0bf8e617ca7a35b880a5e0b9b2000285e7eaa",
+      "ide_current_sha256": "7d4f716926ebfb706ecf759e32924879c9522f2bdd34c093c2f1e1d52be91d51",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "build-macos.sh",
+      "offline_target_exists": false,
+      "offline_head_sha256": "4488c72558fd60852e67c3875f34d0194b0e58e9957007b9e4f8b9794540c6fa",
+      "offline_head_git_blob": "a70891d4c0215485c0e61472b1c1fa8967f88162",
+      "ide_current_sha256": "4488c72558fd60852e67c3875f34d0194b0e58e9957007b9e4f8b9794540c6fa",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "build.ps1",
+      "offline_target_exists": false,
+      "offline_head_sha256": "d6cb5a60fa1e5fdaec520c8f16c0e438cf0475cc9d397e57146f58e80759833e",
+      "offline_head_git_blob": "c07c889f25f42074edf64e61676151c9b7ac129f",
+      "ide_current_sha256": "d6cb5a60fa1e5fdaec520c8f16c0e438cf0475cc9d397e57146f58e80759833e",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "requirements-app.txt",
+      "offline_target_exists": false,
+      "offline_head_sha256": "b18885bdb7e0607fe0deed3fdb4de3d401432904b93761158e4eca475b4c5166",
+      "offline_head_git_blob": "cdbd63d37a3eb91359fc7b5fb2d3dfa410324b51",
+      "ide_current_sha256": "b18885bdb7e0607fe0deed3fdb4de3d401432904b93761158e4eca475b4c5166",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "requirements-ocr.txt",
+      "offline_target_exists": false,
+      "offline_head_sha256": "c69500dc1cf9cec288ab66fc61746e0adc07d1b90565f481fa4fab8f6803fa6c",
+      "offline_head_git_blob": "416698f6f6a646b7574f2dcfd7ba4f45e33ecde8",
+      "ide_current_sha256": "c69500dc1cf9cec288ab66fc61746e0adc07d1b90565f481fa4fab8f6803fa6c",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "requirements-webui.txt",
+      "offline_target_exists": false,
+      "offline_head_sha256": "42d5b656614a03962508722657b8e4c3f87e566fad21619c87d9764549b2ab05",
+      "offline_head_git_blob": "ab2bc59c9e33b74ca670b93693f527c4ac78eb3e",
+      "ide_current_sha256": "42d5b656614a03962508722657b8e4c3f87e566fad21619c87d9764549b2ab05",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    },
+    {
+      "path": "requirements.txt",
+      "offline_target_exists": false,
+      "offline_head_sha256": "970e5be616204c1fb52243c9354e88db8f546cdc5b5f722ba80fdd54547e365a",
+      "offline_head_git_blob": "b59ae00157eb87d25a90f0ba7d7ddfd1b9cc5754",
+      "ide_current_sha256": "970e5be616204c1fb52243c9354e88db8f546cdc5b5f722ba80fdd54547e365a",
+      "ide_matches_offline_head": true,
+      "planning_candidate": "HEAD_only_after_context_review",
+      "execution_rule": "Recheck missing target and preserve current files; no blind whole-tree checkout"
+    }
+  ],
+  "not_restored": true
+}

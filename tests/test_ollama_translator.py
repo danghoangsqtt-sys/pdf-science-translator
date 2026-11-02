@@ -12,7 +12,7 @@ import pymupdf
 import requests
 
 from pdf2zh import translator as translator_module
-from pdf2zh.cache import clean_test_db, init_test_db
+from pdf2zh.cache import TranslationCache, clean_test_db, init_test_db
 from pdf2zh.translator import (
     ENGINES,
     FormulaPlaceholderError,
@@ -28,6 +28,23 @@ from pdf2zh.translator import (
 )
 
 FONT_PATH = Path(__file__).resolve().parents[1] / "app" / "fonts" / "BeVietnamPro-Regular.ttf"
+
+# The fallback model asks the local Ollama which models it has. Tests never
+# reach a real server, so it is off unless a test turns it on explicitly.
+_NO_FALLBACK = mock.patch.dict(os.environ, {"PDF_TRANSLATE_OLLAMA_FALLBACK_MODEL": ""})
+_NO_HTTP = mock.patch.object(
+    requests.Session, "request", side_effect=AssertionError("Unexpected real HTTP in Ollama tests")
+)
+
+
+def setUpModule() -> None:
+    _NO_FALLBACK.start()
+    _NO_HTTP.start()
+
+
+def tearDownModule() -> None:
+    _NO_HTTP.stop()
+    _NO_FALLBACK.stop()
 
 
 class FakeResponse:
@@ -381,10 +398,121 @@ class OllamaTranslatorTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.translator.translate("Hello")
 
+    def test_non_text_answers_are_not_coerced_into_translation_text(self):
+        for value in (None, 42, [], {"text": "Xin chào"}):
+            with self.subTest(value=value):
+                self.post.return_value = FakeResponse(200, {"response": value, "done": True})
+                with self.assertRaisesRegex(RuntimeError, "translation text"):
+                    self.translator.translate("Hello")
+
+    def test_a_truncated_answer_is_refused_even_with_intact_markers(self):
+        for metadata in ({"done": False}, {"done": True, "done_reason": "length"}):
+            with self.subTest(metadata=metadata):
+                self.post.return_value = FakeResponse(
+                    200, {"response": "Gọi <b0></b0> là", **metadata}
+                )
+                with self.assertRaisesRegex(RuntimeError, "incomplete translation"):
+                    self.translator.translate("Let <b0></b0> be the loss function.")
+
     def test_an_over_long_segment_is_refused_without_a_request(self):
         with self.assertRaises(SegmentTooLongError):
             self.translator.translate("a" * 5001)
         self.post.assert_not_called()
+
+
+class FallbackModelTests(unittest.TestCase):
+    """qwen3.5:9b is asked once for a segment TranslateGemma could not keep."""
+
+    def setUp(self) -> None:
+        patches = [
+            mock.patch.object(translator_module.time, "sleep"),
+            mock.patch.dict(os.environ, {"PDF_TRANSLATE_OLLAMA_FALLBACK_MODEL": "qwen3.5:9b"}),
+            mock.patch.object(
+                translator_module,
+                "ollama_status",
+                return_value=translator_module.OllamaStatus(
+                    "ready", "http://127.0.0.1:11434", "qwen3.5:9b"
+                ),
+            ),
+        ]
+        for patcher in patches:
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        self.translator = OllamaTranslator("en", "vi", "translategemma:12b", ignore_cache=True)
+        self.translator.base_url = "http://127.0.0.1:11434"
+        self.post = mock.Mock()
+        self.translator.session.post = self.post
+        self.source = "Deep generative models sample {v0} from {v1}."
+        self.sent = encode_formula_placeholders(self.source)
+
+    def test_the_fallback_runs_only_after_translategemma_and_its_retries_fail(self):
+        lost = _reply("Các mô hình lấy mẫu.")
+        self.post.side_effect = [lost, lost, lost, lost,
+                                 _reply("Các mô hình sinh sâu lấy mẫu <b0></b0> từ <b1></b1>.")]
+
+        translated = self.translator.translate(self.sent)
+
+        self.assertEqual(
+            restore_formula_placeholders(self.source, translated),
+            "Các mô hình sinh sâu lấy mẫu {v0} từ {v1}.",
+        )
+        bodies = [call.kwargs["json"] for call in self.post.call_args_list]
+        self.assertEqual([body["model"] for body in bodies],
+                         ["translategemma:12b"] * 4 + ["qwen3.5:9b"])
+        self.assertFalse(bodies[-1]["think"])
+        self.assertNotIn("think", bodies[0])
+        self.assertEqual(self.translator.fallback_rescues, 1)
+
+    def test_the_fallback_prompt_names_the_preferred_terms(self):
+        prompt = self.translator.fallback_prompt(self.sent)
+        self.assertIn("- generative model → mô hình sinh", prompt)
+        self.assertIn("<b0></b0>", prompt)
+        self.assertTrue(prompt.endswith(f"Text:\n{self.sent}"))
+        self.assertNotIn("marginal distribution", prompt)
+
+    def test_a_bare_model_and_its_latest_tag_do_not_fall_back_to_each_other(self):
+        with mock.patch.dict(os.environ, {"PDF_TRANSLATE_OLLAMA_FALLBACK_MODEL": "custom:latest"}):
+            translator = OllamaTranslator("en", "vi", "custom", ignore_cache=True)
+        self.assertIsNone(translator.fallback_model)
+
+    def test_a_fallback_answer_must_pass_the_same_checks(self):
+        lost = _reply("Các mô hình lấy mẫu.")
+        self.post.return_value = lost
+        translated = self.translator.translate(self.sent)
+        with self.assertRaises(FormulaPlaceholderError):
+            restore_formula_placeholders(self.source, translated)
+        self.assertEqual(self.translator.fallback_rescues, 0)
+
+    def test_a_segment_translategemma_keeps_never_reaches_the_fallback(self):
+        self.post.return_value = _reply("Mô hình lấy mẫu <b0></b0> từ <b1></b1>.")
+        self.translator.translate(self.sent)
+        self.assertEqual(self.post.call_count, 1)
+
+    def test_a_missing_fallback_model_is_skipped_quietly(self):
+        translator_module.ollama_status.return_value = translator_module.OllamaStatus(
+            "model_missing", "http://127.0.0.1:11434", "qwen3.5:9b"
+        )
+        self.post.return_value = _reply("Các mô hình lấy mẫu.")
+
+        self.translator.translate(self.sent)
+        self.translator.translate(self.sent)
+
+        models = {call.kwargs["json"]["model"] for call in self.post.call_args_list}
+        self.assertEqual(models, {"translategemma:12b"})
+        translator_module.ollama_status.assert_called_once()
+
+    def test_a_failing_fallback_never_ends_the_run(self):
+        lost = _reply("Các mô hình lấy mẫu.")
+        self.post.side_effect = [lost] * 4 + [requests.ConnectionError("gone")] * 3
+        translated = self.translator.translate(self.sent)
+        self.assertEqual(translated, "Các mô hình lấy mẫu.")
+
+    def test_the_fallback_model_is_part_of_the_cache_key(self):
+        params = self.translator.cache_revision_params()
+        self.assertEqual(params["fallback"], "qwen3.5:9b")
+        self.assertEqual(params["revision"], translator_module.OLLAMA_CACHE_REVISION)
+        with mock.patch.dict(os.environ, {"PDF_TRANSLATE_OLLAMA_FALLBACK_MODEL": ""}):
+            self.assertIsNone(self.translator.cache_revision_params()["fallback"])
 
 
 class TranslationCacheSafetyTests(unittest.TestCase):
@@ -412,6 +540,32 @@ class TranslationCacheSafetyTests(unittest.TestCase):
         second = self._translator()
         self.assertEqual(second.translate(sent), "Gọi <b0></b0> là hàm mất mát.")
         second.session.post.assert_not_called()
+
+    def test_an_old_revision_cannot_serve_an_intact_but_outdated_answer(self):
+        sent = "Hello world"
+        old = TranslationCache("ollama", {
+            "lang_in": "en", "lang_out": "vi", "model": "translategemma:12b",
+            "revision": "2", "fallback": None,
+        })
+        old.set(sent, "outdated translation")
+        translator = self._translator()
+        translator.session.post.return_value = _reply("Xin chào thế giới")
+
+        self.assertEqual(translator.translate(sent), "Xin chào thế giới")
+        translator.session.post.assert_called_once()
+        self.assertEqual(old.get(sent), "outdated translation")
+
+    def test_an_incomplete_answer_never_enters_the_cache(self):
+        translator = self._translator()
+        sent = "Let <b0></b0> be the loss function."
+        translator.session.post.return_value = FakeResponse(
+            200, {"response": "Gọi <b0></b0> là", "done": True, "done_reason": "length"}
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "incomplete translation"):
+            translator.translate(sent)
+
+        self.assertIsNone(translator.cache.get(sent))
 
     def test_a_damaged_answer_is_never_cached(self):
         sent = encode_formula_placeholders("Let {v0} be the loss.")

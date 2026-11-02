@@ -19,10 +19,17 @@ The release workflow rejects a mismatch.
 
 ## Third-Party Engines
 
-Never bundle Ollama or a model into an installer or release asset. The app
-detects Ollama and tells the user how to install it and run `ollama pull`.
-Never ship an Azure key; it is read from the user's environment or settings
-file at run time.
+The user explicitly changed the Windows product scope on 27–28/10/2026 to a
+fully offline application with a product-owned worker and complete local data.
+For that edition, use `scripts/prepare_offline_pack.py` and
+`scripts/build_offline_windows.py`; a separately installed AI service is not a
+dependency. Keep original notices/license layers and all generated data out of git.
+The private mapping belongs in backend resources, never in user-facing UI/API/logs.
+No credentials are bundled. No publication/signing is authorized by local assembly.
+
+The old download-and-swap updater and `build.ps1` payload contract below are for
+the legacy desktop release. The new portable app has no online updater and is
+not a compatible replacement for that published ZIP until release work is scoped.
 
 ## What the In-App Updater Depends On
 

@@ -14,16 +14,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile, status
+from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 
 from scripts.translate_pdf import DOMAINS, TARGET_LANGUAGES
-from webui.backend.services.engine_service import (
-    ENGINE_LABELS,
-    allowed_ollama_models,
-    describe_engines,
-)
+from pdf2zh.offline import PROFILES, OfflineError, active
+from webui.backend.services import offline_service
+from webui.backend.services.runtime_service import runtime
 from webui.backend.services.job_service import FINISHED_WITH_RESULT, TranslationJobManager
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -47,16 +47,28 @@ job_manager = TranslationJobManager()
 async def lifespan(app: FastAPI):
     # Ensure job manager queue worker is running on app startup
     await job_manager.start()
+    if active():
+        runtime.start()
     logger.info("PDF Translate backend started on 127.0.0.1 (Data dir: %s)", DATA_DIR)
     yield
+    if active():
+        runtime.close()
 
 
-app = FastAPI(title="PDF Translate Backend", lifespan=lifespan)
+app = FastAPI(title="PDF Translate Backend", lifespan=lifespan,
+              docs_url=None, redoc_url=None, openapi_url=None)
+
+
+@app.exception_handler(RequestValidationError)
+async def invalid_request(_request, _error):
+    return JSONResponse(status_code=422, content={"detail": "Yêu cầu không hợp lệ.",
+                                                 "code": "INVALID_REQUEST"})
 
 # Allow requests from local frontend (Electron / Vite dev server)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "null",  # Packaged Electron file:// renderer; protected by per-session token.
         "http://127.0.0.1:5173",
         "http://localhost:5173",
         "http://127.0.0.1:8089",
@@ -121,41 +133,45 @@ async def health_check():
 
 @app.get("/api/engines")
 async def list_engines(
-    model: str = "",
     x_pdftranslate_token: str | None = Header(default=None, alias=API_TOKEN_HEADER),
 ):
-    """The engines on offer and whether Ollama can translate right now."""
     _require_api_token(x_pdftranslate_token)
-    # Asks the local Ollama server over HTTP; keep it off the event loop.
-    return await asyncio.to_thread(describe_engines, model or None)
+    raise HTTPException(status_code=410, detail="Hãy sử dụng danh sách mức xử lý.")
+
+
+@app.get("/api/capabilities")
+async def list_capabilities(
+    x_pdftranslate_token: str | None = Header(default=None, alias=API_TOKEN_HEADER),
+):
+    _require_api_token(x_pdftranslate_token)
+    return await asyncio.to_thread(offline_service.capabilities)
 
 
 @app.post("/api/jobs", status_code=status.HTTP_202_ACCEPTED)
 async def create_translation_job(
+    request: Request,
     file: UploadFile = File(...),
     target_language: str = Form("vi"),
     domain: str = Form(""),
-    engine: str = Form("ollama"),
+    profile: str = Form("balanced"),
+    engine: str = Form(""),
     model: str = Form(""),
     x_pdftranslate_token: str | None = Header(default=None, alias=API_TOKEN_HEADER),
 ):
     """Receive PDF upload and enqueue a translation job."""
     _require_api_token(x_pdftranslate_token)
 
-    if engine not in ENGINE_LABELS:
-        supported_engines = ", ".join(ENGINE_LABELS)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Bộ dịch không được hỗ trợ: {engine!r}. Hỗ trợ: {supported_engines}",
-        )
-    model_value: str | None = model or None
-    if model_value is not None and (
-        engine != "ollama" or model_value not in allowed_ollama_models()
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Mô hình không được hỗ trợ cho bộ dịch {engine}: {model_value!r}",
-        )
+    form = await request.form()
+    if any(key not in {"file", "target_language", "domain", "profile", "engine", "model"} for key in form):
+        raise HTTPException(status_code=400, detail="Yêu cầu không hợp lệ.")
+    if engine or model:
+        raise HTTPException(status_code=400, detail="Chỉ được chọn mức xử lý của ứng dụng.")
+    if profile not in PROFILES:
+        raise HTTPException(status_code=400, detail="Mức xử lý không được hỗ trợ.")
+    try:
+        await asyncio.to_thread(offline_service.require_profile, profile)
+    except OfflineError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from None
 
     # Reject rather than silently substitute: a client offering a language
     # this build cannot render (e.g. a non-Latin script) needs to see why
@@ -164,7 +180,7 @@ async def create_translation_job(
         supported = ", ".join(sorted(TARGET_LANGUAGES))
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Ngôn ngữ đích không được hỗ trợ: {target_language!r}. Hỗ trợ: {supported}",
+            detail=f"Ngôn ngữ đích không được hỗ trợ. Hỗ trợ: {supported}",
         )
 
     # Empty string means "no domain selected" - the dropdown's default. Only
@@ -175,7 +191,7 @@ async def create_translation_job(
         supported_domains = ", ".join(sorted(DOMAINS))
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Lĩnh vực không được hỗ trợ: {domain_value!r}. Hỗ trợ: {supported_domains}",
+            detail=f"Lĩnh vực không được hỗ trợ. Hỗ trợ: {supported_domains}",
         )
 
     job_id = str(uuid.uuid4())
@@ -188,12 +204,12 @@ async def create_translation_job(
         await _read_validated_upload(file, upload_path, max_bytes=MAX_FILE_SIZE)
     except HTTPException:
         raise
-    except Exception as exc:
+    except Exception:
         upload_path.unlink(missing_ok=True)
-        logger.exception("Error reading upload: %s", exc)
+        logger.error("Upload rejected")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Lỗi khi đọc file tải lên: {exc}",
+            detail="Không thể đọc tài liệu được chọn.",
         )
 
     await job_manager.submit(
@@ -203,8 +219,7 @@ async def create_translation_job(
         output_dir=job_output_dir,
         target_language=target_language,
         domain=domain_value,
-        engine=engine,
-        model=model_value,
+        profile=profile,
     )
 
     return {"job_id": job_id}

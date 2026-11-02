@@ -10,6 +10,7 @@ copy. Protected structures never enter the cleanup mask.
 from __future__ import annotations
 
 import math
+import os
 import re
 import threading
 import time
@@ -132,6 +133,19 @@ def load_ocr_engine(mode: str) -> Callable[[np.ndarray], Any]:
             ) from error
 
         model_type = ModelType(profile.model_type)
+        local_params = {}
+        from pdf2zh.offline import active, OfflineError
+        if active():
+            folder = Path(os.environ.get("PDF_TRANSLATE_OCR_ASSET_DIR", ""))
+            suffix = "medium" if mode == "enhanced" else "small"
+            paths = {
+                "Det.model_path": folder / f"PP-OCRv6_det_{suffix}.onnx",
+                "Rec.model_path": folder / f"PP-OCRv6_rec_{suffix}.onnx",
+                "Cls.model_path": folder / "ch_ppocr_mobile_v2.0_cls_mobile.onnx",
+            }
+            if not all(path.is_file() for path in paths.values()):
+                raise OfflineError("LOCAL_DATA_MISSING")
+            local_params = {key: str(path) for key, path in paths.items()}
         try:
             engine = RapidOCR(
                 params={
@@ -147,6 +161,7 @@ def load_ocr_engine(mode: str) -> Callable[[np.ndarray], Any]:
                     "Rec.model_type": model_type,
                     "Rec.ocr_version": OCRVersion.PPOCRV6,
                     "Global.use_cls": True,
+                    **local_params,
                 }
             )
         except Exception as error:
@@ -782,8 +797,9 @@ def _insert_sidecar_lines(
 ) -> int:
     if is_formula_font(OCR_FONT_NAME):
         raise AssertionError("OCR sidecar font must not be formula-like")
-    page.insert_font(fontname=OCR_FONT_NAME, fontfile=str(OCR_FONT_PATH))
-    font = pymupdf.Font(fontfile=str(OCR_FONT_PATH))
+    font_path = Path(os.environ.get("PDF_TRANSLATE_OCR_FONT", str(OCR_FONT_PATH)))
+    page.insert_font(fontname=OCR_FONT_NAME, fontfile=str(font_path))
+    font = pymupdf.Font(fontfile=str(font_path))
     inserted = 0
     for line in lines:
         size = _font_size(line, scale, font)

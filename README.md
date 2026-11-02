@@ -1,3 +1,13 @@
+# PDF Translate — Windows ngoại tuyến
+
+Bản Windows đang phát triển xử lý hoàn toàn trên máy, kể cả lần mở đầu. Mở `PDFTranslate.exe` trong toàn bộ thư mục portable được cấp; không dùng bản ZIP legacy bên dưới để thay thế. Giao diện chỉ có **Nhanh / Cân bằng / Chất lượng cao**, không yêu cầu Internet hay cài công cụ AI riêng. Không tự kiểm tra hoặc tải cập nhật. PDF nguồn được giữ nguyên; hãy đối chiếu phần dịch và cảnh báo.
+
+Phát triển: Python **3.12**, `.venv312/Scripts/python.exe`; quy tắc dùng chung tại [agent-knowledge/index.md](agent-knowledge/index.md). Dựng offline bằng `scripts/build_offline_windows.py` từ tài nguyên local đã xác minh; [hướng dẫn và QA hiện hành](docs/offline-windows-2026-10-28.md). Không chạy lệnh tải tài nguyên hoặc cập nhật dependency khi kiểm thử offline.
+
+## Tài liệu legacy được giữ để bảo toàn lịch sử
+
+Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dịch vụ mạng và cập nhật. Các lựa chọn đó không áp dụng cho bản Windows ngoại tuyến. Thông tin branding người dùng được giữ nguyên; ghi công và giấy phép gốc nằm trong LICENSE và THIRD_PARTY_NOTICES.md.
+
 <p align="center">
   <img src=".github/assets/logo.png" alt="PDF Translate logo" width="160">
 </p>
@@ -9,25 +19,25 @@
 </p>
 
 <p align="center">
-  <sub>Xây dựng và duy trì bởi <a href="https://www.tiktok.com/@huyg.ai">Lê Ngọc Gia Huy · huyg.ai</a></sub>
+  <sub>Phát triển và duy trì bởi <strong>dhsystem</strong></sub>
 </p>
 
 <p align="center">
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-windows.zip">
-    <img src="https://img.shields.io/badge/TẢI_XUỐNG-Windows_x64-1f6feb?style=for-the-badge&logo=windows11&logoColor=white" alt="Tải PDF Translate cho Windows">
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-windows.zip">
+    <img src="https://img.shields.io/badge/TẢI_XUỐNG-Windows_x64-14452F?style=for-the-badge&logo=windows11&logoColor=white" alt="Tải PDF Translate cho Windows">
   </a>
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg">
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg">
     <img src="https://img.shields.io/badge/TẢI_XUỐNG-macOS_Apple_Silicon-111111?style=for-the-badge&logo=apple&logoColor=white" alt="Tải PDF Translate cho Mac Apple Silicon">
   </a>
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-intel.dmg">
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-intel.dmg">
     <img src="https://img.shields.io/badge/TẢI_XUỐNG-macOS_Intel-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Tải PDF Translate cho Mac Intel">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest"><img src="https://img.shields.io/github/v/release/breslee1707/VI-Translate?style=flat-square&label=release" alt="Bản phát hành mới nhất"></a>
-  <a href="https://github.com/breslee1707/VI-Translate/releases"><img src="https://img.shields.io/github/downloads/breslee1707/VI-Translate/total?style=flat-square&label=downloads" alt="Tổng lượt tải"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/breslee1707/VI-Translate?style=flat-square" alt="Giấy phép AGPL-3.0"></a>
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest"><img src="https://img.shields.io/github/v/release/danghoangsqtt-sys/Vp_translator?style=flat-square&label=release" alt="Bản phát hành mới nhất"></a>
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases"><img src="https://img.shields.io/github/downloads/danghoangsqtt-sys/Vp_translator/total?style=flat-square&label=downloads" alt="Tổng lượt tải"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/danghoangsqtt-sys/Vp_translator?style=flat-square" alt="Giấy phép AGPL-3.0"></a>
   <img src="https://img.shields.io/badge/Python-không_cần_cài-2ea44f?style=flat-square" alt="Không cần cài Python">
 </p>
 
@@ -62,19 +72,19 @@ PDF Translate là ứng dụng mã nguồn mở dành cho Windows, macOS và And
 
 ### Windows
 
-1. **[Tải PDF Translate cho Windows](https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-windows.zip)** (`.zip`, khoảng 336 MB; đã gồm model OCR chạy cục bộ, không cần mạng).
+1. **[Tải PDF Translate cho Windows](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-windows.zip)** (`.zip`, khoảng 336 MB; đã gồm model OCR chạy cục bộ, không cần mạng).
 2. Giải nén toàn bộ file vừa tải.
 3. Mở `PDFTranslate.exe`.
 
 ### macOS
 
-1. Tải bản phù hợp: **[Apple Silicon](https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg)** cho Mac M1/M2/M3/M4/M5 hoặc **[Intel](https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-intel.dmg)** cho Mac Intel.
+1. Tải bản phù hợp: **[Apple Silicon](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg)** cho Mac M1/M2/M3/M4/M5 hoặc **[Intel](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-intel.dmg)** cho Mac Intel.
 2. Mở file `.dmg`, kéo **PDF Translate** vào thư mục **Applications**.
 3. Trong lần chạy đầu, bấm chuột phải vào ứng dụng → **Open** → **Open**.
 
 ### Android
 
-1. **[Tải APK từ bản phát hành Android mới nhất](https://github.com/breslee1707/VI-Translate/releases?q=android-v)** (`PDFTranslate-android-*.apk`). Bản Android được đánh tag riêng theo dạng `android-v*`.
+1. **[Tải APK từ bản phát hành Android mới nhất](https://github.com/danghoangsqtt-sys/Vp_translator/releases?q=android-v)** (`PDFTranslate-android-*.apk`). Bản Android được đánh tag riêng theo dạng `android-v*`.
 2. Trên điện thoại, cho phép trình duyệt hoặc trình quản lý file **cài ứng dụng từ nguồn không xác định**, rồi mở file APK.
 3. Ứng dụng cần Android 8.0 trở lên.
 
@@ -100,7 +110,7 @@ cd android
 > [!WARNING]
 > Bản macOS hiện dùng chữ ký ad-hoc, chưa được Apple notarize. Gatekeeper có thể chặn thao tác mở thông thường; hãy dùng cách bấm chuột phải → **Open** ở trên nếu bạn tải từ trang Releases chính thức.
 
-Bạn cũng có thể mở [trang Releases](https://github.com/breslee1707/VI-Translate/releases/latest) để xem ghi chú thay đổi và các tệp của phiên bản mới nhất.
+Bạn cũng có thể mở [trang Releases](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest) để xem ghi chú thay đổi và các tệp của phiên bản mới nhất.
 
 Ứng dụng cũng tự kiểm tra phiên bản mới mỗi lần mở. Máy không có mạng thì bỏ qua, không báo lỗi.
 
@@ -190,52 +200,6 @@ Codex, Claude Code hay Copilot.
 
 Các hệ chữ sau chưa được hỗ trợ: Trung, Nhật, Hàn, Ả Rập, Do Thái, Thái và các chữ Ấn Độ. Ứng dụng sẽ báo lỗi thay vì tạo PDF chứa ký tự ô vuông do thiếu glyph.
 
-## Bộ dịch
-
-Từ bản này, lõi dịch và giao diện Electron mặc định dịch **ngoại tuyến** trên máy bằng [Ollama](https://ollama.com). Tài liệu không rời khỏi máy và không cần tài khoản. App desktop Tkinter (`app/gui.py`) vẫn dùng Google như trước.
-
-| Bộ dịch | Khi nào dùng | Cần gì |
-| --- | --- | --- |
-| **Ngoại tuyến (Ollama)** – mặc định | Tài liệu riêng tư, không muốn phụ thuộc Internet | Ollama và mô hình `translategemma:12b` (8,1 GB; nên có GPU khoảng 10 GB VRAM) hoặc `translategemma:4b` (3,3 GB) cho máy yếu |
-| **Azure** | Cần dịch vụ chính thức, ổn định | Khóa Azure Translator của bạn (gói F0 miễn phí 2 triệu ký tự/giờ) |
-| **Google (dự phòng)** | Thử nhanh khi không có hai lựa chọn trên | Internet. Google có thể tạm chặn máy khi dịch nhiều trang |
-
-### Cài Ollama
-
-Bộ cài của ứng dụng **không** kèm Ollama. App tự kiểm tra và hướng dẫn từng bước khi chưa sẵn sàng.
-
-1. Tải và cài Ollama tại <https://ollama.com/download>, rồi mở ứng dụng Ollama.
-2. Tải mô hình (chỉ một lần):
-
-   ```powershell
-   ollama pull translategemma:12b
-   ```
-
-   Máy yếu hoặc GPU dưới 8 GB: dùng `ollama pull translategemma:4b` và chọn mô hình 4B trong app.
-
-Các biến môi trường tùy chọn: `PDF_TRANSLATE_OLLAMA_URL` (hoặc `OLLAMA_HOST`) cho địa chỉ máy chủ, `PDF_TRANSLATE_OLLAMA_MODEL` cho tên mô hình, `PDF_TRANSLATE_OLLAMA_TIMEOUT` cho thời gian chờ mỗi đoạn (mặc định 180 giây).
-
-### Cấu hình Azure
-
-Đặt khóa bằng biến môi trường:
-
-```powershell
-setx AZURE_TRANSLATOR_KEY "khóa-của-bạn"
-setx AZURE_TRANSLATOR_REGION "southeastasia"
-```
-
-hoặc tạo tệp `%APPDATA%\PDFTranslate\engines.json` (macOS/Linux: `~/.config/pdftranslate/engines.json`):
-
-```json
-{"azure": {"key": "khóa-của-bạn", "region": "southeastasia"}}
-```
-
-Khóa chỉ nằm trên máy của bạn; đừng đưa tệp này vào repo.
-
-### Khi bản dịch chưa trọn vẹn
-
-Ứng dụng không bao giờ báo "hoàn tất" cho một bản dịch rỗng. Không dịch được đoạn nào thì báo lỗi, không tạo tệp. Dịch được một phần thì hiện băng vàng "Đã dịch X%" kèm lý do: bộ dịch lỗi, mô hình làm mất ký hiệu công thức, hoặc bản dịch không vừa chỗ. Những đoạn đó được giữ nguyên bản gốc thay vì in ra công thức hỏng. Kết quả đo thực tế: [docs/do-luong-ollama-2026-10-27.md](docs/do-luong-ollama-2026-10-27.md).
-
 ## Dùng như Agent Skill
 
 Repo đồng thời tuân theo chuẩn [Agent Skills](https://agentskills.io/) và có thể dùng với Codex, Claude Code, GitHub Copilot cùng các coding agent hỗ trợ `SKILL.md`.
@@ -243,7 +207,7 @@ Repo đồng thời tuân theo chuẩn [Agent Skills](https://agentskills.io/) v
 Cài skill cho tất cả agent có trên máy:
 
 ```powershell
-npx skills add breslee1707/VI-Translate -g --all
+npx skills add danghoangsqtt-sys/Vp_translator -g --all
 ```
 
 Sau đó gọi skill bằng yêu cầu tự nhiên:
@@ -258,16 +222,14 @@ Trong Claude Code hoặc Copilot CLI:
 /pdf-translate translate this PDF into Vietnamese.
 ```
 
-Skill cung cấp các chế độ dịch:
+Skill cung cấp hai chế độ dịch:
 
 | Chế độ | Bộ máy dịch | Phù hợp khi |
 | --- | --- | --- |
-| **Ollama** | `translategemma` chạy trên máy | Mặc định; dữ liệu không rời khỏi máy |
-| **Azure** | Azure Translator v3 | Có khóa Azure, cần dịch vụ chính thức |
-| **Google** | `translate.google.com` | Dự phòng nhanh, miễn phí, không có API key |
+| **Google** | `translate.google.com` | Cần nhanh, miễn phí và không có API key |
 | **Handoff** | AI agent trong phiên làm việc | Tài liệu chuyên ngành cần bản dịch theo ngữ cảnh |
 
-Ollama là chế độ mặc định của dòng lệnh và giao diện Electron; app desktop Tkinter vẫn dùng Google. Handoff trích các đoạn văn sang JSONL để agent dịch, sau đó dựng lại PDF; dữ liệu không được gửi đi đâu nhưng sẽ tốn token và mất nhiều thời gian hơn.
+Google là chế độ mặc định và là chế độ được dùng trong app desktop. Handoff trích các đoạn văn sang JSONL để agent dịch, sau đó dựng lại PDF; dữ liệu không được gửi tới Google nhưng sẽ tốn token và mất nhiều thời gian hơn.
 
 Ví dụ với từ *conduction* trong tài liệu truyền nhiệt:
 
@@ -282,26 +244,16 @@ Xem quy trình đầy đủ tại [SKILL.md](SKILL.md).
 ### Chuẩn bị môi trường
 
 ```powershell
-git clone https://github.com/breslee1707/VI-Translate.git
-cd VI-Translate
+git clone https://github.com/danghoangsqtt-sys/Vp_translator.git
+cd Vp_translator
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-### Dịch ngoại tuyến bằng Ollama (mặc định)
+### Dịch bằng Google
 
 ```powershell
 .venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT
-.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT --model translategemma:4b
-```
-
-Mặc định dùng 2 luồng cho Ollama (GPU xử lý lần lượt từng yêu cầu); `--threads` để đổi.
-
-### Dịch bằng Azure hoặc Google
-
-```powershell
-.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT --engine azure
-.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT --engine google
 ```
 
 ### Dịch bằng Handoff
@@ -341,9 +293,7 @@ Gói phát hành được tạo tại `dist/PDFTranslate-macos-apple-silicon.dmg
   chắn sẽ được giữ nguyên và báo là dịch một phần.
 - Chữ nằm trong vùng được nhận diện là bảng hoặc hình đôi khi được giữ nguyên theo bản gốc.
 - Mục lục, index, danh mục ký hiệu và tài liệu tham khảo được ưu tiên giữ bố cục nên không được dàn lại dòng. Xem [quy tắc bảo toàn](references/preservation-rules.md).
-- Mỗi đoạn gửi tới Google hoặc Ollama được giới hạn ở 5.000 ký tự (Azure: 50.000); đoạn dài hơn được giữ nguyên và báo lại.
-- Mô hình ngoại tuyến hay làm rơi ký hiệu công thức ở đoạn văn dày công thức; những đoạn đó được giữ nguyên tiếng Anh và tính vào tỷ lệ "Đã dịch X%".
-- Đoạn giữ nguyên bản gốc vẫn được dàn lại dòng, nên có thể còn dấu gạch nối của bản gốc giữa dòng (ví dụ "In- ception").
+- Mỗi đoạn gửi tới Google được giới hạn ở 5.000 ký tự; phần vượt quá giới hạn không được dịch.
 - Với đoạn vốn quá chật, mẫu số của phân số nội dòng có thể vẫn nằm sát dòng bên dưới.
 
 Nên kiểm tra lại tài liệu đầu ra trước khi dùng cho xuất bản hoặc các mục đích yêu cầu độ chính xác cao.
@@ -354,7 +304,7 @@ PDF Translate được phát hành theo giấy phép [AGPL-3.0](LICENSE). Nếu 
 
 Thư mục [`pdf2zh/`](pdf2zh/) là bản fork của nhân xử lý PDF từ [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate) 1.9.11, dùng model bố cục và font đã ghim của [BabelDOC](https://github.com/funstory-ai/BabelDOC). Hai dự án đó cho công việc này một điểm khởi đầu và được ghi công đầy đủ tại [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Ứng dụng desktop, bộ quy tắc bảo toàn, các bản sửa lỗi trong nhân, bộ test hồi quy, chế độ Handoff và toàn bộ phần đóng gói — mọi thứ liệt kê ở [Được phát triển ở đây](#được-phát-triển-ở-đây) — do **Lê Ngọc Gia Huy** ([@huyg.ai trên TikTok](https://www.tiktok.com/@huyg.ai)) phát triển và duy trì.
+Ứng dụng desktop, bộ quy tắc bảo toàn, các bản sửa lỗi trong nhân, bộ test hồi quy, chế độ Handoff và toàn bộ phần đóng gói — mọi thứ liệt kê ở [Được phát triển ở đây](#được-phát-triển-ở-đây) — do **dhsystem** phát triển và duy trì.
 
 ---
 
@@ -363,5 +313,5 @@ Thư mục [`pdf2zh/`](pdf2zh/) là bản fork của nhân xử lý PDF từ [PD
 </p>
 
 <p align="center">
-  <sub>Xây dựng &amp; duy trì bởi <a href="https://www.tiktok.com/@huyg.ai">Lê Ngọc Gia Huy (huyg.ai)</a></sub>
+  <sub>Phát triển &amp; duy trì bởi <strong>dhsystem</strong></sub>
 </p>

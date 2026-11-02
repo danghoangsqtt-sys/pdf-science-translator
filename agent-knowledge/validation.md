@@ -2,6 +2,17 @@
 
 ## Automated Gate
 
+For offline Windows also run `tests/test_offline.py`, the profile API tests and
+`npm run test:viewer`. The Chromium harness must use the production sandbox
+preload with a non-default API port; testing only 8089 missed a packaged CSP bug.
+Verify preparing/missing resources block translation and never silently downgrade.
+Real jobs must use the owned worker and copied data, not the developer's separate
+service. Check all three profiles on the same source and record partial output.
+Load both OCR modes with the packaged Python and outbound guard active.
+Record packaged startup, actual UI translation, public errors, and network observations.
+A loopback-only TCP snapshot is evidence, not a substitute for clean-machine/network
+isolation acceptance. Do not claim clean Windows qualification without performing it.
+
 Run from the repository root with the platform virtual environment:
 
 ```text
@@ -17,6 +28,12 @@ full system drive two of them fail without any code change.
 
 `git diff --check` must be clean. Run `app/gui.py --smoke-test`; after packaging,
 run the packaged executable with `--smoke-test` and require exit code 0.
+
+The Ollama unit module blocks real HTTP at `requests.Session.request`; model
+status, replies and retry delays must be mocked. Native smoke checks still load
+the real layout/OCR runtime and require the bundled assets. For the Electron
+PDF panes, run `npm run test:viewer` in `webui/frontend`: it checks gutter
+geometry and native Chromium interactions without a real translation service.
 
 ## Engine Gate
 

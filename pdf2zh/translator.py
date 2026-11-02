@@ -173,8 +173,19 @@ class BaseTranslator:
                 "lang_in": self.lang_in,
                 "lang_out": self.lang_out,
                 "model": model,
+                **self.cache_revision_params(),
             },
         )
+
+    def cache_revision_params(self) -> dict[str, Any]:
+        """Extra cache key fields for engines whose answers change with the code.
+
+        An engine that post-processes or retries its answers bumps a revision
+        here, so entries written by an older build are simply not found. The
+        offline engine's answers once kept backticks a later build strips, and
+        the cache kept serving them.
+        """
+        return {}
 
     def translate(self, text: str, ignore_cache: bool = False) -> str:
         """Translate text, consulting the persistent cache unless bypassed.
@@ -344,6 +355,54 @@ def ollama_model_name() -> str:
     return os.environ.get("PDF_TRANSLATE_OLLAMA_MODEL") or DEFAULT_OLLAMA_MODEL
 
 
+# A general instruction-following model asked once for a segment TranslateGemma
+# could not translate with its markers intact. On the 9-page Inception Score
+# paper qwen3.5:9b kept every marker in all 19 such segments. Empty disables it.
+DEFAULT_OLLAMA_FALLBACK_MODEL = "qwen3.5:9b"
+# Part of the offline engine's cache key: bump it when post-processing,
+# retries or the fallback change what the engine returns for the same text.
+OLLAMA_CACHE_REVISION = "3"
+
+
+def ollama_fallback_model_name() -> str | None:
+    value = os.environ.get("PDF_TRANSLATE_OLLAMA_FALLBACK_MODEL")
+    if value is None:
+        return DEFAULT_OLLAMA_FALLBACK_MODEL
+    return value.strip() or None
+
+
+# Terms the fallback prompt names when they occur in a segment, on top of the
+# domain glossaries. Each entry corrects a wrong choice seen in a real run.
+FALLBACK_TERMS_VI = {
+    "generative model": "mô hình sinh",
+    "generative modeling": "mô hình hóa sinh",
+    "marginal distribution": "phân phối biên",
+}
+
+
+def fallback_terms(text: str, lang_out: str) -> list[tuple[str, str]]:
+    """Preferred target terms that occur in ``text``, longest first."""
+    if lang_out != "vi":
+        return []
+    table: dict[str, str] = {}
+    for domain in sorted(SUPPORTED_DOMAINS):
+        table.update(load_domain_glossary(domain))
+    table.update(FALLBACK_TERMS_VI)
+    lowered = text.lower()
+    found = [
+        (term, preferred)
+        for term, preferred in table.items()
+        if re.search(r"\b" + re.escape(term.lower()) + r"s?\b", lowered)
+    ]
+    # "generative modeling" must not also list "generative model".
+    found.sort(key=lambda pair: -len(pair[0]))
+    kept: list[tuple[str, str]] = []
+    for term, preferred in found:
+        if not any(term.lower() in longer.lower() for longer, _ in kept):
+            kept.append((term, preferred))
+    return kept
+
+
 def _same_model(wanted: str, installed: str) -> bool:
     """Ollama lists ``name:tag``; a bare name means ``:latest``."""
     def full(name: str) -> str:
@@ -454,6 +513,36 @@ class OllamaTranslator(BaseTranslator):
         self.session = requests.Session()
         self._failure_lock = threading.Lock()
         self._consecutive_failures = 0
+        fallback = ollama_fallback_model_name()
+        self.fallback_model = (
+            fallback if fallback and not _same_model(fallback, self.model) else None
+        )
+        from pdf2zh.offline import active, profile_for
+        if active():
+            policy = profile_for(os.environ.get("PDF_TRANSLATE_PROCESSING_PROFILE", "balanced"))
+            self.ATTEMPTS = policy.retries
+            self.RESCUE_ATTEMPTS = self.RESCUE_ATTEMPTS[:policy.rescues]
+            self.fallback_model = policy.fallback
+            self.session.trust_env = False
+        self._fallback_checked = False
+        self._fallback_lock = threading.Lock()
+        self.fallback_rescues = 0
+
+    def cache_revision_params(self) -> dict[str, Any]:
+        # Bump OLLAMA_CACHE_REVISION whenever post-processing or retries change
+        # what the same model returns for the same text.
+        from pdf2zh.offline import active
+        if active():
+            return {
+                "revision": OLLAMA_CACHE_REVISION,
+                "offline_policy": "1",
+                "data_revision": os.environ.get("PDF_TRANSLATE_DATA_REVISION", "unconfigured"),
+                "profile": os.environ.get("PDF_TRANSLATE_PROCESSING_PROFILE", "balanced"),
+            }
+        return {
+            "revision": OLLAMA_CACHE_REVISION,
+            "fallback": ollama_fallback_model_name(),
+        }
 
     def prompt(self, text: str) -> str:
         """TranslateGemma's documented prompt, including the two blank lines."""
@@ -539,6 +628,9 @@ class OllamaTranslator(BaseTranslator):
                 break
             if markers_intact(text, candidate) and plausible_length(text, candidate):
                 return candidate
+        rescued = self._translate_with_fallback(text)
+        if rescued is not None:
+            return rescued
         if not plausible_length(text, first):
             raise ImplausibleTranslationError(
                 f"translation of {len(strip_markers(text))} characters came back as "
@@ -546,40 +638,120 @@ class OllamaTranslator(BaseTranslator):
             )
         return first
 
+    def fallback_prompt(self, text: str) -> str:
+        """An instruction prompt for the general model, with terminology.
+
+        Unlike TranslateGemma's fixed prompt, this one can carry the preferred
+        Vietnamese terms that occur in the segment: without them qwen3.5 wrote
+        "mô hình sinh học" (biology) for "generative models".
+        """
+        source_code = "en" if self.lang_in in ("", "auto") else self.lang_in
+        source = LANGUAGE_NAMES.get(source_code, source_code)
+        target = LANGUAGE_NAMES.get(self.lang_out, self.lang_out)
+        terms = fallback_terms(text, self.lang_out)
+        glossary = "".join(f"- {term} → {preferred}\n" for term, preferred in terms)
+        return (
+            f"Translate the following {source} text from a scientific paper into "
+            f"{target}.\n"
+            "Rules:\n"
+            f"- Output only the {target} translation, nothing else.\n"
+            "- The text contains placeholder tags such as <b0></b0>, <s1>...</s1> "
+            "and <t0></t0>. Each one stands for a formula or a styled phrase. Copy "
+            "every tag exactly, keep the same number and order, and put it where it "
+            f"belongs in the {target} sentence.\n"
+            "- Keep proper nouns, model and metric names, citations such as "
+            "(Salimans et al., 2016) and URLs unchanged.\n"
+            "- Do not add explanations, lists or text that is not in the source.\n"
+            + (f"- Use these {target} terms:\n{glossary}" if glossary else "")
+            + f"\nText:\n{text}"
+        )
+
+    def _translate_with_fallback(self, text: str) -> str | None:
+        """Ask the general fallback model, once, for a segment TranslateGemma
+        could not translate with its markers intact. None when there is no
+        usable fallback or its answer fails the same checks."""
+        if not self._fallback_ready():
+            return None
+        try:
+            candidate = self._request_with_retries(text, fallback=True)
+        except Exception as error:  # noqa: BLE001 - never let the fallback end the run
+            logger.warning("Fallback model %s failed: %s", self.fallback_model, error)
+            return None
+        if markers_intact(text, candidate) and plausible_length(text, candidate):
+            with self._fallback_lock:
+                self.fallback_rescues += 1
+            logger.info("Fallback model %s translated a segment TranslateGemma lost",
+                        self.fallback_model)
+            return candidate
+        return None
+
+    def _fallback_ready(self) -> bool:
+        """Whether the fallback model is pulled; checked once per run."""
+        with self._fallback_lock:
+            if self.fallback_model is None:
+                return False
+            if not self._fallback_checked:
+                self._fallback_checked = True
+                status = ollama_status(self.fallback_model, self.base_url)
+                if not status.ready:
+                    logger.info(
+                        "Fallback model %s is not available (%s); segments "
+                        "TranslateGemma loses stay in the source language",
+                        self.fallback_model,
+                        status.state,
+                    )
+                    self.fallback_model = None
+            return self.fallback_model is not None
+
     def _request_with_retries(
-        self, text: str, temperature: float = 0.0, seed: int | None = None
+        self,
+        text: str,
+        temperature: float = 0.0,
+        seed: int | None = None,
+        fallback: bool = False,
     ) -> str:
         last_error: Exception | None = None
         for attempt in range(self.ATTEMPTS):
             if attempt:
                 time.sleep(self.BACKOFF_SECONDS * 2 ** (attempt - 1))
             try:
-                return self._request(text, temperature, seed)
+                return self._request(text, temperature, seed, fallback)
             except (requests.Timeout, _RetryableOllamaError) as error:
                 last_error = error
         assert last_error is not None
         raise last_error
 
-    def _request(self, text: str, temperature: float = 0.0, seed: int | None = None) -> str:
+    def _request(
+        self,
+        text: str,
+        temperature: float = 0.0,
+        seed: int | None = None,
+        fallback: bool = False,
+    ) -> str:
         options: dict[str, Any] = {
             "temperature": temperature,
             "num_ctx": 8192,
             # Room for Vietnamese to run longer than its source, while a
-            # model that starts looping still stops.
-            "num_predict": max(256, len(text)),
+            # model that starts looping still stops. A general model writes
+            # more freely than TranslateGemma, so it gets twice the room.
+            "num_predict": max(256, len(text) * (2 if fallback else 1)),
         }
         if seed is not None:
             options["seed"] = seed
+        body: dict[str, Any] = {
+            "model": self.fallback_model if fallback else self.model,
+            "prompt": self.fallback_prompt(text) if fallback else self.prompt(text),
+            "stream": False,
+            "keep_alive": "15m",
+            "options": options,
+        }
+        if fallback:
+            # Reasoning models (qwen3.5) otherwise spend the budget thinking.
+            body["think"] = False
         try:
             response = self.session.post(
                 f"{self.base_url}/api/generate",
-                json={
-                    "model": self.model,
-                    "prompt": self.prompt(text),
-                    "stream": False,
-                    "keep_alive": "15m",
-                    "options": options,
-                },
+                json=body,
                 timeout=self.timeout,
             )
         except requests.ConnectionError as error:
@@ -598,9 +770,17 @@ class OllamaTranslator(BaseTranslator):
             raise _RetryableOllamaError(f"Ollama returned HTTP {response.status_code}")
         response.raise_for_status()
         try:
-            translated = str(response.json()["response"])
+            payload = response.json()
+            translated = payload["response"]
         except (ValueError, KeyError, TypeError) as error:
             raise RuntimeError("Ollama response did not contain a translation") from error
+        if not isinstance(translated, str):
+            raise RuntimeError("Ollama response did not contain translation text")
+        if payload.get("done") is False or payload.get("done_reason") == "length":
+            # Intact markers and a plausible length do not prove completeness:
+            # a token limit can cut off prose after the last formula. Never
+            # render or cache that prefix as the translation of a whole segment.
+            raise RuntimeError("Ollama returned an incomplete translation")
         translated = close_lone_formula_tags(remove_control_characters(translated.strip()))
         translated = drop_added_final_period(text, translated)
         if "`" not in text:

@@ -26,10 +26,18 @@ def _use_bundled_assets() -> None:
         os.environ.setdefault("NOTO_FONT_PATH", font)
 
 
-_use_bundled_assets()
+os.environ["PDF_TRANSLATE_OFFLINE"] = "1"
+os.environ.setdefault("PDF_TRANSLATE_OFFLINE_PACK", os.path.join(PROJECT_ROOT, "offline-data"))
+from pdf2zh.offline import install_network_guard
+
+install_network_guard()
+import logging
+logging.disable(logging.CRITICAL)
 
 import uvicorn
 
 if __name__ == "__main__":
     # Single-user local desktop application: binds strictly to 127.0.0.1, port 8089
-    uvicorn.run("webui.backend.main:app", host="127.0.0.1", port=8089, reload=False)
+    uvicorn.run("webui.backend.main:app", host="127.0.0.1",
+                port=int(os.environ.get("PDFTRANSLATE_API_PORT", "8089")),
+                reload=False, access_log=False)

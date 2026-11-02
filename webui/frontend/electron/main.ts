@@ -1,9 +1,10 @@
-import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
 import path from 'node:path';
 import { spawn, ChildProcess } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
+import net from 'node:net';
 
 // Diagnostic-only file log: console output from a windowed (non-console)
 // Electron build is not reliably captured by a parent shell even when its
@@ -11,7 +12,7 @@ import os from 'node:os';
 // impossible to diagnose from outside the process. Written before anything
 // else so it survives a failure during module load itself, not only inside
 // app.whenReady().
-const CRASH_LOG_PATH = path.join(os.tmpdir(), 'pdftranslate-main.log');
+const CRASH_LOG_PATH = path.join(os.tmpdir(), 'pdftranslate-local.log');
 function fileLog(...args: unknown[]) {
   try {
     const line = `[${new Date().toISOString()}] ${args.map((a) => (a instanceof Error ? `${a.name}: ${a.message}\n${a.stack}` : String(a))).join(' ')}\n`;
@@ -20,29 +21,30 @@ function fileLog(...args: unknown[]) {
     // logging must never be the thing that crashes the app
   }
 }
-fileLog('main.ts module loading, pid', process.pid, 'argv', process.argv.join(' '));
+fileLog('Local application loading');
 
 const API_TOKEN = randomBytes(32).toString('base64url');
+let apiPort = 8089;
 process.env.PDFTRANSLATE_API_TOKEN = API_TOKEN;
 
 // Global EPIPE Guard
 process.on('uncaughtException', (err) => {
-  fileLog('uncaughtException', err);
+  fileLog('Local application failure');
   if ((err as NodeJS.ErrnoException).code === 'EPIPE') {
     return;
   }
   try {
     dialog.showErrorBox(
       'PDF Translate - Unexpected Error',
-      `${err.name}: ${err.message}\n\n${err.stack}`
+      'Ứng dụng gặp sự cố. Hãy khởi động lại. Mã hỗ trợ: LOCAL_APP_FAILED.'
     );
   } catch {
     // dialog might not be ready yet
   }
 });
 
-process.on('unhandledRejection', (reason) => {
-  fileLog('unhandledRejection', reason);
+process.on('unhandledRejection', () => {
+  fileLog('Local application operation failed');
 });
 
 process.stdout?.on('error', () => {});
@@ -91,6 +93,7 @@ function startPythonBackend() {
   const pythonCandidates = app.isPackaged
     ? [path.join(PROJECT_ROOT, 'python_runtime', 'python.exe')]
     : [
+        path.join(PROJECT_ROOT, '.venv312', 'Scripts', 'python.exe'),
         path.join(PROJECT_ROOT, '.venv', 'Scripts', 'python.exe'),
         path.join(PROJECT_ROOT, 'python_runtime', 'python.exe'),
       ];
@@ -109,7 +112,7 @@ function startPythonBackend() {
     safeLog(`[FATAL] Python executable not found. Checked: ${pythonCandidates.join(', ')}`);
     dialog.showErrorBox(
       'PDF Translate - Backend Not Found',
-      `Không tìm thấy Python runtime tại .venv\\Scripts\\python.exe.\n\nĐã kiểm tra:\n${pythonCandidates.join('\n')}`
+      'Thiếu thành phần xử lý cục bộ. Hãy cài lại ứng dụng. Mã hỗ trợ: LOCAL_COMPONENT_MISSING.'
     );
     return;
   }
@@ -118,7 +121,7 @@ function startPythonBackend() {
     safeLog(`[FATAL] Server script not found: ${runServerScript}`);
     dialog.showErrorBox(
       'PDF Translate - Server Script Not Found',
-      `Không tìm thấy file server:\n${runServerScript}`
+      'Thiếu thành phần ứng dụng. Hãy cài lại bản được cấp. Mã hỗ trợ: LOCAL_COMPONENT_MISSING.'
     );
     return;
   }
@@ -127,6 +130,9 @@ function startPythonBackend() {
     ...process.env,
     PDFTRANSLATE_API_TOKEN: API_TOKEN,
     PDFTRANSLATE_DATA_DIR: userDataPath,
+    PDFTRANSLATE_API_PORT: String(apiPort),
+    PDF_TRANSLATE_OFFLINE: '1',
+    PDF_TRANSLATE_OFFLINE_PACK: process.env.PDF_TRANSLATE_OFFLINE_PACK || path.join(PROJECT_ROOT, 'offline-data'),
   };
 
   pythonProcess = spawn(pythonExe, ['-s', runServerScript], {
@@ -138,21 +144,21 @@ function startPythonBackend() {
   });
 
   pythonProcess.stdout?.on('data', (data) => {
-    safeLog(`[Backend] ${data}`);
+    if (data.length) safeLog('Local backend activity');
   });
 
   pythonProcess.stderr?.on('data', (data) => {
-    safeLog(`[Backend ERR] ${data}`);
+    if (data.length) safeLog('Local backend diagnostic event');
   });
 
   pythonProcess.stdout?.on('error', () => {});
   pythonProcess.stderr?.on('error', () => {});
 
   pythonProcess.on('error', (err) => {
-    safeLog(`[Backend SPAWN ERROR] ${err.message}`);
+    safeLog('Local backend could not start');
     dialog.showErrorBox(
       'PDF Translate - Lỗi khởi động Backend',
-      `Không thể khởi chạy máy chủ Python:\n${err.message}`
+      'Không thể khởi động bộ xử lý cục bộ. Mã hỗ trợ: LOCAL_START_FAILED.'
     );
   });
 
@@ -211,35 +217,35 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: true,
-      additionalArguments: [`--pdftranslate-api-token=${API_TOKEN}`],
+      devTools: !app.isPackaged,
+      additionalArguments: [`--pdftranslate-api-token=${API_TOKEN}`,
+        `--pdftranslate-api-base=http://127.0.0.1:${apiPort}/api`],
     },
   });
   fileLog('BrowserWindow constructed');
+  win.removeMenu();
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
 
   win.on('closed', () => fileLog('window closed event'));
   win.webContents.on('render-process-gone', (_event, details) => {
     fileLog('render-process-gone', JSON.stringify(details));
   });
-  win.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
-    safeLog(`[Renderer] Failed to load: ${validatedURL} - ${errorCode} ${errorDescription}`);
+  win.webContents.on('did-fail-load', () => {
+    safeLog('Local interface could not load');
   });
   win.webContents.on('did-finish-load', () => fileLog('did-finish-load'));
 
   const target = VITE_DEV_SERVER_URL ?? path.join(RENDERER_DIST, 'index.html');
   fileLog('loading renderer from', target, 'RENDERER_DIST exists =', fs.existsSync(RENDERER_DIST));
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL).catch((err) => fileLog('loadURL rejected', err));
+    win.loadURL(VITE_DEV_SERVER_URL).catch(() => fileLog('Local interface unavailable'));
   } else {
-    win.loadFile(path.join(RENDERER_DIST, 'index.html')).catch((err) => fileLog('loadFile rejected', err));
+    win.loadFile(path.join(RENDERER_DIST, 'index.html')).catch(() => fileLog('Local interface unavailable'));
   }
   fileLog('createWindow end (load call issued)');
 }
 
-ipcMain.handle('open-external', async (_event, url: string) => {
-  if (typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
-    await shell.openExternal(url);
-  }
-});
+ipcMain.handle('open-external', async () => false);
 
 app.on('window-all-closed', () => {
   fileLog('window-all-closed fired');
@@ -253,7 +259,7 @@ app.on('window-all-closed', () => {
         pythonProcess.kill('SIGTERM');
       }
     } catch (e) {
-      safeLog('Error killing backend:', e);
+      safeLog('Local backend shutdown failed');
     }
   }
   if (process.platform !== 'darwin') {
@@ -268,10 +274,28 @@ app.on('activate', () => {
   }
 });
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  apiPort = await new Promise<number>((resolve, reject) => {
+    const probe = net.createServer();
+    probe.once('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const address = probe.address() as net.AddressInfo;
+      probe.close(() => resolve(address.port));
+    });
+  });
+  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
+    try {
+      const url = new URL(details.url);
+      const localAsset = ['file:', 'data:', 'blob:'].includes(url.protocol);
+      const localApi = url.protocol === 'http:' && url.hostname === '127.0.0.1' && Number(url.port) === apiPort;
+      const localDev = !app.isPackaged && ['http:', 'ws:'].includes(url.protocol)
+        && ['127.0.0.1', 'localhost'].includes(url.hostname) && Number(url.port) === 5173;
+      callback({ cancel: !(localAsset || localApi || localDev) });
+    } catch { callback({ cancel: true }); }
+  });
   fileLog('app ready, isPackaged =', app.isPackaged, 'resourcesPath =', process.resourcesPath);
   startPythonBackend();
   createWindow();
-}).catch((err) => {
-  fileLog('app.whenReady chain rejected', err);
+}).catch(() => {
+  fileLog('Local application startup failed');
 });

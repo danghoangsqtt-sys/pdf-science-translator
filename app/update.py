@@ -88,6 +88,9 @@ def latest_release(current: str = APP_VERSION) -> Release | None:
     network, rate limit, no release yet, a tag that is not a version, a
     release whose assets have not finished uploading - is just "no update".
     """
+    from pdf2zh.offline import active
+    if active():
+        return None
     try:
         import requests
 
@@ -188,6 +191,10 @@ def download_release(
     Downloads to a .part file and renames on success, so an interrupted
     download can never be mistaken for a complete archive.
     """
+    from pdf2zh.offline import OfflineError, active
+
+    if active():
+        raise OfflineError("OFFLINE_POLICY")
     import requests
 
     destination.parent.mkdir(parents=True, exist_ok=True)

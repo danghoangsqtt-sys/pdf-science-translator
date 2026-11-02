@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant U as Người dùng
+    participant UI as Giao diện
+    participant API as API token-auth
+    participant C as DeviceCheck
+    participant W as Worker sở hữu
+    UI->>API: GET capabilities/device (chỉ đọc)
+    API-->>UI: mức/pack/recommendation/probe state
+    UI->>API: POST device/check (mức đề xuất hoặc đã chọn)
+    API-->>UI: 202, check_id
+    API->>C: dedupe và chờ worker idle
+    C->>W: probe mẫu local, policy hữu hạn
+    W-->>C: ready hoặc lỗi OOM/timeout đã lọc
+    UI->>API: GET capabilities
+    API-->>UI: readiness + reason code theo mức
+    U->>UI: Dịch với mức đã chọn
+    UI->>API: POST jobs(profile)
+    API->>C: recheck nhẹ và snapshot policy
+    alt readiness đã mất
+        API-->>UI: yêu cầu kiểm tra lại, không tự đổi mức
+    else readiness còn hợp lệ
+        API-->>UI: job_id nhanh
+        API->>W: job qua PDF core, cùng policy cố định
+        W-->>API: kết quả hoặc partial có guard
+        API-->>UI: trạng thái, cảnh báo, PDF
+    end
+
