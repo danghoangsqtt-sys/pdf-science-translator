@@ -27,10 +27,12 @@ For the end-to-end component map and desktop/API/Android boundaries, see
   `docs/bao-cao/bang-chung/` is a historical record; never rewrite it.
   [`docs/README.md`](../docs/README.md) is the index.
 
-Samples, translation output and audit scratch live outside the repository in
-`D:/DataAdmin/vp-pdf-workspace/` (`samples/`, `output/`, `scratch/`); release
-builds go to `D:/PDFTranslate-Release/`. Do not recreate `tmp/`, `output/`,
-`test_samples/` or `test_output/` at the repository root.
+The whole project lives in this one folder. What is not source stays in two
+gitignored folders at the root: `_workspace/` (`samples/`, `output/`,
+`scratch/`, `backup-*/`) and `BAN-CAI-DAT/` (installable editions). Intermediate
+data packs are build input only; put them in `_workspace/scratch/` and delete
+them after the build, since they duplicate the model store. Do not recreate
+`tmp/`, `output/`, `test_samples/` or `test_output/` at the repository root.
 - `.github/workflows/`: Android builds only; the desktop app has no release
   workflow yet.
 

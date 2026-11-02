@@ -56,7 +56,7 @@ Keep source and output hashes/paths separate. For every delivered PDF:
    bold/italic runs, and page numbers remain legible and correctly placed.
 6. Report every fallback segment or materially untranslated region as partial.
 
-Use `D:/DataAdmin/vp-pdf-workspace/scratch/` for render/diagnostic intermediates
-and `D:/DataAdmin/vp-pdf-workspace/output/` for final PDFs, never the repository. Never overwrite a source or an existing user output without explicit
+Use `_workspace/scratch/` for render/diagnostic intermediates and
+`_workspace/output/` for final PDFs; both are gitignored. Never overwrite a source or an existing user output without explicit
 authorization. For expensive translations, validate representative pages
 first, then regenerate the complete document with the final code.

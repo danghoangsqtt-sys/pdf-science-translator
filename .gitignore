@@ -56,9 +56,11 @@ models/
 .cache/
 *.gguf
 
-# Local samples, scratch output and review material kept beside the repo,
-# never in it. Translation inputs and outputs belong in
-# D:/DataAdmin/vp-pdf-workspace (see docs/README.md).
+# Everything that is not source stays inside the project folder but out of
+# git: samples, output and scratch in _workspace/, installable builds in
+# BAN-CAI-DAT/ (see docs/README.md).
+/_workspace/
+/BAN-CAI-DAT/
 test_samples/
 test_output/
 design-review/

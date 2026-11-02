@@ -14,9 +14,12 @@ Bắt đầu từ [`huong-dan/installation-guide.md`](huong-dan/installation-gui
 Quy tắc bảo toàn bố cục là hợp đồng sản phẩm, nằm ở
 [`../references/preservation-rules.md`](../references/preservation-rules.md).
 
-## Ngoài repo
+## Ngoài git
 
-Những thứ sau không thuộc mã nguồn và nằm ở `D:/DataAdmin/vp-pdf-workspace/`:
+Toàn bộ dự án nằm trong một thư mục. Những thứ không phải mã nguồn nằm trong
+hai thư mục ở gốc, được git bỏ qua:
+
+`_workspace/`:
 
 | Thư mục | Nội dung |
 | --- | --- |
@@ -25,4 +28,6 @@ Những thứ sau không thuộc mã nguồn và nằm ở `D:/DataAdmin/vp-pdf-
 | `scratch/` | Log, script và môi trường tạm của các lần audit (trước đây `tmp/`) |
 | `backup-*/` | Bản vá và bản sao lưu trước các thay đổi lớn |
 
-Bản cài cho máy khác nằm ở `D:/PDFTranslate-Release/`.
+`BAN-CAI-DAT/`: hai bản cài portable (máy cấu hình mạnh, máy cấu hình yếu)
+kèm hướng dẫn cài đặt, để chép sang máy khác. Gói dữ liệu trung gian dùng khi
+build là bản sao của kho model, nên xóa sau mỗi lần build.
