@@ -1,0 +1,1013 @@
+[
+  {
+    "path": "build\\app",
+    "files": 16,
+    "bytes": 52267186,
+    "links_skipped": [],
+    "extensions": {
+      ".toc": 5,
+      ".zip": 1,
+      ".exe": 1,
+      ".pkg": 1,
+      ".pyz": 1,
+      ".txt": 1,
+      ".html": 1,
+      ".pyc": 5
+    }
+  },
+  {
+    "path": "dist\\PDFTranslate",
+    "files": 1337,
+    "bytes": 570904227,
+    "links_skipped": [],
+    "extensions": {
+      ".exe": 1,
+      ".zip": 1,
+      ".dll": 26,
+      ".pyd": 67,
+      ".tcl": 125,
+      ".terms": 1,
+      "(none)": 650,
+      ".msg": 143,
+      ".eps": 2,
+      ".gif": 10,
+      ".enc": 80,
+      ".txt": 13,
+      ".lib": 4,
+      ".dylib": 2,
+      ".so": 2,
+      ".tm": 5,
+      ".yaml": 3,
+      ".typed": 3,
+      ".pyi": 1,
+      ".onnx": 6,
+      ".md": 4,
+      ".gz": 148,
+      ".xsl": 7,
+      ".rng": 2,
+      ".py": 11,
+      ".json": 5,
+      ".ico": 2,
+      ".otf": 1,
+      ".ttf": 6,
+      ".apache": 1,
+      ".bsd": 1,
+      ".pem": 1,
+      ".rnc": 1,
+      ".xsd": 1,
+      ".png": 1
+    }
+  },
+  {
+    "path": "dist\\PDFTranslate-windows.zip",
+    "files": 1,
+    "bytes": 336414237
+  },
+  {
+    "path": "tmp\\audit-focused.log",
+    "files": 1,
+    "bytes": 15157
+  },
+  {
+    "path": "tmp\\audit-full.log",
+    "files": 1,
+    "bytes": 4508
+  },
+  {
+    "path": "tmp\\audit-venv312",
+    "files": 897,
+    "bytes": 11550984,
+    "links_skipped": [],
+    "extensions": {
+      "(none)": 35,
+      ".cfg": 1,
+      ".bat": 2,
+      ".ps1": 1,
+      ".exe": 11,
+      ".txt": 10,
+      ".apache": 2,
+      ".bsd": 2,
+      ".md": 2,
+      ".typed": 15,
+      ".py": 406,
+      ".pyc": 406,
+      ".json": 1,
+      ".rst": 1,
+      ".js": 1,
+      ".pem": 1
+    }
+  },
+  {
+    "path": "tmp\\audit_cleanup_inventory_20261028.py",
+    "files": 1,
+    "bytes": 1945
+  },
+  {
+    "path": "tmp\\build_offline_design.py",
+    "files": 1,
+    "bytes": 38240
+  },
+  {
+    "path": "tmp\\capture_electron.py",
+    "files": 1,
+    "bytes": 676
+  },
+  {
+    "path": "tmp\\capture_electron_check.py",
+    "files": 1,
+    "bytes": 814
+  },
+  {
+    "path": "tmp\\capture_electron_topmost.py",
+    "files": 1,
+    "bytes": 814
+  },
+  {
+    "path": "tmp\\capture_presentation_app.py",
+    "files": 1,
+    "bytes": 996
+  },
+  {
+    "path": "tmp\\capture_presentation_app_final.py",
+    "files": 1,
+    "bytes": 1007
+  },
+  {
+    "path": "tmp\\create_presentation_sample.py",
+    "files": 1,
+    "bytes": 2924
+  },
+  {
+    "path": "tmp\\create_presentation_sample_v2.py",
+    "files": 1,
+    "bytes": 2936
+  },
+  {
+    "path": "tmp\\create_presentation_sample_v3.py",
+    "files": 1,
+    "bytes": 2817
+  },
+  {
+    "path": "tmp\\download_science_benchmark.py",
+    "files": 1,
+    "bytes": 943
+  },
+  {
+    "path": "tmp\\extract_science_p1.py",
+    "files": 1,
+    "bytes": 810
+  },
+  {
+    "path": "tmp\\extract_science_samples.py",
+    "files": 1,
+    "bytes": 1347
+  },
+  {
+    "path": "tmp\\paste_electron_dialog.py",
+    "files": 1,
+    "bytes": 836
+  },
+  {
+    "path": "tmp\\plot_science_benchmark.py",
+    "files": 1,
+    "bytes": 4661
+  },
+  {
+    "path": "tmp\\qa_presentation_pdf.py",
+    "files": 1,
+    "bytes": 1364
+  },
+  {
+    "path": "tmp\\qa_science_benchmark.py",
+    "files": 1,
+    "bytes": 2368
+  },
+  {
+    "path": "tmp\\rebuild_science_samples.py",
+    "files": 1,
+    "bytes": 5124
+  },
+  {
+    "path": "tmp\\render_science_benchmark.py",
+    "files": 1,
+    "bytes": 566
+  },
+  {
+    "path": "tmp\\render_science_translations.py",
+    "files": 1,
+    "bytes": 770
+  },
+  {
+    "path": "tmp\\run_short_electron.py",
+    "files": 1,
+    "bytes": 1064
+  },
+  {
+    "path": "tmp\\select_pdf_electron.py",
+    "files": 1,
+    "bytes": 2446
+  },
+  {
+    "path": "tmp\\select_pdf_electron_v2.py",
+    "files": 1,
+    "bytes": 2426
+  },
+  {
+    "path": "tmp\\select_pdf_electron_v3.py",
+    "files": 1,
+    "bytes": 2451
+  },
+  {
+    "path": "tmp\\select_science_short_electron.py",
+    "files": 1,
+    "bytes": 2461
+  },
+  {
+    "path": "tmp\\time_science_extraction.py",
+    "files": 1,
+    "bytes": 1401
+  },
+  {
+    "path": "tmp\\tmpxnqgj__y",
+    "files": 0,
+    "bytes": 0,
+    "links_skipped": [],
+    "extensions": {}
+  },
+  {
+    "path": "tmp\\uv-cache",
+    "files": 27,
+    "bytes": 1669,
+    "links_skipped": [],
+    "extensions": {
+      "(none)": 4,
+      ".tag": 1,
+      ".lock": 21,
+      ".msgpack": 1
+    }
+  },
+  {
+    "path": "tmp\\viewer-electron.stderr.log",
+    "files": 1,
+    "bytes": 0
+  },
+  {
+    "path": "tmp\\viewer-electron.stdout.log",
+    "files": 1,
+    "bytes": 2
+  },
+  {
+    "path": "tmp\\write_presentation_translations.py",
+    "files": 1,
+    "bytes": 2022
+  },
+  {
+    "path": "tmp\\write_presentation_translations_final.py",
+    "files": 1,
+    "bytes": 1827
+  },
+  {
+    "path": "output\\attention-paper-demo-2026-10-01",
+    "files": 22,
+    "bytes": 4930159,
+    "links_skipped": [],
+    "extensions": {
+      ".jsonl": 1,
+      ".png": 19,
+      ".txt": 2
+    }
+  },
+  {
+    "path": "output\\electron-science-benchmark-2026-10-01",
+    "files": 42,
+    "bytes": 15479422,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 5,
+      ".png": 17,
+      ".jsonl": 14,
+      ".pdf": 6
+    }
+  },
+  {
+    "path": "output\\presentation-demo-2026-10-01",
+    "files": 23,
+    "bytes": 5867798,
+    "links_skipped": [],
+    "extensions": {
+      ".png": 11,
+      ".pdf": 5,
+      ".jsonl": 7
+    }
+  },
+  {
+    "path": "test_output\\01_short_article-vi.pdf",
+    "files": 1,
+    "bytes": 2441772
+  },
+  {
+    "path": "test_output\\02_academic_paper_with_tables-vi.pdf",
+    "files": 1,
+    "bytes": 2444926
+  },
+  {
+    "path": "test_output\\03_technical_manual_multi_page-vi.pdf",
+    "files": 1,
+    "bytes": 2461676
+  },
+  {
+    "path": "test_output\\04_scanned_book_page-vi.pdf",
+    "files": 1,
+    "bytes": 2597277
+  },
+  {
+    "path": "test_output\\benchmark",
+    "files": 5,
+    "bytes": 16407021,
+    "links_skipped": [],
+    "extensions": {
+      ".pdf": 4,
+      ".json": 1
+    }
+  },
+  {
+    "path": "test_output\\debug",
+    "files": 2,
+    "bytes": 11722572,
+    "links_skipped": [],
+    "extensions": {
+      ".pdf": 2
+    }
+  },
+  {
+    "path": "NVIDIA Corporation\\umdlogs",
+    "files": 0,
+    "bytes": 0,
+    "links_skipped": [],
+    "extensions": {}
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\build\\offline-data-2026-10-28",
+    "files": 1022,
+    "bytes": 21307739172,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 4,
+      ".exe": 3,
+      ".lnk": 1,
+      "(none)": 29,
+      ".txt": 5,
+      ".dll": 80,
+      ".mit": 1,
+      ".hsaco": 511,
+      ".dat": 221,
+      ".co": 158,
+      ".onnx": 6,
+      ".optimized": 1,
+      ".ttf": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\build\\windows-offline-2026-10-28",
+    "files": 28092,
+    "bytes": 22657569711,
+    "links_skipped": [],
+    "extensions": {
+      ".pak": 58,
+      ".dll": 121,
+      ".txt": 236,
+      ".dat": 252,
+      "(none)": 1464,
+      ".html": 8,
+      ".exe": 26,
+      ".bin": 2,
+      ".json": 37,
+      ".asar": 1,
+      ".py": 12287,
+      ".pyc": 1208,
+      ".lib": 120,
+      ".sh": 3,
+      ".tcl": 309,
+      ".terms": 2,
+      ".msg": 147,
+      ".eps": 2,
+      ".gif": 37,
+      ".png": 64,
+      ".xbm": 50,
+      ".ppm": 1,
+      ".fs": 8,
+      ".fsc": 6,
+      ".cs": 8,
+      ".csc": 8,
+      ".xpm": 24,
+      ".mask": 1,
+      ".enc": 82,
+      ".tm": 5,
+      ".c": 14,
+      ".vc": 2,
+      ".nmake": 1,
+      ".csh": 1,
+      ".fish": 1,
+      ".bat": 4,
+      ".ps1": 1,
+      ".cfg": 4,
+      ".pth": 2,
+      ".whl": 3,
+      ".pyd": 282,
+      ".typed": 92,
+      ".xsd": 10,
+      ".toml": 1,
+      ".jinja2": 11,
+      ".md": 37,
+      ".js": 9,
+      ".pyi": 468,
+      ".1": 1,
+      ".dylib": 2,
+      ".so": 2,
+      ".xsl": 10,
+      ".g4": 2,
+      ".lark": 2,
+      ".al": 16,
+      ".apache2": 1,
+      ".mit": 2,
+      ".h": 522,
+      ".npy": 15,
+      ".ini": 12,
+      ".jpg": 4,
+      ".xml": 2,
+      ".npz": 26,
+      ".tif": 2,
+      ".pxd": 38,
+      ".tmpl": 2,
+      ".apache": 6,
+      ".bsd": 6,
+      ".a": 109,
+      ".pyx": 13,
+      ".build": 6,
+      ".sav": 47,
+      ".nc": 3,
+      ".wav": 22,
+      ".ani": 1,
+      ".mat": 110,
+      ".arff": 16,
+      ".yaml": 5,
+      ".onnx": 1932,
+      ".rst": 4,
+      ".ico": 4,
+      ".egg": 1,
+      ".zip": 1,
+      ".pem": 2,
+      ".gz": 154,
+      ".0": 1,
+      ".cc": 74,
+      ".proto": 8,
+      ".in": 1,
+      ".pb": 6356,
+      ".pkl": 1,
+      ".cpp": 1,
+      ".fits": 1,
+      ".csv": 33,
+      ".pc": 1,
+      ".template": 1,
+      ".f90": 60,
+      ".f": 24,
+      ".pyf": 7,
+      ".inc": 1,
+      ".f95": 1,
+      ".a99": 2,
+      ".b99": 2,
+      ".bz2": 4,
+      ".eigen": 1,
+      ".lua": 1,
+      ".mplstyle": 31,
+      ".xrc": 1,
+      ".css": 7,
+      ".svg": 19,
+      ".pdf": 11,
+      ".ttf": 45,
+      ".afm": 61,
+      ".markdown-it": 1,
+      ".pxi": 26,
+      ".rng": 2,
+      ".external": 1,
+      ".otf": 1,
+      ".pickle": 1,
+      ".rnc": 1,
+      ".def": 4,
+      ".pyw": 1,
+      ".ctypes": 1,
+      ".lnk": 1,
+      ".hsaco": 511,
+      ".co": 158,
+      ".optimized": 1,
+      ".cjs": 1,
+      ".mjs": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\audit-tests-311.log",
+    "files": 1,
+    "bytes": 158630
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\audit-tests-312-final.log",
+    "files": 1,
+    "bytes": 160622
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\audit-tests-312.log",
+    "files": 1,
+    "bytes": 172318
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\audit_tests.py",
+    "files": 1,
+    "bytes": 1011
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\bootstrap312.log",
+    "files": 1,
+    "bytes": 986
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\build-windows-offline.log",
+    "files": 1,
+    "bytes": 564
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\cache-replay-output",
+    "files": 1,
+    "bytes": 7077458,
+    "links_skipped": [],
+    "extensions": {
+      ".pdf": 1
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\cache-replay.json",
+    "files": 1,
+    "bytes": 185
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\cache-replay.log",
+    "files": 1,
+    "bytes": 2726
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\complete_local_font_pack.py",
+    "files": 1,
+    "bytes": 1022
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\frontend-build.log",
+    "files": 1,
+    "bytes": 3464
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\frozen312.txt",
+    "files": 1,
+    "bytes": 2121
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\install-312.log",
+    "files": 1,
+    "bytes": 45720
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\install-local312.log",
+    "files": 1,
+    "bytes": 32182
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\migrate_offline_tests.py",
+    "files": 1,
+    "bytes": 3931
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-api-tests.log",
+    "files": 1,
+    "bytes": 10922
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-final-build.log",
+    "files": 1,
+    "bytes": 3464
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-full-tests.log",
+    "files": 1,
+    "bytes": 162366
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-native-smoke.log",
+    "files": 1,
+    "bytes": 6830
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-policy-final.log",
+    "files": 1,
+    "bytes": 6140
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-release-tests.log",
+    "files": 1,
+    "bytes": 165792
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer",
+    "files": 38,
+    "bytes": 1809007,
+    "links_skipped": [],
+    "extensions": {
+      "(none)": 37,
+      ".log": 1
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-dynamic",
+    "files": 43,
+    "bytes": 1842863,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2,
+      ".cache": 1
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-dynamic.log",
+    "files": 1,
+    "bytes": 4394
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-final",
+    "files": 42,
+    "bytes": 1841168,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-final.log",
+    "files": 1,
+    "bytes": 4390
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-handoff",
+    "files": 43,
+    "bytes": 1842944,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2,
+      ".cache": 1
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-handoff.log",
+    "files": 1,
+    "bytes": 4396
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-release",
+    "files": 43,
+    "bytes": 1842944,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2,
+      ".cache": 1
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-release.log",
+    "files": 1,
+    "bytes": 4396
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-software",
+    "files": 42,
+    "bytes": 1798606,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer-software.log",
+    "files": 1,
+    "bytes": 1108
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\offline-viewer.log",
+    "files": 1,
+    "bytes": 5330
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\ollama-focused.log",
+    "files": 1,
+    "bytes": 3176
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\owned-profiles.log",
+    "files": 1,
+    "bytes": 12836
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\packaged-app.pid",
+    "files": 1,
+    "bytes": 7
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\packaged-ocr.log",
+    "files": 1,
+    "bytes": 4690
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\packaged-scan-fixed.log",
+    "files": 1,
+    "bytes": 4726
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\packaged-scan.log",
+    "files": 1,
+    "bytes": 9754
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\pdf-gate.log",
+    "files": 1,
+    "bytes": 3026
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\pdf-gate312.log",
+    "files": 1,
+    "bytes": 3026
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\pdf-run.log",
+    "files": 1,
+    "bytes": 16478
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\pdf-run312.log",
+    "files": 1,
+    "bytes": 16478
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\pdfs",
+    "files": 60,
+    "bytes": 35048044,
+    "links_skipped": [],
+    "extensions": {
+      ".png": 60
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\prefetch312-second.log",
+    "files": 1,
+    "bytes": 18090
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\prefetch312.log",
+    "files": 1,
+    "bytes": 8586
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\prefetch312.py",
+    "files": 1,
+    "bytes": 2283
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\prepare-offline.log",
+    "files": 1,
+    "bytes": 110
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\private-runtime.log",
+    "files": 1,
+    "bytes": 1688
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\profile-ui-build.log",
+    "files": 1,
+    "bytes": 4264
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\qa_offline_pdf.py",
+    "files": 1,
+    "bytes": 2622
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\qa_offline_pdf312.py",
+    "files": 1,
+    "bytes": 2662
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-electron.pid",
+    "files": 1,
+    "bytes": 7
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-electron.stderr.log",
+    "files": 1,
+    "bytes": 0
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-electron.stdout.log",
+    "files": 1,
+    "bytes": 1181
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-launch-build.log",
+    "files": 1,
+    "bytes": 3464
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-test-timings.json",
+    "files": 1,
+    "bytes": 48815
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-tests.log",
+    "files": 1,
+    "bytes": 161196
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-timed.log",
+    "files": 1,
+    "bytes": 160906
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-viewer",
+    "files": 42,
+    "bytes": 1843204,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\reaudit-viewer.log",
+    "files": 1,
+    "bytes": 4380
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\runtime-312.json",
+    "files": 1,
+    "bytes": 386
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\run_audit_pdf.py",
+    "files": 1,
+    "bytes": 2318
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\run_audit_pdf312.py",
+    "files": 1,
+    "bytes": 2335
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\run_owned_profiles.py",
+    "files": 1,
+    "bytes": 3255
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\smoke-312.log",
+    "files": 1,
+    "bytes": 6828
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\test-timings.json",
+    "files": 1,
+    "bytes": 48815
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\update_offline_viewer_test.py",
+    "files": 1,
+    "bytes": 1771
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\update_profile_ui.py",
+    "files": 1,
+    "bytes": 7881
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\verify_cache_replay.py",
+    "files": 1,
+    "bytes": 1307
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\verify_packaged_ocr.py",
+    "files": 1,
+    "bytes": 881
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\verify_packaged_scan.py",
+    "files": 1,
+    "bytes": 2652
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\verify_private_runtime.py",
+    "files": 1,
+    "bytes": 782
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\viewer-assets.log",
+    "files": 1,
+    "bytes": 4380
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\viewer-final.log",
+    "files": 1,
+    "bytes": 4380
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\viewer-qa",
+    "files": 45,
+    "bytes": 1890999,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 2,
+      "(none)": 38,
+      ".log": 2,
+      ".old": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\viewer-qa-assets",
+    "files": 42,
+    "bytes": 1843212,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\viewer-qa-final",
+    "files": 42,
+    "bytes": 1842126,
+    "links_skipped": [],
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      "(none)": 38,
+      ".log": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\viewer-test.log",
+    "files": 1,
+    "bytes": 212
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\tmp\\wheels312",
+    "files": 113,
+    "bytes": 321928047,
+    "links_skipped": [],
+    "extensions": {
+      ".whl": 111,
+      ".gz": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\output\\audit-offline-2026-10-27",
+    "files": 3,
+    "bytes": 7095428,
+    "links_skipped": [],
+    "extensions": {
+      ".pdf": 1,
+      ".json": 2
+    }
+  },
+  {
+    "path": ".claude\\worktrees\\frosty-ritchie-f4e306\\output\\pdf",
+    "files": 19,
+    "bytes": 31111523,
+    "links_skipped": [],
+    "extensions": {
+      ".pdf": 8,
+      ".json": 5,
+      ".png": 6
+    }
+  }
+]

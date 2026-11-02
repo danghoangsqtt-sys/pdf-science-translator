@@ -1,0 +1,10 @@
+flowchart LR
+  UI[Desktop UI] -->|profile + PDF| API[Local API]
+  API --> POLICY[Offline policy + public schemas]
+  POLICY --> WORKER[Managed local worker]
+  WORKER --> PDF[Layout / OCR / translate / fit]
+  PACK[Verified local asset pack] --> WORKER
+  CACHE[Private local cache] --> PDF
+  PDF --> REPORT[Public report without engine identity]
+  REPORT --> UI
+  DENY[Internet egress: denied]

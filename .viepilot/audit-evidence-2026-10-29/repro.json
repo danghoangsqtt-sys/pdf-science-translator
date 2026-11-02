@@ -1,0 +1,25 @@
+{
+  "root_cache": {
+    "engine_calls": 1,
+    "same_invalid_result_served": true,
+    "cached_translation": "Result <b9></b9>"
+  },
+  "root_partial_job": {
+    "input_untranslated": 3,
+    "input_image_only_pages": [
+      1
+    ],
+    "public_status": {
+      "status": "complete",
+      "progress": {
+        "done": 0,
+        "total": 0
+      },
+      "error": null
+    }
+  },
+  "root_cors": {
+    "null_allowed": false,
+    "localhost_allowed": true
+  }
+}

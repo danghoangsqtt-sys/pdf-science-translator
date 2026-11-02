@@ -1,0 +1,38 @@
+{
+  "protected_existing_files_checked": 500,
+  "changed_or_deleted_protected_files": [],
+  "runtime": "ready",
+  "runtime_seconds": 32.34,
+  "profiles": {
+    "offline": true,
+    "default_profile": "balanced",
+    "profiles": [
+      {
+        "id": "fast",
+        "label": "Nhanh",
+        "description": "Ưu tiên tốc độ, ít tài nguyên.",
+        "available": true,
+        "reason_code": null,
+        "message": "Sẵn sàng xử lý trên máy."
+      },
+      {
+        "id": "balanced",
+        "label": "Cân bằng",
+        "description": "Cân bằng thời gian và độ đầy đủ.",
+        "available": true,
+        "reason_code": null,
+        "message": "Sẵn sàng xử lý trên máy."
+      },
+      {
+        "id": "quality",
+        "label": "Chất lượng cao",
+        "description": "Xử lý kỹ hơn, có thể chậm hơn.",
+        "available": true,
+        "reason_code": null,
+        "message": "Sẵn sàng xử lý trên máy."
+      }
+    ]
+  },
+  "retained_app": "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\build\\windows-offline-2026-10-28\\PDFTranslate.exe",
+  "open_ide_file_preserved": true
+}

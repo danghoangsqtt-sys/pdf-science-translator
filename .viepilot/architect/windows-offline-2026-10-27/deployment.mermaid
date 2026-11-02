@@ -1,0 +1,11 @@
+flowchart TD
+  BUILD[Build environment: prepare approved assets] --> PACK[Windows app + full offline data pack]
+  PACK --> USB[Local distribution / USB]
+  USB --> VERIFY[Verify manifest / hash / compatibility]
+  VERIFY --> UI[Desktop UI]
+  UI --> API[Loopback API: per-session token]
+  API --> WORKER[Managed child worker]
+  WORKER --> ASSETS[Local verified resources]
+  WORKER --> CACHE[Local cache / staging]
+  UPDATE[Local update package] --> VERIFY
+  DENY[Runtime Internet: no path]

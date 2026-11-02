@@ -161,14 +161,15 @@ class BaseTranslator:
         )
 
     def translate(self, text: str, ignore_cache: bool = False) -> str:
-        """Translate text, consulting the persistent cache unless bypassed."""
+        """Translate text while refusing cache entries with damaged markers."""
         text = normalise_number_abbreviation(text)
-        if not (self.ignore_cache or ignore_cache):
+        use_cache = not (self.ignore_cache or ignore_cache)
+        if use_cache:
             cached = self.cache.get(text)
-            if cached is not None:
+            if cached is not None and markers_intact(text, cached):
                 return cached
         translated = self.do_translate(text)
-        if not (self.ignore_cache or ignore_cache):
+        if use_cache and markers_intact(text, translated):
             self.cache.set(text, translated)
         return translated
 
@@ -369,6 +370,19 @@ def validate_style_tags(source: str, translated: str) -> None:
     """Require the same balanced bold/italic runs after translation."""
     if _style_tag_counts(source) != _style_tag_counts(translated):
         raise FormulaPlaceholderError("style tags changed during translation")
+
+
+def markers_intact(sent: str, translated: str) -> bool:
+    """Return whether formula, style, and glossary markers survived."""
+    if placeholders(sent) != placeholders(translated):
+        return False
+    if DOMAIN_TERM_PATTERN.findall(sent) != DOMAIN_TERM_PATTERN.findall(translated):
+        return False
+    try:
+        validate_style_tags(sent, translated)
+    except FormulaPlaceholderError:
+        return False
+    return True
 
 
 def load_segment_table(path: str | None) -> dict[str, str]:

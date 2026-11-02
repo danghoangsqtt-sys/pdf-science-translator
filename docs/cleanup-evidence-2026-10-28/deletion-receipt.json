@@ -1,0 +1,234 @@
+﻿{
+    "timestamp":  "2026-10-28T12:26:15.0513952+07:00",
+    "status":  "removed_only_verified_allowlist",
+    "removed":  [
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\build\\offline-data-2026-10-28",
+                        "kind":  "verified_duplicate_staging_pack",
+                        "bytes":  21307739172,
+                        "files":  1022
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\capture_electron.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  676,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\capture_electron_check.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  814,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\capture_electron_topmost.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  814,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\capture_presentation_app.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  996,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\capture_presentation_app_final.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  1007,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\create_presentation_sample.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2924,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\create_presentation_sample_v2.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2936,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\create_presentation_sample_v3.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2817,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\download_science_benchmark.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  943,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\extract_science_p1.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  810,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\extract_science_samples.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  1347,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\paste_electron_dialog.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  836,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\plot_science_benchmark.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  4661,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\qa_presentation_pdf.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  1364,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\qa_science_benchmark.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2368,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\rebuild_science_samples.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  5124,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\render_science_benchmark.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  566,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\render_science_translations.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  770,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\run_short_electron.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  1064,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\select_pdf_electron.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2446,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\select_pdf_electron_v2.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2426,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\select_pdf_electron_v3.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2451,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\select_science_short_electron.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2461,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\time_science_extraction.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  1401,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\write_presentation_translations.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  2022,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\tmp\\write_presentation_translations_final.py",
+                        "kind":  "archived_old_scratch_tool",
+                        "bytes":  1827,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\01_short_article-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  2441772,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\02_academic_paper_with_tables-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  2444926,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\03_technical_manual_multi_page-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  2461676,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\04_scanned_book_page-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  2597277,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\05_arxiv_small_mond-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  2830389,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\06_arxiv_medium_cosmology-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  3200051,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\07_arxiv_large_datacenters-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  2855361,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\benchmark\\08_arxiv_xlarge_llm_survey-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  7511474,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\debug\\07_arxiv_large_datacenters-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  2775173,
+                        "files":  1
+                    },
+                    {
+                        "path":  "D:\\DataAdmin\\vp-pdf\\test_output\\debug\\08_arxiv_xlarge_llm_survey-vi.pdf",
+                        "kind":  "old_translation_test_result",
+                        "bytes":  8947399,
+                        "files":  1
+                    }
+                ],
+    "logical_bytes":  21345852541,
+    "drive_free_before":  42312011776,
+    "drive_free_after":  63660388352,
+    "retained_portable":  "D:\\DataAdmin\\vp-pdf\\.claude\\worktrees\\frosty-ritchie-f4e306\\build\\windows-offline-2026-10-28",
+    "retained_original_models":  "D:\\DataAdmin\\OllamaModels",
+    "scratch_archive":  "D:\\DataAdmin\\vp-pdf\\docs\\cleanup-evidence-2026-10-28\\legacy-scratch-tools.zip"
+}

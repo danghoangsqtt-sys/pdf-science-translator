@@ -121,7 +121,10 @@ class PdfLayoutPreserver(private val context: Context) {
                                     }
 
                                     val encodedText = FormulaPlaceholder.encodeFormulaPlaceholders(textToTranslate)
-                                    var translatedRaw = encodedText
+                                    // On any engine failure, keep the complete source paragraph.
+                                    // In particular, never substitute the first 5,000 characters for
+                                    // a longer paragraph and present that as a successful translation.
+                                    var translatedRaw = textToTranslate
                                     var translationSuccess = false
                                     try {
                                         translatedRaw = engine.translate(encodedText)

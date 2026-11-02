@@ -9,10 +9,26 @@ export interface JobProgress {
   total: number;
 }
 
+export type JobStatus =
+  | 'queued'
+  | 'running'
+  | 'complete'
+  | 'complete_with_warnings'
+  | 'error';
+
+export interface JobSegments {
+  total: number;
+  translated: number;
+  kept: { service: number; formula: number; fit: number; too_long: number };
+}
+
 export interface JobStatusResponse {
-  status: 'queued' | 'running' | 'complete' | 'error';
+  status: JobStatus;
   progress: JobProgress;
   error?: string | null;
+  translated_ratio?: number | null;
+  segments?: JobSegments | null;
+  warnings?: string[];
 }
 
 const getApiToken = (): string => {

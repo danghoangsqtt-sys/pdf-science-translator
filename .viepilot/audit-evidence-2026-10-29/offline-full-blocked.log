@@ -1,0 +1,97 @@
+AUDIT ROOT: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306
+PYTHON: 3.12.15
+CACHE: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\tmp\audit-20261029-controlled\.cache\pdf2zh\cache.v1.db
+customtkinter.windows.widgets.font warning: Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.
+Using 'circle_shapes' instead. The rendering quality will be bad!
+test_a_broken_native_library_is_recognised (test_app_errors.DescribeFailureTests.test_a_broken_native_library_is_recognised) ... ok
+test_a_network_failure_is_recognised (test_app_errors.DescribeFailureTests.test_a_network_failure_is_recognised) ... ok
+test_an_existing_output_is_a_skip_not_a_failure (test_app_errors.DescribeFailureTests.test_an_existing_output_is_a_skip_not_a_failure) ... ok
+test_an_unmapped_failure_keeps_its_original_text (test_app_errors.DescribeFailureTests.test_an_unmapped_failure_keeps_its_original_text) ... ok
+test_an_unreadable_pdf_is_recognised_through_its_cause (test_app_errors.DescribeFailureTests.test_an_unreadable_pdf_is_recognised_through_its_cause) ... ok
+test_every_failure_offers_a_summary_and_an_action (test_app_errors.DescribeFailureTests.test_every_failure_offers_a_summary_and_an_action) ... ok
+test_the_cause_survives_the_generic_wrapper (test_app_errors.FlattenTests.test_the_cause_survives_the_generic_wrapper)
+The core wraps every failure in "Failed to translate <path>", so only ... ok
+test_a_missing_log_is_simply_omitted (test_app_errors.ReportTextTests.test_a_missing_log_is_simply_omitted) ... ok
+test_the_report_carries_what_a_maintainer_needs (test_app_errors.ReportTextTests.test_the_report_carries_what_a_maintainer_needs)
+A user who cannot read the error also cannot retype it, so the copied ... ok
+test_the_ocr_refusal_reaches_the_scan_advice (test_app_errors.ScannedDocumentTests.test_the_ocr_refusal_reaches_the_scan_advice)
+E-PDF-03 was written for this case but nothing ever raised it, so a ... ok
+test_unsafe_ocr_page_has_specific_fail_closed_advice (test_app_errors.ScannedDocumentTests.test_unsafe_ocr_page_has_specific_fail_closed_advice) ... ok
+test_a_directory_expands_to_its_pdfs_without_recursing (test_app_gui.CollectPdfsTests.test_a_directory_expands_to_its_pdfs_without_recursing) ... ok
+test_a_directory_named_like_a_pdf_is_not_queued (test_app_gui.CollectPdfsTests.test_a_directory_named_like_a_pdf_is_not_queued) ... ok
+test_a_vanished_file_stays_queued_so_the_runner_can_report_it (test_app_gui.CollectPdfsTests.test_a_vanished_file_stays_queued_so_the_runner_can_report_it) ... ok
+test_duplicates_collapse_across_a_directory_and_an_explicit_file (test_app_gui.CollectPdfsTests.test_duplicates_collapse_across_a_directory_and_an_explicit_file) ... ok
+test_non_pdf_files_are_dropped (test_app_gui.CollectPdfsTests.test_non_pdf_files_are_dropped) ... ok
+test_a_helper_that_will_not_start_leaves_a_working_app (test_app_gui.InstallUpdateTests.test_a_helper_that_will_not_start_leaves_a_working_app) ... ok
+test_a_running_batch_is_never_interrupted_by_a_restart (test_app_gui.InstallUpdateTests.test_a_running_batch_is_never_interrupted_by_a_restart) ... ok
+test_accepting_starts_the_helper_and_closes_the_app (test_app_gui.InstallUpdateTests.test_accepting_starts_the_helper_and_closes_the_app) ... ok
+test_declining_the_dialog_changes_nothing (test_app_gui.InstallUpdateTests.test_declining_the_dialog_changes_nothing) ... ok
+test_every_ocr_mode_has_a_unique_menu_label (test_app_gui.LanguageMenuTests.test_every_ocr_mode_has_a_unique_menu_label) ... ok
+test_every_supported_language_has_a_menu_label (test_app_gui.LanguageMenuTests.test_every_supported_language_has_a_menu_label) ... ok
+test_menu_labels_are_unique_so_the_reverse_lookup_is_total (test_app_gui.LanguageMenuTests.test_menu_labels_are_unique_so_the_reverse_lookup_is_total) ... ok
+test_an_unreadable_batch_never_raises (test_app_gui.LargestDocumentAdvisoryTests.test_an_unreadable_batch_never_raises) ... ok
+test_macos_uses_the_native_open_command (test_app_gui.OpenResultTests.test_macos_uses_the_native_open_command) ... ok
+test_smoke_test_loads_and_closes_the_app_without_entering_mainloop (test_app_gui.PackagedSmokeTestTests.test_smoke_test_loads_and_closes_the_app_without_entering_mainloop) ... ok
+test_the_smoke_test_exits_nonzero_when_the_native_stack_is_broken (test_app_gui.PackagedSmokeTestTests.test_the_smoke_test_exits_nonzero_when_the_native_stack_is_broken)
+A packaged build that cannot load pikepdf or onnx must not exit 0. ... smoke test failed: ImportError('no qpdf')
+ok
+test_verify_engine_loads_the_real_native_stack (test_app_gui.PackagedSmokeTestTests.test_verify_engine_loads_the_real_native_stack)
+Not mocked: this is the check itself, run against this environment. ... 2026-10-29 15:27:37,559 [INFO] pdf2zh.doclayout: ONNX Runtime providers: ['AzureExecutionProvider', 'CPUExecutionProvider']
+[INFO] 2026-10-29 15:27:37,858 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:27:37,868 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_small.onnx
+[INFO] 2026-10-29 15:27:37,868 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_small.onnx
+[INFO] 2026-10-29 15:27:37,912 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:27:37,912 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:27:37,912 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:27:37,961 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:27:37,975 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_small.onnx
+[INFO] 2026-10-29 15:27:37,975 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_small.onnx
+[INFO] 2026-10-29 15:27:38,759 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:27:38,793 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_medium.onnx
+[INFO] 2026-10-29 15:27:38,793 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_det_medium.onnx
+[INFO] 2026-10-29 15:27:38,942 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:27:38,943 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:27:38,943 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\ch_ppocr_mobile_v2.0_cls_mobile.onnx
+[INFO] 2026-10-29 15:27:38,981 [RapidOCR] base.py:23: Using engine_name: onnxruntime
+[INFO] 2026-10-29 15:27:39,026 [RapidOCR] download_file.py:60: File exists and is valid: D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_medium.onnx
+[INFO] 2026-10-29 15:27:39,026 [RapidOCR] main.py:63: Using D:\DataAdmin\vp-pdf\.claude\worktrees\frosty-ritchie-f4e306\.venv312\Lib\site-packages\rapidocr\models\PP-OCRv6_rec_medium.onnx
+ok
+test_clean_ocr_result_is_done (test_app_gui.TranslationOutcomeTests.test_clean_ocr_result_is_done) ... ok
+test_ocr_safety_warning_is_visible_as_partial (test_app_gui.TranslationOutcomeTests.test_ocr_safety_warning_is_visible_as_partial) ... ok
+test_preserved_scan_is_never_reported_as_done (test_app_gui.TranslationOutcomeTests.test_preserved_scan_is_never_reported_as_done) ... ok
+test_worker_passes_selected_ocr_mode_and_reports_safety_partial (test_app_gui.TranslationOutcomeTests.test_worker_passes_selected_ocr_mode_and_reports_safety_partial) ... ok
+test_a_build_staged_earlier_is_offered_without_downloading_again (test_app_gui.UpdateFlowTests.test_a_build_staged_earlier_is_offered_without_downloading_again) ... ok
+test_a_build_that_cannot_swap_itself_only_gets_the_link (test_app_gui.UpdateFlowTests.test_a_build_that_cannot_swap_itself_only_gets_the_link)
+Running from source, or on a Mac: there is no folder to replace. ... ok
+test_a_disk_with_no_room_falls_back_to_the_link (test_app_gui.UpdateFlowTests.test_a_disk_with_no_room_falls_back_to_the_link) ... ok
+test_a_failed_download_leaves_the_link_and_no_staging (test_app_gui.UpdateFlowTests.test_a_failed_download_leaves_the_link_and_no_staging) ... ok
+test_a_release_with_no_windows_asset_falls_back_to_the_link (test_app_gui.UpdateFlowTests.test_a_release_with_no_windows_asset_falls_back_to_the_link) ... ok
+test_a_staged_download_ends_in_the_restart_offer (test_app_gui.UpdateFlowTests.test_a_staged_download_ends_in_the_restart_offer) ... ok
+test_leaves_a_working_stream_alone (test_app_gui.WritableStreamTests.test_leaves_a_working_stream_alone) ... ok
+test_replaces_streams_that_a_windowed_build_leaves_as_none (test_app_gui.WritableStreamTests.test_replaces_streams_that_a_windowed_build_leaves_as_none) ... ok
+test_icc_colorspace_missing_stream_is_dropped_not_crashed (test_colorspace_resources.ColorspaceResourceTests.test_icc_colorspace_missing_stream_is_dropped_not_crashed)
+A page whose ICCBased ColorSpace resource points at damage MuPDF ... ok
+test_icc_colorspace_with_valid_stream_still_resolves (test_colorspace_resources.ColorspaceResourceTests.test_icc_colorspace_with_valid_stream_still_resolves) ... ok
+test_busy_worker_does_not_probe (test_device_check_service.DeviceCheckServiceTests.test_busy_worker_does_not_probe) ... Timeout (0:00:45)!
+Thread 0x0000ab20 (most recent call first):
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\socket.py", line 295 in accept
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\socket.py", line 627 in _fallback_socketpair
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 787 in _make_self_pipe
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 640 in __init__
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\asyncio\windows_events.py", line 316 in __init__
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\asyncio\events.py", line 720 in new_event_loop
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\asyncio\events.py", line 823 in new_event_loop
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\asyncio\runners.py", line 137 in _lazy_init
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\asyncio\runners.py", line 83 in get_loop
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\async_case.py", line 86 in _callSetUp
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\case.py", line 630 in run
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\async_case.py", line 132 in run
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\case.py", line 690 in __call__
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\suite.py", line 122 in run
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\suite.py", line 84 in __call__
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\suite.py", line 122 in run
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\suite.py", line 84 in __call__
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\suite.py", line 122 in run
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\suite.py", line 84 in __call__
+  File "C:\Users\Admin\AppData\Roaming\uv\python\cpython-3.12.15-windows-x86_64-none\Lib\unittest\runner.py", line 240 in run
+  File "D:\DataAdmin\vp-pdf\tmp\audit_20261029_runner.py", line 32 in <module>

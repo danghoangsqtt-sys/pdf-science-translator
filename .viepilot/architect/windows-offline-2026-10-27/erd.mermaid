@@ -1,0 +1,8 @@
+erDiagram
+  PROFILE_CONFIG ||--o{ JOB : selects
+  PROFILE_CONFIG ||--o{ ASSET_RECORD : requires
+  PROFILE_CONFIG ||--o{ CACHE_ENTRY : namespaces
+  JOB { string id string profile string status int kept_segments }
+  PROFILE_CONFIG { string id string revision }
+  ASSET_RECORD { string internal_id string sha256 string pack_revision }
+  CACHE_ENTRY { string source_key string translation string processing_revision }

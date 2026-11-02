@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 val StatusQueuedLight = Color(0xFF656D76)
 val StatusQueuedDark = Color(0xFF8B949E)
 
-val StatusRunningLight = Color(0xFF1F6FEB)
+val StatusRunningLight = Color(0xFF14452F)
 val StatusRunningDark = Color(0xFF58A6FF)
 
 val StatusDoneLight = Color(0xFF1A7F37)
@@ -24,7 +24,7 @@ val StatusFailedDark = Color(0xFFF85149)
 // tinted purple inside an otherwise blue and grey app. Both schemes below are
 // complete, so nothing is left to the baseline.
 
-val LightPrimary = Color(0xFF1F6FEB)
+val LightPrimary = Color(0xFF14452F)
 val LightOnPrimary = Color(0xFFFFFFFF)
 val LightPrimaryContainer = Color(0xFFD6E4FF)
 val LightOnPrimaryContainer = Color(0xFF04255C)
@@ -100,4 +100,4 @@ val DarkOutline = Color(0xFF30363D)
 val DarkOutlineVariant = Color(0xFF262C33)
 val DarkInverseSurface = Color(0xFFE6EDF3)
 val DarkInverseOnSurface = Color(0xFF1F2328)
-val DarkInversePrimary = Color(0xFF1F6FEB)
+val DarkInversePrimary = Color(0xFF14452F)

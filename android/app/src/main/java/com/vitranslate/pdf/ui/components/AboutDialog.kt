@@ -34,7 +34,7 @@ fun AboutDialog(
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 
-    val officialSourceUrl = "https://github.com/breslee1707/VI-Translate"
+    val officialSourceUrl = "https://github.com/danghoangsqtt-sys/Vp_translator"
     val pdfMathTranslateUrl = "https://github.com/PDFMathTranslate/PDFMathTranslate"
     val babelDocUrl = "https://github.com/funstory-ai/BabelDOC"
 
@@ -121,10 +121,10 @@ fun AboutDialog(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // 1. VI-Translate Official Source
+                    // 1. Vp_translator (dhsystem)
                     CreditCard(
-                        title = "1. VI-Translate (Official Source - Vietnamese)",
-                        description = "Dự án nguồn chính thức tiếng Việt cho phiên bản ứng dụng desktop.",
+                        title = "1. Vp_translator (dhsystem)",
+                        description = "Dự án nguồn tiếng Việt cho ứng dụng dịch PDF bảo toàn bố cục.",
                         url = officialSourceUrl,
                         onOpen = { openUrl(officialSourceUrl) }
                     )

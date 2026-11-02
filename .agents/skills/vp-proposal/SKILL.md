@@ -1,0 +1,273 @@
+---
+name: vp-proposal
+description: "Generate professional proposal packages (.pptx + .docx + .md) from brainstorm sessions or direct briefs"
+version: 0.1.0
+---
+
+<greeting>
+## Invocation Banner
+
+Output this banner as the **first** thing on every invocation — before questions, work, or any other output:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ VIEPILOT ► VP-PROPOSAL  v0.1.0 (fw 2.19.0)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+</greeting>
+<version_check>
+## Version Update Check (ENH-072)
+
+After displaying the greeting banner, run:
+```bash
+node "$HOME/.claude/viepilot/bin/vp-tools.cjs" check-update --silent
+```
+
+**If exit code = 1** (update available — new version printed to stdout):
+Display notice banner before any other output:
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ ✨ ViePilot {latest_version} available  (installed: {current})   │
+│    npm i -g viepilot && vp-tools install --target {adapter_id}   │
+└──────────────────────────────────────────────────────────────────┘
+```
+Replace `{latest_version}` with stdout from the command, `{current}` with the installed
+version, `{adapter_id}` with the active adapter (claude-code / cursor / antigravity / codex / copilot).
+
+**If exit code = 0 or command unavailable**: silent, continue.
+
+**Suppression rules:**
+- `--no-update-check` flag on skill invocation → skip this step entirely
+- `config.json` → `update.check: false` → skip this step entirely
+- Show at most once per session (`update_check_done` session guard)
+</version_check>
+<persona_context>
+## Persona Context Injection (ENH-073)
+At skill start, run:
+```bash
+node "$HOME/.claude/viepilot/bin/vp-tools.cjs" persona auto-switch
+node "$HOME/.claude/viepilot/bin/vp-tools.cjs" persona context
+```
+Inject the output as `## User Persona` context before any task execution.
+Silent if command unavailable or errors.
+</persona_context>
+
+
+<adapter id="claude-code">
+## A. Skill Invocation
+- Skill được gọi khi user mention `vp-proposal`, `/vp-proposal`, "proposal", "pitch deck", "presentation", "tài liệu đề xuất"
+- Treat all user text after the skill mention as `{{VP_ARGS}}`
+
+## B. User Prompting
+Prompt user conversationally with numbered list options.
+
+## C. Tool Usage
+Use Claude Code tools: `Bash` (shell), `Read` (file), `Edit` + `Write` (file write/patch),
+`Grep` (search), `Glob` (file patterns), `LS`, `WebSearch`, `WebFetch`,
+`Agent` (spawn subagent — multi-level nesting supported)
+Interactive: `AskUserQuestion` (deferred — preload via ToolSearch before first call)
+</adapter>
+
+<adapter id="cursor-agent">
+## A. Skill Invocation
+Same trigger keywords as claude-code adapter.
+
+## C. Tool Usage
+Use Cursor tools: `run_terminal_cmd` (shell), `read_file` (read), `edit_file` (write/edit),
+`grep_search` (search), `web_search`, `codebase_search`, `list_dir`, `file_search`
+Interactive: text list fallback (AskQuestion available in Plan Mode only; Agent Mode = text)
+Subagent: `/multitask` (user command, single-level only — not a callable tool)
+MCP limit: 40 tools
+</adapter>
+
+<adapter id="antigravity">
+## A. Skill Invocation
+Same trigger keywords as claude-code adapter.
+Skill discovery: LLM-driven (automatic, no slash command needed).
+
+## C. Tool Usage
+Use Antigravity tools: `shell` (cmd), `file_read`, `file_write`, MCP plugins
+Interactive: text fallback (TUI-based; no formal AskUserQuestion)
+Skill path: `.agents/skills/<skill>/SKILL.md` (project) or `~/.gemini/antigravity/skills/` (global)
+Note: Gemini CLI deprecated June 18, 2026 — use Antigravity CLI.
+</adapter>
+
+<adapter id="codex">
+## A. Skill Invocation
+Same trigger keywords as claude-code adapter.
+
+## C. Tool Usage
+Use Codex tools: `container.exec` (sandboxed shell), `apply_patch` (file write), `web_search`
+Interactive: text fallback (TUI Tab/Enter injection)
+Config: `~/.codex/config.toml`
+</adapter>
+
+<adapter id="copilot">
+## A. Skill Invocation
+Same trigger keywords as claude-code adapter.
+Discovery: User-driven (`@agent-name` in GitHub Copilot Chat).
+
+## C. Tool Usage
+Use Copilot tools: `runCommands` (shell), `read`/`readfile` (read), `edit`/`editFiles` (write),
+`code_search`, `find_references`
+Interactive: `askQuestions` (main agent only — NOT available in subagents; VS Code issue #293745)
+Skill path: `.github/agents/<name>.agent.md`
+</adapter>
+<scope_policy>
+## ViePilot Namespace Guard (BUG-004)
+- Default mode: only use and reference `vp-*` skills in ViePilot workflows.
+- External skills (`non vp-*`) are out of framework scope unless user explicitly opts in.
+</scope_policy>
+<implementation_routing_guard>
+## Implementation routing guard (ENH-021)
+
+- **`/vp-proposal`** generates **output artifacts** (`docs/proposals/*.pptx`, `*.docx`, `*.md`) — it does **not** implement shipping code for `lib/`, `tests/`, `bin/`, or framework `workflows/`/`skills/`.
+- This skill is the **delivery lane** after `/vp-brainstorm` captures the ideas. Use `/vp-request` → `/vp-evolve` → `/vp-auto` for ViePilot framework feature work.
+- **Exception:** User **explicit** bypass — state clearly in chat.
+</implementation_routing_guard>
+
+<objective>
+Generate a professional proposal package from a brainstorm session or direct brief.
+
+**Output files** (written to `docs/proposals/`):
+- `{slug}-{date}.md` — structured proposal Markdown (source of truth)
+- `{slug}-{date}.pptx` — presentation file (ViePilot branded, dark navy/charcoal)
+- `{slug}-{date}.docx` — detailed project document
+- `{slug}-{date}-slides.txt` — Google Slides URL (only with `--slides` flag)
+
+**Proposal types:**
+| Type | Slides | Use case |
+|------|--------|----------|
+| `project-proposal` | 10 | Scope, timeline, budget for clients |
+| `tech-architecture` | 12 | Technical design for partners |
+| `product-pitch` | 12 | Investor / partner pitch deck |
+| `general` | 8 | Generic, fallback |
+
+**Template resolution (2-tier):**
+1. `.viepilot/proposal-templates/{type}.pptx` — project-level override
+2. `{viepilot-install}/templates/proposal/pptx/{type}.pptx` — ViePilot stock
+
+**Context detection:**
+- Auto-loads latest `docs/brainstorm/session-*.md` when present
+- Standalone mode if no session found (user provides brief)
+- `--from session-YYYY-MM-DD.md` for explicit session selection
+</objective>
+
+<execution_context>
+workflows/proposal.md
+</execution_context>
+
+<context>
+Optional flags:
+- `--type <id>` : Proposal type — `project-proposal` | `tech-architecture` | `product-pitch` | `general`
+                  If omitted: guided selection menu is shown
+- `--from <file>` : Explicit brainstorm session file to use as context
+                    Default: auto-detect latest `docs/brainstorm/session-*.md`
+- `--lang <code>` : Language for generated content — ISO 639-1 (e.g. vi, en, ja, fr, zh).
+                    If omitted: prompted with MRU suggestions from config.
+                    Saved to ~/.viepilot/config.json → proposal.recentLangs after generation.
+- `--lang-content-only` : Translate content (bullets, notes, paragraphs) only.
+                           Keep structural labels / section names in English.
+- `--slides` : After .pptx is generated, upload to Google Slides via service account auth
+               Requires: `@googleapis/slides` installed + `GOOGLE_APPLICATION_CREDENTIALS` env var
+- `--dry-run` : Show slide manifest (JSON) without writing any files
+</context>
+
+<process>
+Execute workflow from `workflows/proposal.md`
+
+### Step 1: Context Detection
+- Scan `docs/brainstorm/` for `session-*.md` → sort descending → load latest
+- If `--from` specified: load that file directly
+- If no session found: prompt user for brief:
+  - Project name
+  - One-line description
+  - Target audience (client / partner / investor)
+  - 3–5 key points to cover
+
+### Step 2: Proposal Type Selection
+- If `--type` provided: validate; show type + slide count to confirm
+- Else: present menu:
+  ```
+  1. Project Proposal     (10 slides) — scope, timeline, budget
+  2. Tech Architecture    (12 slides) — system design for partners
+  3. Product Pitch Deck   (12 slides) — investor / partner pitch
+  4. General Proposal     ( 8 slides) — generic fallback
+  ```
+
+### Step 3: AI Slide Manifest Generation
+- Structure context into JSON manifest:
+  ```json
+  {
+    "title": "...",
+    "subtitle": "...",
+    "slides": [
+      { "index": 1, "layout": "cover", "heading": "...", "body": "...", "speakerNotes": "..." },
+      { "index": 2, "layout": "section", "heading": "...", "bullets": ["..."], "speakerNotes": "..." }
+    ]
+  }
+  ```
+- Slide count MUST match `PROPOSAL_TYPES[typeId].slides`
+- If `--dry-run`: print manifest and stop
+
+### Step 4: Template Resolution
+- Call `resolveTemplate(typeId, 'pptx', projectRoot)` → pptx template path
+- Call `resolveTemplate('project-detail', 'docx', projectRoot)` → docx template path
+- Warn (not error) if stock fallback is used
+
+### Step 5: Generate .pptx
+- Load template via pptxgenjs
+- Apply slide manifest: inject titles, bullets, speaker notes per slide
+- Ensure `docs/proposals/` directory exists
+- Write `{slug}-{date}.pptx`
+
+### Step 6: Generate .docx
+- Build detailed document from same manifest + extended content
+- Sections: Executive Summary, Problem & Solution, Features & Specifications,
+            Technical Architecture (if relevant), Timeline, Team, Appendix
+- Write `{slug}-{date}.docx`
+
+### Step 7: Generate .md summary
+- Write Markdown mirror of the manifest
+- Save `{slug}-{date}.md`
+
+### Step 8: Optional Google Slides upload (`--slides`)
+- Call `lib/google-slides-exporter.cjs` → `uploadToSlides(pptxPath, title)`
+- Write URL to `{slug}-{date}-slides.txt`
+- On failure: surface error but do NOT fail the whole command (files already written)
+
+### Step 9: Confirm output
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ VIEPILOT ► PROPOSAL GENERATED ✓
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Type:    {type label}  ({N} slides)
+ Context: {session file or "direct brief"}
+
+ Files:
+   docs/proposals/{slug}-{date}.md
+   docs/proposals/{slug}-{date}.pptx
+   docs/proposals/{slug}-{date}.docx
+   [docs/proposals/{slug}-{date}-slides.txt]  ← if --slides
+
+ Next:
+   Open .pptx in PowerPoint / Keynote / LibreOffice
+   Share .docx as supporting document
+   Run /vp-proposal --slides to upload to Google Slides
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+</process>
+
+<success_criteria>
+- [ ] Context detected (brainstorm session or user brief)
+- [ ] Proposal type selected and validated
+- [ ] Slide manifest generated with correct slide count
+- [ ] .pptx written to docs/proposals/
+- [ ] .docx written to docs/proposals/
+- [ ] .md summary written to docs/proposals/
+- [ ] Template resolution: project override takes precedence over stock
+- [ ] --lang: content generated in specified language; MRU saved to config
+- [ ] --lang-content-only: bullets/notes translated; structural labels stay English
+- [ ] --slides: Google Slides URL written to -slides.txt (or clear error shown)
+- [ ] --dry-run: manifest printed, no files written
+</success_criteria>

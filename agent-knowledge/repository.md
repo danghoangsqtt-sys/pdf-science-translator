@@ -2,6 +2,14 @@
 
 ## Structure
 
+The Windows offline implementation currently lives in the separate, protected
+worktree `.claude/worktrees/frosty-ritchie-f4e306`; do not treat it as disposable
+or merge/delete the IDE checkout's uncommitted changes. See
+[`the cleanup audit`](../docs/audit-don-dep-va-laptop-2026-10-28.md) before removing
+generated data or choosing which build to run. The verified intermediate data
+pack was removed; the complete portable resources and original model store remain.
+The audit also records missing tracked build/docs files predating cleanup.
+
 - `app/`: CustomTkinter GUI, the self-updater, UI fonts, icons, bundled assets.
   `app/update.py` also carries the PowerShell helper that performs the swap.
 - `scripts/translate_pdf.py`: supported CLI and stable output staging.

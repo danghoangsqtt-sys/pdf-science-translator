@@ -9,6 +9,18 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
+internal const val MAX_GOOGLE_QUERY_CHARACTERS = 5000
+
+class SegmentTooLongException(length: Int) : IOException(
+    "Translation segment has $length UTF-16 code units; maximum is $MAX_GOOGLE_QUERY_CHARACTERS"
+)
+
+internal fun requireGoogleQueryFits(query: String) {
+    if (query.length > MAX_GOOGLE_QUERY_CHARACTERS) {
+        throw SegmentTooLongException(query.length)
+    }
+}
+
 class GoogleTranslateEngine(
     private val sourceLang: String = "auto",
     private val targetLang: String = "vi"
@@ -43,10 +55,11 @@ class GoogleTranslateEngine(
     }
 
     private fun fetchGoogleTranslation(query: String): String {
+        requireGoogleQueryFits(query)
         val url = "https://translate.google.com/m".toHttpUrl().newBuilder()
             .addQueryParameter("sl", sourceLang)
             .addQueryParameter("tl", targetLang)
-            .addQueryParameter("q", query.take(5000))
+            .addQueryParameter("q", query)
             .build()
 
         val request = Request.Builder()

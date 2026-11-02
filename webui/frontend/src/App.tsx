@@ -7,8 +7,11 @@ import {
   FileText,
   CheckCircle2,
   RefreshCw,
+  Link2,
+  Unlink2,
 } from 'lucide-react';
-import { PdfViewerBox } from './components/PdfViewerBox.tsx';
+import { PdfViewerBox, type ScrollRatio } from './components/PdfViewerBox.tsx';
+import { TranslationWarningBanner } from './components/TranslationWarningBanner.tsx';
 import {
   createTranslationJob,
   fetchJobStatus,
@@ -16,6 +19,7 @@ import {
   checkHealth,
   POLL_INTERVAL_MS,
   type JobProgress,
+  type JobStatusResponse,
 } from './services/api.ts';
 
 const TARGET_LANGUAGES = [
@@ -76,7 +80,31 @@ export const App: React.FC = () => {
   const [progress, setProgress] = useState<JobProgress>({ done: 0, total: 0 });
   const [errorText, setErrorText] = useState<string | null>(null);
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+  const [finishedJob, setFinishedJob] = useState<JobStatusResponse | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  // Dual PDF viewer zoom + scroll sync (original vs translated), so reviewing
+  // the two side-by-side stays aligned by default.
+  const [syncViewers, setSyncViewers] = useState<boolean>(true);
+  const [leftScale, setLeftScale] = useState<number>(1.0);
+  const [rightScale, setRightScale] = useState<number>(1.0);
+  const [leftScrollTarget, setLeftScrollTarget] = useState<ScrollRatio | null>(null);
+  const [rightScrollTarget, setRightScrollTarget] = useState<ScrollRatio | null>(null);
+
+  const handleLeftScaleChange = (value: number) => {
+    setLeftScale(value);
+    if (syncViewers) setRightScale(value);
+  };
+  const handleRightScaleChange = (value: number) => {
+    setRightScale(value);
+    if (syncViewers) setLeftScale(value);
+  };
+  const handleLeftScroll = (ratio: ScrollRatio) => {
+    if (syncViewers) setRightScrollTarget(ratio);
+  };
+  const handleRightScroll = (ratio: ScrollRatio) => {
+    if (syncViewers) setLeftScrollTarget(ratio);
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pollingTimerRef = useRef<number | null>(null);
@@ -122,6 +150,7 @@ export const App: React.FC = () => {
     setErrorText(null);
     setSelectedFile(file);
     setResultBlob(null);
+    setFinishedJob(null);
     setProgress({ done: 0, total: 0 });
   };
 
@@ -138,6 +167,7 @@ export const App: React.FC = () => {
 
     setErrorText(null);
     setResultBlob(null);
+    setFinishedJob(null);
     setIsTranslating(true);
     setProgress({ done: 0, total: 0 });
 
@@ -149,9 +179,10 @@ export const App: React.FC = () => {
           const statusRes = await fetchJobStatus(job_id);
           setProgress(statusRes.progress);
 
-          if (statusRes.status === 'complete') {
+          if (statusRes.status === 'complete' || statusRes.status === 'complete_with_warnings') {
             const blob = await fetchJobResultBlob(job_id);
             setResultBlob(blob);
+            setFinishedJob(statusRes);
             setIsTranslating(false);
           } else if (statusRes.status === 'error') {
             setErrorText(statusRes.error || 'Dịch tài liệu thất bại.');
@@ -216,7 +247,6 @@ export const App: React.FC = () => {
               {backendReady ? 'Backend sẵn sàng' : 'Đang kết nối backend...'}
             </span>
           </div>
-          <img src="/icon.png" alt="PDF Translate" className="w-8 h-8 rounded-md object-cover" />
         </div>
       </header>
 
@@ -340,6 +370,8 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        {finishedJob && <TranslationWarningBanner result={finishedJob} />}
+
         {/* Error Notice */}
         {errorText && (
           <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2.5 text-red-700 text-xs">
@@ -350,24 +382,51 @@ export const App: React.FC = () => {
       </div>
 
       {/* Main Workspace (Dual PDF Viewers or Drag & Drop Area) */}
-      <main className="flex-1 p-4 overflow-hidden">
+      <main className="flex-1 p-4 overflow-hidden flex flex-col">
         {selectedFile ? (
-          <div className="grid grid-cols-2 gap-4 h-full">
-            {/* Left Viewer: Original Document */}
-            <div className="h-full overflow-hidden">
-              <PdfViewerBox title="Tài liệu gốc (Original)" file={selectedFile} />
+          <>
+            <div className="flex items-center justify-end pb-2">
+              <button
+                onClick={() => setSyncViewers((s) => !s)}
+                className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border transition-colors ${
+                  syncViewers
+                    ? 'bg-brand/10 border-brand text-brand'
+                    : 'bg-gray-50 border-gray-200 text-gray-500'
+                }`}
+                title="Đồng bộ cuộn & thu phóng giữa 2 khung xem để rà soát song song"
+              >
+                {syncViewers ? <Link2 size={14} /> : <Unlink2 size={14} />}
+                <span>{syncViewers ? 'Đã đồng bộ 2 khung' : 'Đồng bộ 2 khung: Tắt'}</span>
+              </button>
             </div>
+            <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
+              {/* Left Viewer: Original Document */}
+              <div className="h-full overflow-hidden">
+                <PdfViewerBox
+                  title="Tài liệu gốc (Original)"
+                  file={selectedFile}
+                  scale={leftScale}
+                  onScaleChange={handleLeftScaleChange}
+                  onScrollRatioChange={handleLeftScroll}
+                  scrollRatioTarget={leftScrollTarget}
+                />
+              </div>
 
-            {/* Right Viewer: Translated Document */}
-            <div className="h-full overflow-hidden">
-              <PdfViewerBox
-                title={`Tài liệu đã dịch (${targetLanguage.toUpperCase()})`}
-                file={resultBlob}
-                onDownload={resultBlob ? handleDownload : undefined}
-                downloadFilename={selectedFile ? `${selectedFile.name.replace(/\.[^/.]+$/, '')}-${targetLanguage}.pdf` : undefined}
-              />
+              {/* Right Viewer: Translated Document */}
+              <div className="h-full overflow-hidden">
+                <PdfViewerBox
+                  title={`Tài liệu đã dịch (${targetLanguage.toUpperCase()})`}
+                  file={resultBlob}
+                  onDownload={resultBlob ? handleDownload : undefined}
+                  downloadFilename={selectedFile ? `${selectedFile.name.replace(/\.[^/.]+$/, '')}-${targetLanguage}.pdf` : undefined}
+                  scale={rightScale}
+                  onScaleChange={handleRightScaleChange}
+                  onScrollRatioChange={handleRightScroll}
+                  scrollRatioTarget={rightScrollTarget}
+                />
+              </div>
             </div>
-          </div>
+          </>
         ) : (
           /* Empty state: Drag and drop dropzone */
           <div

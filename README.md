@@ -9,25 +9,25 @@
 </p>
 
 <p align="center">
-  <sub>Xây dựng và duy trì bởi <a href="https://www.tiktok.com/@huyg.ai">Lê Ngọc Gia Huy · huyg.ai</a></sub>
+  <sub>Phát triển và duy trì bởi <strong>dhsystem</strong></sub>
 </p>
 
 <p align="center">
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-windows.zip">
-    <img src="https://img.shields.io/badge/TẢI_XUỐNG-Windows_x64-1f6feb?style=for-the-badge&logo=windows11&logoColor=white" alt="Tải PDF Translate cho Windows">
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-windows.zip">
+    <img src="https://img.shields.io/badge/TẢI_XUỐNG-Windows_x64-14452F?style=for-the-badge&logo=windows11&logoColor=white" alt="Tải PDF Translate cho Windows">
   </a>
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg">
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg">
     <img src="https://img.shields.io/badge/TẢI_XUỐNG-macOS_Apple_Silicon-111111?style=for-the-badge&logo=apple&logoColor=white" alt="Tải PDF Translate cho Mac Apple Silicon">
   </a>
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-intel.dmg">
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-intel.dmg">
     <img src="https://img.shields.io/badge/TẢI_XUỐNG-macOS_Intel-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Tải PDF Translate cho Mac Intel">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/breslee1707/VI-Translate/releases/latest"><img src="https://img.shields.io/github/v/release/breslee1707/VI-Translate?style=flat-square&label=release" alt="Bản phát hành mới nhất"></a>
-  <a href="https://github.com/breslee1707/VI-Translate/releases"><img src="https://img.shields.io/github/downloads/breslee1707/VI-Translate/total?style=flat-square&label=downloads" alt="Tổng lượt tải"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/breslee1707/VI-Translate?style=flat-square" alt="Giấy phép AGPL-3.0"></a>
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest"><img src="https://img.shields.io/github/v/release/danghoangsqtt-sys/Vp_translator?style=flat-square&label=release" alt="Bản phát hành mới nhất"></a>
+  <a href="https://github.com/danghoangsqtt-sys/Vp_translator/releases"><img src="https://img.shields.io/github/downloads/danghoangsqtt-sys/Vp_translator/total?style=flat-square&label=downloads" alt="Tổng lượt tải"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/danghoangsqtt-sys/Vp_translator?style=flat-square" alt="Giấy phép AGPL-3.0"></a>
   <img src="https://img.shields.io/badge/Python-không_cần_cài-2ea44f?style=flat-square" alt="Không cần cài Python">
 </p>
 
@@ -62,19 +62,19 @@ PDF Translate là ứng dụng mã nguồn mở dành cho Windows, macOS và And
 
 ### Windows
 
-1. **[Tải PDF Translate cho Windows](https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-windows.zip)** (`.zip`, khoảng 336 MB; đã gồm model OCR chạy cục bộ, không cần mạng).
+1. **[Tải PDF Translate cho Windows](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-windows.zip)** (`.zip`, khoảng 336 MB; đã gồm model OCR chạy cục bộ, không cần mạng).
 2. Giải nén toàn bộ file vừa tải.
 3. Mở `PDFTranslate.exe`.
 
 ### macOS
 
-1. Tải bản phù hợp: **[Apple Silicon](https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg)** cho Mac M1/M2/M3/M4/M5 hoặc **[Intel](https://github.com/breslee1707/VI-Translate/releases/latest/download/PDFTranslate-macos-intel.dmg)** cho Mac Intel.
+1. Tải bản phù hợp: **[Apple Silicon](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-apple-silicon.dmg)** cho Mac M1/M2/M3/M4/M5 hoặc **[Intel](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest/download/PDFTranslate-macos-intel.dmg)** cho Mac Intel.
 2. Mở file `.dmg`, kéo **PDF Translate** vào thư mục **Applications**.
 3. Trong lần chạy đầu, bấm chuột phải vào ứng dụng → **Open** → **Open**.
 
 ### Android
 
-1. **[Tải APK từ bản phát hành Android mới nhất](https://github.com/breslee1707/VI-Translate/releases?q=android-v)** (`PDFTranslate-android-*.apk`). Bản Android được đánh tag riêng theo dạng `android-v*`.
+1. **[Tải APK từ bản phát hành Android mới nhất](https://github.com/danghoangsqtt-sys/Vp_translator/releases?q=android-v)** (`PDFTranslate-android-*.apk`). Bản Android được đánh tag riêng theo dạng `android-v*`.
 2. Trên điện thoại, cho phép trình duyệt hoặc trình quản lý file **cài ứng dụng từ nguồn không xác định**, rồi mở file APK.
 3. Ứng dụng cần Android 8.0 trở lên.
 
@@ -100,7 +100,7 @@ cd android
 > [!WARNING]
 > Bản macOS hiện dùng chữ ký ad-hoc, chưa được Apple notarize. Gatekeeper có thể chặn thao tác mở thông thường; hãy dùng cách bấm chuột phải → **Open** ở trên nếu bạn tải từ trang Releases chính thức.
 
-Bạn cũng có thể mở [trang Releases](https://github.com/breslee1707/VI-Translate/releases/latest) để xem ghi chú thay đổi và các tệp của phiên bản mới nhất.
+Bạn cũng có thể mở [trang Releases](https://github.com/danghoangsqtt-sys/Vp_translator/releases/latest) để xem ghi chú thay đổi và các tệp của phiên bản mới nhất.
 
 Ứng dụng cũng tự kiểm tra phiên bản mới mỗi lần mở. Máy không có mạng thì bỏ qua, không báo lỗi.
 
@@ -197,7 +197,7 @@ Repo đồng thời tuân theo chuẩn [Agent Skills](https://agentskills.io/) v
 Cài skill cho tất cả agent có trên máy:
 
 ```powershell
-npx skills add breslee1707/VI-Translate -g --all
+npx skills add danghoangsqtt-sys/Vp_translator -g --all
 ```
 
 Sau đó gọi skill bằng yêu cầu tự nhiên:
@@ -234,8 +234,8 @@ Xem quy trình đầy đủ tại [SKILL.md](SKILL.md).
 ### Chuẩn bị môi trường
 
 ```powershell
-git clone https://github.com/breslee1707/VI-Translate.git
-cd VI-Translate
+git clone https://github.com/danghoangsqtt-sys/Vp_translator.git
+cd Vp_translator
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
@@ -294,7 +294,7 @@ PDF Translate được phát hành theo giấy phép [AGPL-3.0](LICENSE). Nếu 
 
 Thư mục [`pdf2zh/`](pdf2zh/) là bản fork của nhân xử lý PDF từ [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate) 1.9.11, dùng model bố cục và font đã ghim của [BabelDOC](https://github.com/funstory-ai/BabelDOC). Hai dự án đó cho công việc này một điểm khởi đầu và được ghi công đầy đủ tại [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Ứng dụng desktop, bộ quy tắc bảo toàn, các bản sửa lỗi trong nhân, bộ test hồi quy, chế độ Handoff và toàn bộ phần đóng gói — mọi thứ liệt kê ở [Được phát triển ở đây](#được-phát-triển-ở-đây) — do **Lê Ngọc Gia Huy** ([@huyg.ai trên TikTok](https://www.tiktok.com/@huyg.ai)) phát triển và duy trì.
+Ứng dụng desktop, bộ quy tắc bảo toàn, các bản sửa lỗi trong nhân, bộ test hồi quy, chế độ Handoff và toàn bộ phần đóng gói — mọi thứ liệt kê ở [Được phát triển ở đây](#được-phát-triển-ở-đây) — do **dhsystem** phát triển và duy trì.
 
 ---
 
@@ -303,5 +303,5 @@ Thư mục [`pdf2zh/`](pdf2zh/) là bản fork của nhân xử lý PDF từ [PD
 </p>
 
 <p align="center">
-  <sub>Xây dựng &amp; duy trì bởi <a href="https://www.tiktok.com/@huyg.ai">Lê Ngọc Gia Huy (huyg.ai)</a></sub>
+  <sub>Phát triển &amp; duy trì bởi <strong>dhsystem</strong></sub>
 </p>

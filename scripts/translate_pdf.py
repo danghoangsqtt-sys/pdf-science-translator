@@ -90,6 +90,32 @@ class Translation(NamedTuple):
     ocr_pages: tuple[int, ...] = ()
     ocr_profile: str = "off"
     ocr_warnings: tuple[str, ...] = ()
+    total_segments: int = 0
+    engine: str = ""
+    model: str | None = None
+    service_failure: str | None = None
+
+    @property
+    def translated_segments(self) -> int:
+        return max(0, self.total_segments - self.untranslated)
+
+    @property
+    def translated_ratio(self) -> float:
+        if self.total_segments <= 0:
+            return 0.0
+        return self.translated_segments / self.total_segments
+
+    @property
+    def kept_by_reason(self) -> dict[str, int]:
+        fit = sum(
+            count
+            for reason, count in self.reasons.items()
+            if any(marker in reason for marker in _FIT_MARKERS)
+        )
+        formula = self.reasons.get(_FORMULA_REASON, 0)
+        too_long = self.reasons.get(_TOO_LONG_REASON, 0)
+        service = sum(self.reasons.values()) - fit - formula - too_long
+        return {"service": service, "formula": formula, "fit": fit, "too_long": too_long}
 
 
 # record_translation_failure passes up either an exception class name or one of
@@ -535,6 +561,22 @@ def translate_pdf(
             )
 
         untranslated = len(report.failures)
+        total_segments = report.translatable_segments
+        service_failure = getattr(report, "service_failure", None)
+        if destination is not None and untranslated >= total_segments:
+            if service_failure:
+                raise TranslationError(service_failure)
+            causes = "; ".join(_describe_failures(report.reasons))
+            raise TranslationError(
+                f"Không dịch được đoạn nào trong {source.name}"
+                + (f": {causes}" if causes else "")
+            )
+        details = {
+            "total_segments": total_segments,
+            "engine": engine,
+            "model": None,
+            "service_failure": service_failure,
+        }
         image_only = tuple(sorted(report.image_only_pages))
         ocr_pages = ocr_preparation.pages if ocr_preparation else ()
         ocr_warnings = ocr_preparation.warnings if ocr_preparation else ()
@@ -547,6 +589,7 @@ def translate_pdf(
                 ocr_pages,
                 ocr,
                 ocr_warnings,
+                **details,
             )
 
         generated = temp_output / f"{source.stem}-mono.pdf"
@@ -588,6 +631,7 @@ def translate_pdf(
         ocr_pages,
         ocr,
         ocr_warnings,
+        **details,
     )
 
 

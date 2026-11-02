@@ -51,6 +51,7 @@ app = FastAPI(title="PDF Translate Backend", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "null",  # Packaged Electron file:// renderer; API token still required.
         "http://127.0.0.1:5173",
         "http://localhost:5173",
         "http://127.0.0.1:8089",
@@ -204,7 +205,7 @@ async def get_job_result(
             detail=f"Không tìm thấy tác vụ có mã {job_id}.",
         )
 
-    if job.status != "complete":
+    if job.status not in ("complete", "complete_with_warnings"):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Tác vụ chưa hoàn thành hoặc đã gặp lỗi.",
