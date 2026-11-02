@@ -107,10 +107,16 @@ def build(destination: Path, pack_root: Path) -> None:
             if "license" in layer.get("mediaType", "").lower():
                 blob = pack.root / "models/blobs" / layer["digest"].replace(":", "-")
                 shutil.copy2(blob, notices / f"component-{index}-LICENSE.txt")
+    if pack.available_profiles == {"fast"}:
+        edition = ("Bản dành cho máy cấu hình yếu: chỉ có mức Nhanh.\n"
+                   "Muốn dùng Cân bằng / Chất lượng cao, hãy dùng bản cho máy cấu hình mạnh.\n")
+    else:
+        edition = ("Bản dành cho máy cấu hình mạnh.\n"
+                   "Chọn Nhanh / Cân bằng / Chất lượng cao; mặc định Cân bằng.\n")
     (destination / "HUONG-DAN.txt").write_text(
         "PDF Translate — Windows ngoại tuyến\n\n"
         "Mở PDFTranslate.exe. Giữ nguyên toàn bộ thư mục khi sao chép sang máy khác.\n"
-        "Chọn Nhanh / Cân bằng / Chất lượng cao; mặc định Cân bằng.\n"
+        + edition +
         "Lần mở đầu cần thời gian kiểm tra dữ liệu. Không cần Internet hoặc cài công cụ AI riêng.\n"
         "Nếu thiếu dữ liệu, dùng lại bộ ứng dụng đầy đủ được cấp. Không tự tải qua mạng.\n"
         "PDF nguồn được giữ nguyên. Hãy đọc cảnh báo và đối chiếu bản dịch trước khi sử dụng.\n"

@@ -99,11 +99,22 @@ export const App: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pollingTimerRef = useRef<number | null>(null);
   const jobIdRef = useRef<string | null>(null);
+  // Until the user picks a level, follow the pack's own default: the lite
+  // edition has only Nhanh, so a fixed 'balanced' start would open blocked.
+  const profileChosenRef = useRef<boolean>(false);
   const refreshCapabilities = async () => {
     setCheckingEngines(true);
-    try { setEngineInfo(await fetchCapabilities()); }
+    try {
+      const info = await fetchCapabilities();
+      setEngineInfo(info);
+      if (!profileChosenRef.current) setProfile(info.default_profile);
+    }
     catch { setEngineInfo(null); }
     finally { setCheckingEngines(false); }
+  };
+  const chooseProfile = (value: ProcessingProfile) => {
+    profileChosenRef.current = true;
+    setProfile(value);
   };
 
   useEffect(() => {
@@ -361,7 +372,7 @@ export const App: React.FC = () => {
             </div>
 
             <ProfilePicker profile={profile} info={engineInfo} checking={checkingEngines}
-              disabled={isTranslating} onChange={setProfile} onRefresh={refreshCapabilities} />
+              disabled={isTranslating} onChange={chooseProfile} onRefresh={refreshCapabilities} />
 
             <button
               onClick={startTranslation}
