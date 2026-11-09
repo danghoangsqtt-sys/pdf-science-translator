@@ -24,6 +24,24 @@ def copy_tree(source: Path, destination: Path) -> None:
                     ignore=shutil.ignore_patterns(*patterns))
 
 
+def brand_executable(exe: Path) -> None:
+    """Give the renamed Electron binary the PDF Translate logo instead of Electron's."""
+    from PIL import Image
+
+    rcedit = FRONTEND / "node_modules/electron-winstaller/vendor/rcedit.exe"
+    if not rcedit.is_file():
+        raise FileNotFoundError("rcedit.exe is missing; run npm install in frontend/")
+    icon = exe.with_name("PDFTranslate.ico")
+    Image.open(FRONTEND / "icon.png").convert("RGBA").save(
+        icon, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
+    try:
+        subprocess.run([str(rcedit), str(exe), "--set-icon", str(icon),
+                        "--set-version-string", "FileDescription", "PDF Translate",
+                        "--set-version-string", "ProductName", "PDF Translate"], check=True)
+    finally:
+        icon.unlink(missing_ok=True)
+
+
 def preflight(destination: Path, pack_root: Path) -> OfflinePack:
     """Validate every input before creating output or copying large resources."""
     destination = destination.resolve()
@@ -71,6 +89,7 @@ def build(destination: Path, pack_root: Path) -> None:
     print("Copying application and Python 3.12...", flush=True)
     copy_tree(frontend / "node_modules/electron/dist", destination)
     (destination / "electron.exe").rename(destination / "PDFTranslate.exe")
+    brand_executable(destination / "PDFTranslate.exe")
     resources = destination / "resources"
     app = resources / "app"
     copy_tree(frontend / "dist", app / "dist")

@@ -44,7 +44,8 @@ class LocalRuntime:
             if pack is None:
                 root = Path(os.environ.get("PDF_TRANSLATE_OFFLINE_PACK", "offline-data"))
                 pack = OfflinePack(root)
-                pack.verify()
+                data_dir = os.environ.get("PDFTRANSLATE_DATA_DIR")
+                pack.verify(Path(data_dir) / "offline-verified.json" if data_dir else None)
             else:
                 pack.unchanged()
             pack.configure()

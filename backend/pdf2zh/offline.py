@@ -141,6 +141,8 @@ class OfflinePack:
                 self.data, {ident: profile.model for ident, profile in PROFILES.items()}
             )
             self.signatures: dict[str, tuple[int, int]] = {}
+            # Files already hashed on an earlier launch: relative -> (size, mtime_ns, sha256).
+            self._trusted: dict[str, tuple[int, int, str]] = {}
             self.available_profiles: set[str] = set()
             self.profile_errors: dict[str, str] = {}
         except OfflineError:
@@ -174,8 +176,14 @@ class OfflinePack:
             expected = self.data["files"][relative]
             path = self.path(relative)
             stat = path.stat()
-            if stat.st_size != expected["size"] or sha256(path) != expected["sha256"]:
+            if stat.st_size != expected["size"]:
                 raise OfflineError("LOCAL_DATA_INVALID")
+            # Hashing ~20 GB on every launch took minutes. A file whose size and
+            # modification time match the earlier full hash is trusted; any
+            # change to it is hashed again.
+            if self._trusted.get(relative) != (stat.st_size, stat.st_mtime_ns, expected["sha256"]):
+                if sha256(path) != expected["sha256"]:
+                    raise OfflineError("LOCAL_DATA_INVALID")
             verified[relative] = (stat.st_size, stat.st_mtime_ns)
         self.signatures.update(verified)
 
@@ -200,7 +208,39 @@ class OfflinePack:
                 if blob not in allowed or blob not in self.signatures:
                     raise OfflineError("LOCAL_DATA_INVALID")
 
-    def verify(self) -> None:
+    def _cache_key(self) -> str:
+        return f"{self.root}|{sha256(self.root / 'manifest.json')}"
+
+    def _load_cache(self, cache: Path | None) -> None:
+        self._trusted = {}
+        if cache is None:
+            return
+        try:
+            data = json.loads(cache.read_text(encoding="utf-8"))
+            if data.get("key") == self._cache_key():
+                self._trusted = {k: (int(v[0]), int(v[1]), str(v[2])) for k, v in data["files"].items()}
+        except (OSError, ValueError, KeyError, TypeError, IndexError, AttributeError):
+            self._trusted = {}
+
+    def _save_cache(self, cache: Path | None) -> None:
+        if cache is None:
+            return
+        files = {relative: [size, mtime, self.data["files"][relative]["sha256"]]
+                 for relative, (size, mtime) in self.signatures.items()}
+        try:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            temporary = cache.with_suffix(".tmp")
+            temporary.write_text(json.dumps({"key": self._cache_key(), "files": files}), encoding="utf-8")
+            os.replace(temporary, cache)
+        except OSError:
+            pass
+
+    def verify(self, cache: Path | None = None) -> None:
+        """Check every file against the manifest; `cache` remembers files already hashed."""
+        self._load_cache(cache)
+        self._verify(cache)
+
+    def _verify(self, cache: Path | None) -> None:
         try:
             self._verify_files(self.contract.common)
             for asset in ("layout", "font", "ocr_font", "worker", "ocr_det_small", "ocr_rec_small",
@@ -219,6 +259,7 @@ class OfflinePack:
                     self.profile_errors[ident] = error.code
             if not self.available_profiles:
                 raise OfflineError("LOCAL_DATA_INVALID")
+            self._save_cache(cache)
         except OfflineError:
             raise
         except (KeyError, TypeError, OSError, ValueError):

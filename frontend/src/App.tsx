@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useTransition } from 'react';
 import {
   FileUp,
-  Languages,
   Loader2,
   AlertCircle,
   FileText,
@@ -272,8 +271,8 @@ export const App: React.FC = () => {
       {/* Top Navigation Bar */}
       <header className="bg-[#14452F] text-white px-5 py-3 shadow-md flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-white/10 p-1.5 rounded-lg">
-            <Languages size={22} className="text-white" />
+          <div className="w-9 h-9 rounded-lg overflow-hidden bg-white shrink-0">
+            <img src="./icon.png" alt="" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight leading-tight">PDF Translate</h1>
