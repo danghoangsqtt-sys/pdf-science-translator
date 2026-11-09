@@ -6,8 +6,8 @@ from unittest import mock
 
 from pdf2zh.offline import PROFILES
 from pdf2zh.runtime_policy import GIB
-from webui.backend.services.device_check_service import DeviceCheckService
-from webui.backend.services.hardware_service import GpuMemory, HardwareSnapshot
+from server.services.device_check_service import DeviceCheckService
+from server.services.hardware_service import GpuMemory, HardwareSnapshot
 
 
 class _Pack:

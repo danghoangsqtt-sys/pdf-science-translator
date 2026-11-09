@@ -21,8 +21,8 @@ if HAS_FASTAPI:
     os.environ.setdefault("PDFTRANSLATE_DATA_DIR", DATA_DIR.name)
     from fastapi.testclient import TestClient
 
-    from webui.backend import main as backend
-    from webui.backend.services import offline_service, job_service
+    from server import main as backend
+    from server.services import offline_service, job_service
     from pdf2zh.offline import profile_for
 
 TOKEN = {"X-PDFTranslate-Token": "dev-token"}

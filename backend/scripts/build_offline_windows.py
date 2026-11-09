@@ -9,14 +9,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1]  # backend/
+REPO = ROOT.parent
+FRONTEND = REPO / "frontend"
 sys.path.insert(0, str(ROOT))
 from pdf2zh.offline import OfflinePack  # noqa: E402
 
 
 def copy_tree(source: Path, destination: Path) -> None:
     patterns = ["__pycache__", "*.pyc", "*.optimized", ".git"]
-    if source == ROOT / "webui/backend":
+    if source == ROOT / "server":
         patterns.append("data")
     shutil.copytree(source, destination, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns(*patterns))
@@ -30,16 +32,16 @@ def preflight(destination: Path, pack_root: Path) -> OfflinePack:
         raise FileExistsError("Choose a new build directory; existing output is preserved")
     if destination == pack_root or destination.is_relative_to(pack_root):
         raise ValueError("Output must be separate from the input data")
-    frontend = ROOT / "webui/frontend"
+    frontend = FRONTEND
     required = [frontend / "dist/index.html", frontend / "dist-electron/main.cjs",
                 frontend / "dist-electron/preload.mjs",
                 frontend / "node_modules/electron/dist/electron.exe",
-                ROOT / "LICENSE", ROOT / "THIRD_PARTY_NOTICES.md",
-                ROOT / "pdf2zh/offline.py", ROOT / "webui/backend/main.py",
+                REPO / "LICENSE", REPO / "THIRD_PARTY_NOTICES.md",
+                ROOT / "pdf2zh/offline.py", ROOT / "server/main.py",
                 ROOT / "scripts/translate_pdf.py"]
     for path in required:
         if not path.is_file():
-            raise FileNotFoundError(f"Required local build input is missing: {path.relative_to(ROOT)}")
+            raise FileNotFoundError(f"Required local build input is missing: {path.relative_to(REPO)}")
     pack = OfflinePack(pack_root)
     print("Verifying local data...", flush=True)
     pack.verify()
@@ -60,7 +62,7 @@ def build(destination: Path, pack_root: Path) -> None:
         raise RuntimeError("Build with the repository Python 3.12 on Windows")
     destination = destination.resolve()
     pack = preflight(destination, pack_root)
-    frontend = ROOT / "webui/frontend"
+    frontend = FRONTEND
     for required in (frontend / "dist/index.html", frontend / "dist-electron/main.cjs",
                      frontend / "node_modules/electron/dist/electron.exe"):
         if not required.is_file():
@@ -79,22 +81,22 @@ def build(destination: Path, pack_root: Path) -> None:
     }), encoding="utf-8")
     copy_tree(Path(sys.base_prefix), resources / "python_runtime")
     copy_tree(Path(sys.prefix) / "Lib/site-packages", resources / "python_runtime/Lib/site-packages")
-    for folder in ("pdf2zh", "webui/backend"):
-        copy_tree(ROOT / folder, resources / folder)
-    (resources / "scripts").mkdir(parents=True)
-    shutil.copy2(ROOT / "scripts/translate_pdf.py", resources / "scripts/translate_pdf.py")
+    for folder in ("pdf2zh", "server"):
+        copy_tree(ROOT / folder, resources / "backend" / folder)
+    (resources / "backend/scripts").mkdir(parents=True)
+    shutil.copy2(ROOT / "scripts/translate_pdf.py", resources / "backend/scripts/translate_pdf.py")
     # The marker keeps cloud engines disabled even if the data directory is removed.
-    (resources / "offline-edition.json").write_text('{"version":1}\n', encoding="utf-8")
+    (resources / "backend/offline-edition.json").write_text('{"version":1}\n', encoding="utf-8")
     print("Copying verified local data...", flush=True)
     shutil.copytree(pack.root, resources / "offline-data")
     # Native GUI smoke checks resolve these two historical bundled asset locations.
-    (resources / "app/assets").mkdir(parents=True, exist_ok=True)
-    shutil.copy2(pack.asset("layout"), resources / "app/assets/doclayout.onnx")
-    shutil.copy2(pack.asset("font"), resources / "app/assets/GoNotoKurrent-Regular.ttf")
+    (resources / "backend/app/assets").mkdir(parents=True, exist_ok=True)
+    shutil.copy2(pack.asset("layout"), resources / "backend/app/assets/doclayout.onnx")
+    shutil.copy2(pack.asset("font"), resources / "backend/app/assets/GoNotoKurrent-Regular.ttf")
     notices = resources / "legal"
     notices.mkdir()
     for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
-        path = ROOT / name
+        path = REPO / name
         shutil.copy2(path, notices / name)
     # Retain upstream notices that accompany the worker and the original model layers.
     for filename in ("LICENSE", "LICENSE.txt", "LICENSES.txt"):
@@ -127,9 +129,9 @@ def build(destination: Path, pack_root: Path) -> None:
     env = dict(os.environ, PYTHONNOUSERSITE="1", PDF_TRANSLATE_OFFLINE="1")
     subprocess.run([str(python), "-s", "-m", "pip", "check"], env=env, cwd=resources, check=True)
     subprocess.run([str(python), "-s", "-c",
-                    "import fitz, onnxruntime, tkinter; import pdf2zh.offline; import webui.backend.main; "
+                    "import fitz, onnxruntime, tkinter; import pdf2zh.offline; import server.main; "
                     "assert pdf2zh.offline.active(); print('Portable dependencies ready')"],
-                   env=env, cwd=resources, check=True)
+                   env=env, cwd=resources / "backend", check=True)
     print(f"Portable Windows build ready: {destination}", flush=True)
 
 

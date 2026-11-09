@@ -16,12 +16,12 @@
     "appId": "com.vitranslate.pdf",
     "productName": "PDF Translate",
     "asar": true,
-    "icon": "../icon.png",
+    "icon": "icon.png",
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "../icon.png"
+      "icon": "icon.png"
     },
     "files": [
       "dist/**/*",
@@ -29,31 +29,31 @@
     ],
     "extraResources": [
       {
-        "from": "../python_runtime",
+        "from": "../BAN-CHAY/python_runtime",
         "to": "python_runtime",
         "filter": ["**/*"]
       },
       {
-        "from": "../../pdf2zh",
-        "to": "pdf2zh",
+        "from": "../backend/pdf2zh",
+        "to": "backend/pdf2zh",
         "filter": ["**/*", "!__pycache__", "!**/__pycache__"]
       },
       {
-        "from": "../../scripts/translate_pdf.py",
-        "to": "scripts/translate_pdf.py"
+        "from": "../backend/scripts/translate_pdf.py",
+        "to": "backend/scripts/translate_pdf.py"
       },
       {
-        "from": "../backend",
-        "to": "webui/backend",
+        "from": "../backend/server",
+        "to": "backend/server",
         "filter": ["**/*", "!data", "!__pycache__", "!**/__pycache__"]
       },
       {
-        "from": "../../app/assets/doclayout.onnx",
-        "to": "app/assets/doclayout.onnx"
+        "from": "../backend/app/assets/doclayout.onnx",
+        "to": "backend/app/assets/doclayout.onnx"
       },
       {
-        "from": "../../app/assets/GoNotoKurrent-Regular.ttf",
-        "to": "app/assets/GoNotoKurrent-Regular.ttf"
+        "from": "../backend/app/assets/GoNotoKurrent-Regular.ttf",
+        "to": "backend/app/assets/GoNotoKurrent-Regular.ttf"
       }
     ],
     "directories": {

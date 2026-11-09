@@ -1,6 +1,6 @@
 # Android Build and Release
 
-The Android app in `android/` is a second product, not the desktop pipeline
+The Android app in `frontend/android/` is a second product, not the desktop pipeline
 recompiled. It reimplements layout preservation on PDFBox-Android
 (`PdfLayoutPreserver.kt`) instead of PyMuPDF and pdfminer.six, uses spatial
 heuristics where the desktop build uses BabelDOC/YOLOv8, reads text-based PDFs
@@ -16,7 +16,7 @@ such copy see an update it cannot fetch.
 
 Android releases are tagged `android-v<appVersionName>` and published by
 `.github/workflows/android-build.yml`, which refuses a tag that disagrees with
-`appVersionName` in `android/app/build.gradle.kts`. `UpdateChecker` walks the
+`appVersionName` in `frontend/android/app/build.gradle.kts`. `UpdateChecker` walks the
 release list and takes the newest non-draft, non-prerelease tag with that
 prefix; it must never fall back to `/releases/latest`, which returns whichever
 product released last.
@@ -41,13 +41,13 @@ published Gradle 9.7.1 jar and its checksum is verified in CI by
 distribution named in `gradle-wrapper.properties`, so the versions differing is
 deliberate, not drift.
 
-`android/local.properties` must never be committed: `sdk.dir` overrides
+`frontend/android/local.properties` must never be committed: `sdk.dir` overrides
 `ANDROID_HOME` and breaks every other checkout.
 
 ## Signing
 
 Release builds are signed from `ANDROID_KEYSTORE_*` environment variables or an
-untracked `android/keystore.properties`, and are left unsigned when neither is
+untracked `frontend/android/keystore.properties`, and are left unsigned when neither is
 present. Never restore `signingConfig = signingConfigs.getByName("debug")` for
 the release type: a debug keystore is generated per machine, so CI would sign
 each release with a different key and users could not update in place. Full

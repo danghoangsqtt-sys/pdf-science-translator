@@ -26,15 +26,17 @@ class OfflineBuildTests(unittest.TestCase):
     def test_missing_notice_fails_before_any_copy(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            required = ("webui/frontend/dist/index.html", "webui/frontend/dist-electron/main.cjs",
-                        "webui/frontend/dist-electron/preload.mjs",
-                        "webui/frontend/node_modules/electron/dist/electron.exe")
+            required = ("frontend/dist/index.html", "frontend/dist-electron/main.cjs",
+                        "frontend/dist-electron/preload.mjs",
+                        "frontend/node_modules/electron/dist/electron.exe")
             for name in required:
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.touch()
             target = root / "output"
-            with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder, "OfflinePack") as pack:
+            with mock.patch.object(builder, "ROOT", root / "backend"), mock.patch.object(builder, "REPO", root), \
+                    mock.patch.object(builder, "FRONTEND", root / "frontend"), \
+                    mock.patch.object(builder, "OfflinePack") as pack:
                 with self.assertRaisesRegex(FileNotFoundError, "LICENSE"):
                     builder.preflight(target, root / "data")
                 pack.assert_not_called()

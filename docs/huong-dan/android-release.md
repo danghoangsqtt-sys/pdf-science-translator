@@ -1,6 +1,6 @@
 # Building and Releasing the Android APK
 
-The Android app lives in [`android/`](../../android). It is a separate product
+The Android app lives in [`frontend/android/`](../../android). It is a separate product
 from the desktop build and releases under its own tag namespace.
 
 ## Toolchain
@@ -14,7 +14,7 @@ from the desktop build and releases under its own tag namespace.
 | compileSdk / targetSdk | 35 | Android 15. |
 | minSdk | 26 | Android 8.0. |
 
-Do not commit `android/local.properties`. `sdk.dir` in that file overrides
+Do not commit `frontend/android/local.properties`. `sdk.dir` in that file overrides
 `ANDROID_HOME`, so a committed one breaks every checkout but the author's.
 
 ## Building locally
@@ -24,7 +24,7 @@ cd android
 ./gradlew assembleDebug testDebugUnitTest lintDebug
 ```
 
-The debug APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`.
+The debug APK lands in `frontend/android/app/build/outputs/apk/debug/app-debug.apk`.
 
 On Windows, set `ANDROID_HOME` to the SDK root and use `gradlew.bat`. If the
 Gradle test worker dies with `Could not find or load main class ...`, check the
@@ -51,7 +51,7 @@ keytool -genkeypair -v \
 Keep the `.jks` file and its passwords somewhere durable and private. Losing
 them means every future release has to be installed as a new app.
 
-**Locally**, put an untracked `android/keystore.properties` beside the build
+**Locally**, put an untracked `frontend/android/keystore.properties` beside the build
 file:
 
 ```properties
@@ -105,7 +105,7 @@ fails to deliver it.
 Releasing is one number and one tag:
 
 1. Change `appVersionName` in
-   [`android/app/build.gradle.kts`](../../android/app/build.gradle.kts). That is
+   [`frontend/android/app/build.gradle.kts`](../../android/app/build.gradle.kts). That is
    the only edit. `versionCode` is derived from it as
    `major * 10000 + minor * 100 + patch`, so 0.1.0 is 100 and 1.2.3 is 10203 —
    there is no second number to remember to bump, and forgetting one is how you

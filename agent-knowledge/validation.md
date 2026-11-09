@@ -2,7 +2,7 @@
 
 ## Automated Gate
 
-For offline Windows also run `tests/test_offline.py`, the profile API tests and
+For offline Windows also run `backend/tests/test_offline.py`, the profile API tests and
 `npm run test:viewer`. The Chromium harness must use the production sandbox
 preload with a non-default API port; testing only 8089 missed a packaged CSP bug.
 Verify preparing/missing resources block translation and never silently downgrade.
@@ -18,19 +18,19 @@ Run from the repository root with the platform virtual environment:
 ```text
 python -m unittest discover -s tests -v
 python -m pip check
-python -m ruff check pdf2zh scripts app tests webui/backend --select E9,F63,F7,F82
+python -m ruff check pdf2zh scripts app tests backend/server --select E9,F63,F7,F82
 ```
 
-With `webui/frontend/node_modules` present, `npx tsc -b` in `webui/frontend`
+With `frontend/node_modules` present, `npx tsc -b` in `frontend/`
 must pass. Backend tests skip themselves when FastAPI is not installed.
 
 `git diff --check` must be clean. For desktop changes, start the app with
-`npm run dev` in `webui/frontend` and translate one document end to end.
+`npm run dev` in `frontend/` and translate one document end to end.
 
 The Ollama unit module blocks real HTTP at `requests.Session.request`; model
 status, replies and retry delays must be mocked. Native smoke checks still load
 the real layout/OCR runtime and require the bundled assets. For the Electron
-PDF panes, run `npm run test:viewer` in `webui/frontend`: it checks gutter
+PDF panes, run `npm run test:viewer` in `frontend/`: it checks gutter
 geometry and native Chromium interactions without a real translation service.
 
 ## Engine Gate

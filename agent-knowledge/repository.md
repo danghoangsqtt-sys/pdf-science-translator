@@ -6,21 +6,21 @@ For the end-to-end component map and desktop/API/Android boundaries, see
 [`docs/kien-truc/codebase-architecture.md`](../docs/kien-truc/codebase-architecture.md).
 
 - `app/errors.py`: user-facing failure codes and the copyable error report.
-- `app/assets/`, `app/fonts/`: layout model, Unicode PDF font and OCR font;
+- `backend/app/assets/`, `backend/app/fonts/`: layout model, Unicode PDF font and OCR font;
   the offline build packages them from here.
-- `scripts/translate_pdf.py`: supported CLI and stable output staging.
+- `backend/scripts/translate_pdf.py`: supported CLI and stable output staging.
 - `webui/`: Electron + React frontend (`frontend/src`) and the FastAPI backend
   (`backend/main.py`, `backend/services/`) it starts on a private 127.0.0.1 port.
   `/api/capabilities` reports the three public profiles; `/api/engines` returns 410.
   Jobs accept `profile`, refuse engine/model/unknown fields, and report the translated share.
   The development launcher prefers `.venv312` before `.venv`; the packaged
   app continues to use its bundled `python_runtime`.
-- `scripts/fetch_assets.py`: downloads the layout model and Unicode PDF font.
-- `scripts/prepare_offline_pack.py`: assembles verified resources already on disk.
-- `scripts/build_offline_windows.py`: fresh portable Electron/Python 3.12/data assembly;
+- `backend/scripts/fetch_assets.py`: downloads the layout model and Unicode PDF font.
+- `backend/scripts/prepare_offline_pack.py`: assembles verified resources already on disk.
+- `backend/scripts/build_offline_windows.py`: fresh portable Electron/Python 3.12/data assembly;
   no network fetch, no overwrite of an existing destination. See the offline handoff doc.
-- `pdf2zh/`: bundled extraction, translation, preservation, and PDF rendering.
-- `tests/`: standard-library `unittest` regressions.
+- `backend/pdf2zh/`: bundled extraction, translation, preservation, and PDF rendering.
+- `backend/tests/`: standard-library `unittest` regressions.
 - `references/`: product preservation contract.
 - `docs/`: grouped by kind (`huong-dan`, `kien-truc`, `bao-cao`, `ke-hoach`,
   `tham-khao`; `brainstorm` stays where ViePilot expects it). Evidence under
@@ -50,19 +50,19 @@ Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt -r webui\requirements-webui.txt
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt -r backend\requirements-webui.txt
 .\.venv\Scripts\python.exe scripts\fetch_assets.py
 .\.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
-cd webui\frontend; npm install; npm run dev
+cd frontend; npm install; npm run dev
 ```
 
 macOS:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python scripts/translate_pdf.py INPUT.pdf --output-dir OUT
+.venv/bin/python -m pip install -r backend/requirements.txt
+.venv/bin/python backend/scripts/translate_pdf.py INPUT.pdf --output-dir OUT
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
@@ -80,3 +80,17 @@ implementation text. Preserve unrelated dirty-worktree changes.
 Commit subjects are short and imperative. PRs state user impact, validation,
 and representative visual evidence for GUI/PDF changes. Never commit local
 test PDFs or packaged artifacts.
+
+## Folder Layout (2026-11-09)
+
+- `backend/` — Python import root: `pdf2zh/` engine, `server/` FastAPI app
+  (was `webui/backend`), `scripts/`, `tests/`, `app/` assets/fonts,
+  `research/`, `requirements*.txt`. Run tests from `backend/`:
+  `..\BAN-CHAY\.venv312\Scripts\python.exe -m unittest discover -s tests -t .`
+- `frontend/` — Electron + React desktop UI (was `webui/frontend`) and
+  `frontend/android/`.
+- `BAN-CAI-DAT/` — built installable editions (gitignored).
+- `BAN-CHAY/` — the runtime used on this machine: `.venv312/` and the
+  embedded `python_runtime/` (gitignored). Electron dev mode looks there first.
+- Packaged apps mirror this: `resources/backend/{pdf2zh,server,scripts,app}`,
+  `resources/python_runtime`, `resources/offline-data`.

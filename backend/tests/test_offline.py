@@ -12,7 +12,7 @@ from unittest import mock
 
 from pdf2zh.offline import OfflineError, OfflinePack, PROFILES, enforce_engine, profile_for, sha256
 from pdf2zh.translator import OllamaTranslator
-from webui.backend.services.offline_service import public_failure
+from server.services.offline_service import public_failure
 
 
 class OfflinePolicyTests(unittest.TestCase):

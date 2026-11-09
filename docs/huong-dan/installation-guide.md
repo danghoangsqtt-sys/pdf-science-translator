@@ -1,7 +1,7 @@
 # Hướng dẫn cài đặt — PDF Translate (vp-pdf)
 
 Tài liệu này dành cho việc chạy và kiểm thử từ mã nguồn trên máy Windows hiện
-tại. Không sửa đổi bất kỳ file mã nguồn nào trong `pdf2zh/`, `webui/`, `scripts/`.
+tại. Không sửa đổi bất kỳ file mã nguồn nào trong `backend/pdf2zh/`, `webui/`, `backend/scripts/`.
 
 ## 1. Yêu cầu hệ thống
 
@@ -16,20 +16,20 @@ tại. Không sửa đổi bất kỳ file mã nguồn nào trong `pdf2zh/`, `we
 git clone https://github.com/danghoangsqtt-sys/pdf-science-translator.git
 cd pdf-science-translator
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt        # core dịch + OCR
-.\.venv\Scripts\python.exe -m pip install -r webui\requirements-webui.txt  # backend cho app desktop
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt        # core dịch + OCR
+.\.venv\Scripts\python.exe -m pip install -r backend\requirements-webui.txt  # backend cho app desktop
 .\.venv\Scripts\python.exe scripts\fetch_assets.py                   # tải model layout + font Unicode
 ```
 
 `fetch_assets.py` tải `doclayout.onnx` (~75 MB) và font `GoNotoKurrent-Regular.ttf`
-(~15 MB) vào `app/assets/`. Không có bước này, engine layout sẽ báo thiếu model.
+(~15 MB) vào `backend/app/assets/`. Không có bước này, engine layout sẽ báo thiếu model.
 
 ## 3. Xác minh cài đặt (trạng thái hiện tại trên máy này)
 
 Repo này (`D:\DataAdmin\vp-pdf`) đã ở trạng thái sẵn sàng:
 
 - `.venv/` đã tạo, dependencies đã cài đủ.
-- `app/assets/` đã có model layout + font (theo brainstorm session 2026-09-10).
+- `backend/app/assets/` đã có model layout + font (theo brainstorm session 2026-09-10).
 - Bộ test hồi quy: 278/278 `unittest` OK (ghi nhận trong session trước).
 
 Kiểm tra lại nhanh (không sửa code, chỉ chạy):
@@ -57,7 +57,7 @@ Kiểm tra lại nhanh (không sửa code, chỉ chạy):
 .\.venv\Scripts\python.exe scripts\translate_pdf.py "INPUT.pdf" --engine handoff --segments translations.jsonl --output-dir "OUT"
 ```
 
-Các cờ CLI đầy đủ (từ `scripts/translate_pdf.py --help`):
+Các cờ CLI đầy đủ (từ `backend/scripts/translate_pdf.py --help`):
 
 | Cờ | Ý nghĩa |
 | --- | --- |
@@ -76,7 +76,7 @@ Các cờ CLI đầy đủ (từ `scripts/translate_pdf.py --help`):
 Cần Node.js 20 trở lên.
 
 ```powershell
-cd webui\frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -87,12 +87,12 @@ file PDF vào cửa sổ, bản dịch hiện cạnh bản gốc và tải xuố
 ## 6. Build bộ cài Windows (không cần cho việc kiểm thử chất lượng/tốc độ)
 
 ```powershell
-cd webui\frontend
+cd frontend
 npm run build
 npx electron-builder --win
 ```
 
-Bộ cài nằm trong `webui\frontend\release\`; cần sẵn `webui\python_runtime\`.
+Bộ cài nằm trong `frontend\release\`; cần sẵn `BAN-CHAY\python_runtime\`.
 
 ## 7. Giới hạn cần biết trước khi kiểm thử
 
@@ -104,7 +104,7 @@ Bộ cài nằm trong `webui\frontend\release\`; cần sẵn `webui\python_runti
   không phải lỗi.
 - **Số trang khuyến nghị:** đã kiểm chứng sạch tới 36 trang (bài báo/chương
   ngắn) trong benchmark thật. Tài liệu trên 50 trang (`PAGE_COUNT_ADVISORY_LIMIT`
-  trong `scripts/translate_pdf.py`) vẫn dịch được — đây không phải giới hạn
+  trong `backend/scripts/translate_pdf.py`) vẫn dịch được — đây không phải giới hạn
   cứng — nhưng CLI sẽ tự hiện thông báo khuyên nên dịch thử một khoảng
   trang bằng `--pages` trước, rồi mới dịch cả tài liệu, và kiểm tra kỹ các
   trang nhiều công thức/bảng trong kết quả trước khi dùng cho việc quan trọng.

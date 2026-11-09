@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Literal
 
 from scripts.translate_pdf import Translation, TranslationCancelled, translate_pdf
-from webui.backend.services.offline_service import public_failure, require_profile
+from server.services.offline_service import public_failure, require_profile
 
 logger = logging.getLogger(__name__)
 

@@ -6,9 +6,9 @@ output/
 tmp/
 dist/
 build/
-app/assets/*.onnx
-app/assets/*.ttf
-app/assets/*.optimized
+backend/app/assets/*.onnx
+backend/app/assets/*.ttf
+backend/app/assets/*.optimized
 
 # Tool caches. .ruff_cache only stayed out of commits because of a global
 # excludes file, which no fresh clone has.
@@ -27,15 +27,15 @@ pdf-translate.log
 .idea/
 .gradle/
 .kotlin/
-android/.gradle/
-android/.kotlin/
-android/.idea/
-android/build/
-android/app/build/
+frontend/android/.gradle/
+frontend/android/.kotlin/
+frontend/android/.idea/
+frontend/android/build/
+frontend/android/app/build/
 # Machine-specific SDK path; a committed one breaks every other checkout.
-android/local.properties
+frontend/android/local.properties
 # Signing material never belongs in the repository.
-android/keystore.properties
+frontend/android/keystore.properties
 *.jks
 *.keystore
 .DS_Store
@@ -50,17 +50,21 @@ desktop.ini
 # Offline development and native/model outputs.
 .venv312/
 node_modules/
-webui/frontend/dist/
-webui/frontend/dist-electron/
+frontend/dist/
+frontend/dist-electron/
+frontend/release/
+frontend/*.tsbuildinfo
+backend/server/data/
 models/
 .cache/
 *.gguf
 
 # Everything that is not source stays inside the project folder but out of
 # git: samples, output and scratch in _workspace/, installable builds in
-# BAN-CAI-DAT/ (see docs/README.md).
+# BAN-CAI-DAT/, the runtime used on this machine in BAN-CHAY/ (see docs/README.md).
 /_workspace/
 /BAN-CAI-DAT/
+/BAN-CHAY/
 test_samples/
 test_output/
 design-review/

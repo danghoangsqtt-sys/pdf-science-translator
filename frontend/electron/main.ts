@@ -54,9 +54,9 @@ function getProjectRoot(): string {
   if (app.isPackaged) {
     return process.resourcesPath;
   } else {
-    // Dev mode: __dirname = webui/frontend/dist-electron/
-    // Go up 3 levels: dist-electron -> frontend -> webui -> vp-pdf root
-    return path.resolve(__dirname, '..', '..', '..');
+    // Dev mode: __dirname = frontend/dist-electron/
+    // Go up 2 levels: dist-electron -> frontend -> vp-pdf root
+    return path.resolve(__dirname, '..', '..');
   }
 }
 
@@ -93,12 +93,13 @@ function startPythonBackend() {
   const pythonCandidates = app.isPackaged
     ? [path.join(PROJECT_ROOT, 'python_runtime', 'python.exe')]
     : [
+        path.join(PROJECT_ROOT, 'BAN-CHAY', '.venv312', 'Scripts', 'python.exe'),
+        path.join(PROJECT_ROOT, 'BAN-CHAY', 'python_runtime', 'python.exe'),
         path.join(PROJECT_ROOT, '.venv312', 'Scripts', 'python.exe'),
         path.join(PROJECT_ROOT, '.venv', 'Scripts', 'python.exe'),
-        path.join(PROJECT_ROOT, 'python_runtime', 'python.exe'),
       ];
   const pythonExe = pythonCandidates.find((candidate) => fs.existsSync(candidate));
-  const runServerScript = path.join(PROJECT_ROOT, 'webui', 'backend', 'run_server.py');
+  const runServerScript = path.join(PROJECT_ROOT, 'backend', 'server', 'run_server.py');
   const userDataPath = path.join(app.getPath('userData'), 'data');
 
   safeLog('========== PDF Translate Backend ==========');
@@ -136,7 +137,7 @@ function startPythonBackend() {
   };
 
   pythonProcess = spawn(pythonExe, ['-s', runServerScript], {
-    cwd: PROJECT_ROOT,
+    cwd: path.join(PROJECT_ROOT, 'backend'),
     detached: false,
     stdio: ['ignore', 'pipe', 'pipe'],
     env: backendEnvironment,

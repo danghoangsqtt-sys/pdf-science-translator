@@ -2,7 +2,7 @@
 
 ## Pipeline
 
-The Windows offline edition runs `pdf2zh/offline.py` policy before translation.
+The Windows offline edition runs `backend/pdf2zh/offline.py` policy before translation.
 Only three private local profile aliases are accepted; no arbitrary engine/model.
 `offline-edition.json` makes the policy permanent for a packaged copy even if
 its data directory disappears. Python blocks external DNS/TCP/UDP, renderer
@@ -18,14 +18,14 @@ cannot reuse older alias-based translations. The API enables safe standard OCR o
 paths prevent the dependency downloader from selecting missing remote assets.
 Legacy translator defaults described below apply outside the offline edition.
 
-1. `scripts/translate_pdf.py` validates a text-based PDF and stages output.
-2. `pdf2zh/high_level.py` loads fonts/model, predicts layout, matches tables,
+1. `backend/scripts/translate_pdf.py` validates a text-based PDF and stages output.
+2. `backend/pdf2zh/high_level.py` loads fonts/model, predicts layout, matches tables,
    detects preserved structures, patches pages, and serializes the mono PDF.
-3. `pdf2zh/converter.py` groups glyphs into paragraphs, carries formulas and
+3. `backend/pdf2zh/converter.py` groups glyphs into paragraphs, carries formulas and
    styles through translation markers, reflows text, and emits PDF operators.
-4. `pdf2zh/translator.py` validates placeholders/style markers and caches only
+4. `backend/pdf2zh/translator.py` validates placeholders/style markers and caches only
    safe translations.
-5. `pdf2zh/pdfinterp.py` retains source graphics while replacing selected text.
+5. `backend/pdf2zh/pdfinterp.py` retains source graphics while replacing selected text.
 
 Each run returns a `TranslationReport`: the segments left in the source
 language, why each was left, the image-only pages, and how much text was
@@ -92,7 +92,7 @@ translatable. The source page stream stays exact for wholly protected pages.
   `page_has_image` (any image at all) drives the image-only report, because a
   scanner routinely emits one page as dozens of small tiles.
 - The experimental OCR path is opt-in at the CLI (`--ocr standard|enhanced`)
-  and is not yet exposed in the desktop app (`webui/`).
+  and is not yet exposed in the desktop app (`frontend/` + `backend/server/`).
   It adds an invisible sidecar only for image-only pages, never paints white
   backing rectangles on those pages, and replaces the scan image only after a
   safe inpainting pass. DocLayout inference is capped at 1024 pixels while OCR
@@ -138,12 +138,12 @@ translatable. The source page stream stays exact for wholly protected pages.
 
 ## Translation Engines
 
-`pdf2zh/translator.py` registers `ollama` (default), `azure`, `google` and
-`handoff`. `scripts/translate_pdf.py` checks the chosen engine before reading
+`backend/pdf2zh/translator.py` registers `ollama` (default), `azure`, `google` and
+`handoff`. `backend/scripts/translate_pdf.py` checks the chosen engine before reading
 any page: Ollama must answer `/api/tags` with the model pulled, Azure needs a
 key from `AZURE_TRANSLATOR_KEY`/`_REGION` or the per-user `engines.json`
 (`%APPDATA%\PDFTranslate`, `~/.config/pdftranslate`), never the repository.
-The desktop app (`webui/`) lets the user pick the engine and model.
+The desktop app (`frontend/` + `backend/server/`) lets the user pick the engine and model.
 
 - **Ollama** sends TranslateGemma's own prompt verbatim (source and target
   name plus code, two blank lines before the text). It has no glossary slot,

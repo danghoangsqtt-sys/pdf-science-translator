@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 # Ensure repository root is in sys.path
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]  # backend/
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -22,9 +22,9 @@ from fastapi.exceptions import RequestValidationError
 
 from scripts.translate_pdf import DOMAINS, TARGET_LANGUAGES
 from pdf2zh.offline import PROFILES, OfflineError, active
-from webui.backend.services import offline_service
-from webui.backend.services.runtime_service import runtime
-from webui.backend.services.job_service import FINISHED_WITH_RESULT, TranslationJobManager
+from server.services import offline_service
+from server.services.runtime_service import runtime
+from server.services.job_service import FINISHED_WITH_RESULT, TranslationJobManager
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("pdf_translate.backend")
@@ -33,7 +33,7 @@ API_TOKEN_HEADER = "X-PDFTranslate-Token"
 API_TOKEN = os.environ.get("PDFTRANSLATE_API_TOKEN") or "dev-token"
 
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MiB
-DATA_DIR = Path(os.environ.get("PDFTRANSLATE_DATA_DIR") or (PROJECT_ROOT / "webui" / "backend" / "data"))
+DATA_DIR = Path(os.environ.get("PDFTRANSLATE_DATA_DIR") or (PROJECT_ROOT / "server" / "data"))
 UPLOADS_DIR = DATA_DIR / "uploads"
 OUTPUTS_DIR = DATA_DIR / "outputs"
 

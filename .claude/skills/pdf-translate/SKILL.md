@@ -12,8 +12,8 @@ Before acting:
 1. Read `../../../SKILL.md` completely and follow its workflow and boundaries.
 2. Read `../../../agent-knowledge/index.md`, then its routed PDF engine,
    regression, and validation files relevant to the request.
-3. Resolve commands from the repository root containing `pdf2zh/` and
-   `scripts/translate_pdf.py`, not from this adapter directory.
+3. Resolve commands from the repository root containing `backend/pdf2zh/` and
+   `backend/scripts/translate_pdf.py`, not from this adapter directory.
 
 On macOS use `.venv/bin/python`; on Windows use `.venv\Scripts\python.exe`.
 The preservation behavior and tests are shared across platforms. Keep the source unchanged, validate rendered

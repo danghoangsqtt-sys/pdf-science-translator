@@ -42,9 +42,9 @@ Default to Google. Offer handoff when the user asks for higher quality, rejects 
 
 ## Boundaries
 
-- Use the bundled `pdf2zh/` core. Never substitute the PyPI `pdf2zh` package; the runner checks version `1.9.11` and preservation ruleset `code4life-preservation-v1` and refuses an external core.
+- Use the bundled `backend/pdf2zh/` core. Never substitute the PyPI `pdf2zh` package; the runner checks version `1.9.11` and preservation ruleset `code4life-preservation-v1` and refuses an external core.
 - Google mode sends extracted document text to Google. Tell the user before processing sensitive material and obtain explicit confirmation unless their request already authorizes that disclosure. Handoff mode does not contact Google.
-- Supported targets are the Latin-script codes enforced by `scripts/translate_pdf.py`. CJK, right-to-left, Thai, Devanagari, and other complex-shaping targets are rejected because the bundled font and layout engine cannot render them reliably.
+- Supported targets are the Latin-script codes enforced by `backend/scripts/translate_pdf.py`. CJK, right-to-left, Thai, Devanagari, and other complex-shaping targets are rejected because the bundled font and layout engine cannot render them reliably.
 - OCR is opt-in with `--ocr standard|enhanced`. It fails closed on unsafe tables,
   formulas, figures, code and ambiguous reading order; report every preserved
   region as partial instead of claiming the whole scan was translated.
@@ -63,7 +63,7 @@ Windows:
 
 ```powershell
 python -m venv "<skill-root>\.venv"
-& "<skill-root>\.venv\Scripts\python.exe" -m pip install -r "<skill-root>\requirements.txt"
+& "<skill-root>\.venv\Scripts\python.exe" -m pip install -r "<skill-root>\backend/requirements.txt"
 ```
 
 macOS/Linux:

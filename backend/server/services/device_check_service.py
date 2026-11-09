@@ -9,8 +9,8 @@ from typing import Awaitable, Callable
 
 from pdf2zh.offline import OfflineError, PROFILES
 from pdf2zh.runtime_policy import EffectivePolicy, ResourceSnapshot, candidate_policies
-from webui.backend.services.hardware_service import HardwareService, hardware
-from webui.backend.services.runtime_service import LocalRuntime, runtime
+from server.services.hardware_service import HardwareService, hardware
+from server.services.runtime_service import LocalRuntime, runtime
 
 Probe = Callable[[str, EffectivePolicy], Awaitable[bool]]
 

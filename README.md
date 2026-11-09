@@ -2,7 +2,7 @@
 
 Bản Windows đang phát triển xử lý hoàn toàn trên máy, kể cả lần mở đầu. Mở `PDFTranslate.exe` trong toàn bộ thư mục portable được cấp; không dùng bản ZIP legacy bên dưới để thay thế. Giao diện chỉ có **Nhanh / Cân bằng / Chất lượng cao**, không yêu cầu Internet hay cài công cụ AI riêng. Không tự kiểm tra hoặc tải cập nhật. PDF nguồn được giữ nguyên; hãy đối chiếu phần dịch và cảnh báo.
 
-Phát triển: Python **3.12**, `.venv312/Scripts/python.exe`; quy tắc dùng chung tại [agent-knowledge/index.md](agent-knowledge/index.md). Dựng offline bằng `scripts/build_offline_windows.py` từ tài nguyên local đã xác minh; [hướng dẫn và QA hiện hành](docs/bao-cao/offline-windows-2026-10-28.md). Không chạy lệnh tải tài nguyên hoặc cập nhật dependency khi kiểm thử offline.
+Phát triển: Python **3.12**, `.venv312/Scripts/python.exe`; quy tắc dùng chung tại [agent-knowledge/index.md](agent-knowledge/index.md). Dựng offline bằng `backend/scripts/build_offline_windows.py` từ tài nguyên local đã xác minh; [hướng dẫn và QA hiện hành](docs/bao-cao/offline-windows-2026-10-28.md). Không chạy lệnh tải tài nguyên hoặc cập nhật dependency khi kiểm thử offline.
 
 ## Tài liệu legacy được giữ để bảo toàn lịch sử
 
@@ -110,12 +110,12 @@ Phần kế thừa từ dự án gốc là nhân đọc, phân tích bố cục 
 quyết định việc một trang tiếng Việt in ra có đọc được hay không đều được viết
 cho dự án này:
 
-**Ứng dụng desktop — [`webui/`](webui/)**
+**Ứng dụng desktop — [`frontend/`](frontend/) + [`backend/server/`](backend/server/)**
 Giao diện Electron + React với backend FastAPI cục bộ: xem bản gốc và bản dịch
 song song, chọn bộ dịch và lĩnh vực, huỷ giữa chừng, báo rõ phần chưa dịch được.
 Không một dòng nào trong thư mục này đến từ dự án gốc.
 
-**Bộ quy tắc bảo toàn — [`pdf2zh/rules.py`](pdf2zh/rules.py) và [contract sản phẩm](references/preservation-rules.md)**
+**Bộ quy tắc bảo toàn — [`backend/pdf2zh/rules.py`](backend/pdf2zh/rules.py) và [contract sản phẩm](references/preservation-rules.md)**
 Đây là thứ phân biệt dự án với một công cụ dịch PDF thông thường: nhận diện vùng
 công thức và ký hiệu kỹ thuật để không dịch nhầm thành văn xuôi, giữ in đậm và
 in nghiêng qua vòng dịch, dựng lại chữ xoay 90 độ đúng chiều thay vì bẻ ngang,
@@ -135,7 +135,7 @@ và sửa tại đây:
 
 Bảng nguyên nhân đầy đủ: [agent-knowledge/regressions.md](agent-knowledge/regressions.md).
 
-**Bộ test hồi quy trong [`tests/`](tests/)**
+**Bộ test hồi quy trong [`backend/tests/`](backend/tests/)**
 Mỗi lỗi đã sửa đều bị khoá lại bằng một test dựng đúng hình học nhỏ nhất gây ra nó,
 nên bản sửa không âm thầm mất đi ở lần thay đổi sau.
 
@@ -197,7 +197,7 @@ Xem quy trình đầy đủ tại [SKILL.md](SKILL.md).
 git clone https://github.com/danghoangsqtt-sys/pdf-science-translator.git
 cd pdf-science-translator
 python -m venv .venv
-.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
 ```
 
 ### Dịch bằng Google
@@ -223,9 +223,9 @@ python -m venv .venv
 Cần thêm Node.js 20 trở lên. Từ thư mục gốc của repo:
 
 ```powershell
-.venv\Scripts\python.exe -m pip install -r webui\requirements-webui.txt
+.venv\Scripts\python.exe -m pip install -r backend\requirements-webui.txt
 .venv\Scripts\python.exe scripts\fetch_assets.py
-cd webui\frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -235,13 +235,13 @@ Electron tự khởi động backend bằng `.venv\Scripts\python.exe`.
 ### Build bộ cài Windows
 
 ```powershell
-cd webui\frontend
+cd frontend
 npm run build
 npx electron-builder --win
 ```
 
-Bộ cài được tạo trong `webui\frontend\release\`. Bước đóng gói cần sẵn bộ Python
-chạy độc lập tại `webui\python_runtime\`; chưa có bản build cho macOS.
+Bộ cài được tạo trong `frontend\release\`. Bước đóng gói cần sẵn bộ Python
+chạy độc lập tại `BAN-CHAY\python_runtime\`; chưa có bản build cho macOS.
 
 ## Giới hạn hiện tại
 
@@ -259,7 +259,7 @@ Nên kiểm tra lại tài liệu đầu ra trước khi dùng cho xuất bản 
 
 PDF Translate được phát hành theo giấy phép [AGPL-3.0](LICENSE). Nếu phát hành lại ứng dụng hoặc cung cấp nó như một dịch vụ qua mạng, bạn phải kèm theo mã nguồn tương ứng theo điều khoản của giấy phép.
 
-Thư mục [`pdf2zh/`](pdf2zh/) là bản fork của nhân xử lý PDF từ [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate) 1.9.11, dùng model bố cục và font đã ghim của [BabelDOC](https://github.com/funstory-ai/BabelDOC). Hai dự án đó cho công việc này một điểm khởi đầu và được ghi công đầy đủ tại [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Thư mục [`backend/pdf2zh/`](backend/pdf2zh/) là bản fork của nhân xử lý PDF từ [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate) 1.9.11, dùng model bố cục và font đã ghim của [BabelDOC](https://github.com/funstory-ai/BabelDOC). Hai dự án đó cho công việc này một điểm khởi đầu và được ghi công đầy đủ tại [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Ứng dụng desktop, bộ quy tắc bảo toàn, các bản sửa lỗi trong nhân, bộ test hồi quy, chế độ Handoff và toàn bộ phần đóng gói — mọi thứ liệt kê ở [Được phát triển ở đây](#được-phát-triển-ở-đây) — do **dhsystem** phát triển và duy trì.
 

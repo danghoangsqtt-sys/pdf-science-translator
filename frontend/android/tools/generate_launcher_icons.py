@@ -21,9 +21,9 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[3]
 LOGO = REPO / ".github" / "assets" / "logo.png"
-RES = REPO / "android" / "app" / "src" / "main" / "res"
+RES = REPO / "frontend" / "android" / "app" / "src" / "main" / "res"
 
 # Density buckets as multiples of the mdpi baseline.
 DENSITIES = {

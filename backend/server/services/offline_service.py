@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from pdf2zh.offline import MESSAGES, PROFILES, OfflineError, ProcessingProfile, profile_for
-from webui.backend.services.runtime_service import runtime
+from server.services.runtime_service import runtime
 
 
 def capabilities() -> dict[str, object]:

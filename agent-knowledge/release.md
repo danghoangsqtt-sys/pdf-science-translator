@@ -17,12 +17,12 @@ build, a CI workflow, a packaged smoke test, macOS targets and an updater.
 Windows installer, built locally:
 
 ```powershell
-cd webui\frontend
+cd frontend
 npm run build
 npx electron-builder --win
 ```
 
-The installer lands in `webui/frontend/release/`. Close any running
+The installer lands in `frontend/release/`. Close any running
 `PDF Translate.exe` or backend `python.exe` first; they lock that folder.
 
 ## Retired Tkinter Builds Still Poll `v*`
@@ -41,8 +41,8 @@ falls back to opening the release page. Therefore:
 
 The user explicitly changed the Windows product scope on 27–28/10/2026 to a
 fully offline application with a product-owned worker and complete local data.
-For that edition, use `scripts/prepare_offline_pack.py` and
-`scripts/build_offline_windows.py`; a separately installed AI service is not a
+For that edition, use `backend/scripts/prepare_offline_pack.py` and
+`backend/scripts/build_offline_windows.py`; a separately installed AI service is not a
 dependency. Keep original notices/license layers and all generated data out of git.
 The private mapping belongs in backend resources, never in user-facing UI/API/logs.
 No credentials are bundled. No publication/signing is authorized by local assembly.

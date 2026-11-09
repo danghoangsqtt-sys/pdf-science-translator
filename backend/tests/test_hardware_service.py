@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from webui.backend.services import hardware_service as hardware
+from server.services import hardware_service as hardware
 
 
 class HardwareServiceTests(unittest.TestCase):

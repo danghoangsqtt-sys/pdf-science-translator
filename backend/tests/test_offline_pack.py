@@ -75,8 +75,8 @@ class ManifestV2Tests(unittest.TestCase):
             pack.require_profile("balanced")
         self.assertEqual(error.exception.code, "PROFILE_UNAVAILABLE")
         self.assertEqual(pack.installed_aliases(), {PROFILES["fast"].model})
-        with mock.patch("webui.backend.services.offline_service.runtime.require", return_value=pack):
-            from webui.backend.services.offline_service import capabilities, require_profile
+        with mock.patch("server.services.offline_service.runtime.require", return_value=pack):
+            from server.services.offline_service import capabilities, require_profile
             self.assertEqual(require_profile("fast").id, "fast")
             with self.assertRaises(OfflineError) as backend_error:
                 require_profile("balanced")

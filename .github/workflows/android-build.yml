@@ -18,7 +18,7 @@ on:
       - "android-v*"
   pull_request:
     paths:
-      - "android/**"
+      - "frontend/android/**"
       - ".github/workflows/android-build.yml"
   workflow_dispatch:
 
@@ -27,7 +27,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: android
+    working-directory: frontend/android
 
 jobs:
   build:
@@ -69,7 +69,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: PDFTranslate-android-${{ steps.version.outputs.version }}-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
       # A release APK signed with a throwaway debug key cannot be updated over,
@@ -134,7 +134,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: ${{ steps.apk.outputs.name }}
-          path: android/${{ steps.apk.outputs.name }}
+          path: frontend/android/${{ steps.apk.outputs.name }}
           if-no-files-found: error
 
       - name: Remove the keystore
@@ -170,11 +170,11 @@ jobs:
       - uses: actions/download-artifact@v7
         with:
           name: ${{ needs.build.outputs.apk }}
-          path: android
+          path: frontend/android
 
       - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
           name: Android ${{ needs.build.outputs.version }}
-          files: android/${{ needs.build.outputs.apk }}
+          files: frontend/android/${{ needs.build.outputs.apk }}
           fail_on_unmatched_files: true

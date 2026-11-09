@@ -192,4 +192,4 @@ class HardwareService:
         return await asyncio.to_thread(self.snapshot, refresh)
 
 
-hardware = HardwareService(Path(__file__).resolve().parents[3])
+hardware = HardwareService(Path(__file__).resolve().parents[2])
