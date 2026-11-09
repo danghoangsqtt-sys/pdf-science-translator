@@ -195,8 +195,8 @@ export const PdfViewerBox: React.FC<Props> = ({
 
   return (
     <section className="flex flex-col h-full min-h-0 min-w-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 p-3 border-b border-gray-100 bg-white">
-        <span className="text-gray-800 text-sm font-semibold">{title}</span>
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-2 py-1.5 lg:p-3 border-b border-gray-100 bg-white">
+        <span className="min-w-0 truncate text-gray-800 text-sm font-semibold" title={title}>{title}</span>
         {file && <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center bg-gray-50 rounded border border-gray-200">
             <button disabled={pageNumber <= 1} onClick={() => goTo(pageNumber - 1)}
@@ -214,7 +214,7 @@ export const PdfViewerBox: React.FC<Props> = ({
           </div>
           {onDownload && <button onClick={onDownload}
             className="flex items-center gap-1 bg-brand hover:bg-brand-hover text-white text-xs px-2 py-1 rounded" title="Tải tệp PDF đã dịch">
-            <Download size={14} /> Tải xuống
+            <Download size={14} /> <span className="hidden sm:inline">Tải xuống</span>
           </button>}
         </div>}
       </div>
@@ -242,7 +242,7 @@ export const PdfViewerBox: React.FC<Props> = ({
           stopPan();
         }}
         onPointerCancel={stopPan} onLostPointerCapture={stopPan}
-        className={'flex-1 min-h-0 overflow-auto relative bg-gray-100 p-4 select-none overscroll-contain ' + (dragging ? 'cursor-grabbing' : 'cursor-grab')}
+        className={'flex-1 min-h-0 overflow-auto relative bg-gray-100 p-2 lg:p-4 select-none overscroll-contain ' + (dragging ? 'cursor-grabbing' : 'cursor-grab')}
         style={{ overflowAnchor: 'none' }}>
         <Document file={file} onLoadSuccess={loadPages} onLoadError={() => setLoadError(true)}
           className="flex flex-col items-center gap-4 w-max min-w-full"

@@ -20,6 +20,9 @@ import {
   fetchJobResultBlob,
   checkHealth,
   POLL_INTERVAL_MS,
+  POLL_MAX_BACKOFF_MS,
+  POLL_GIVE_UP_MS,
+  classifyRequestError,
   type CapabilitiesResponse,
   type ProcessingProfile,
   type JobProgress,
@@ -197,9 +200,26 @@ export const App: React.FC = () => {
       );
       jobIdRef.current = job_id;
 
+      // A single failed status request must not end the job on screen: the
+      // backend can be busy for tens of seconds finishing a large PDF, or be
+      // restarted by Electron. Retry with backoff; stop only when the job is
+      // gone (404), the request is refused, or nothing answers for too long.
+      let failures = 0;
+      let failingSince = 0;
+      const stopFollowing = (message: string) => {
+        setErrorText(message);
+        setNoticeText(null);
+        setIsTranslating(false);
+        setIsCancelling(false);
+        jobIdRef.current = null;
+      };
+
       const poll = async () => {
         try {
           const statusRes = await fetchJobStatus(job_id);
+          if (failures > 0) setNoticeText(null);
+          failures = 0;
+          failingSince = 0;
           setProgress(statusRes.progress);
 
           if (statusRes.status === 'complete' || statusRes.status === 'complete_with_warnings') {
@@ -220,10 +240,23 @@ export const App: React.FC = () => {
           } else {
             pollingTimerRef.current = window.setTimeout(poll, POLL_INTERVAL_MS);
           }
-        } catch (err: any) {
-          const msg = 'Không thể kiểm tra tiến độ. Vui lòng kiểm tra lại trạng thái ứng dụng.';
-          setErrorText(msg);
-          setIsTranslating(false);
+        } catch (err: unknown) {
+          const kind = classifyRequestError(err);
+          if (kind === 'not_found') {
+            stopFollowing('Bộ xử lý đã khởi động lại nên tác vụ bị gián đoạn. Hãy bấm "Dịch ngay" để dịch lại.');
+            return;
+          }
+          if (kind === 'transient') {
+            failures += 1;
+            if (!failingSince) failingSince = Date.now();
+            if (Date.now() - failingSince < POLL_GIVE_UP_MS) {
+              setNoticeText('Đang chờ bộ xử lý phản hồi... Tác vụ vẫn tiếp tục.');
+              const delay = Math.min(POLL_INTERVAL_MS * 2 ** failures, POLL_MAX_BACKOFF_MS);
+              pollingTimerRef.current = window.setTimeout(poll, delay);
+              return;
+            }
+          }
+          stopFollowing('Không thể kiểm tra tiến độ. Vui lòng kiểm tra lại trạng thái ứng dụng.');
         }
       };
 
@@ -267,21 +300,21 @@ export const App: React.FC = () => {
     progress.total > 0 ? Math.min(100, Math.round((progress.done / progress.total) * 100)) : 0;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
+    <div className="flex flex-col h-screen min-w-0 overflow-hidden bg-gray-50 text-gray-900">
       {/* Top Navigation Bar */}
-      <header className="bg-[#14452F] text-white px-5 py-3 shadow-md flex items-center justify-between">
+      <header className="bg-[#14452F] text-white px-3 py-2 lg:px-5 lg:py-3 short:py-1.5 shadow-md flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg overflow-hidden bg-white shrink-0">
+          <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-lg overflow-hidden bg-white shrink-0">
             <img src="./icon.png" alt="" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight leading-tight">PDF Translate</h1>
-            <p className="text-xs text-emerald-100/70">Bảo toàn bố cục, bảng biểu & công thức</p>
+            <p className="hidden md:block short:hidden text-xs text-emerald-100/70">Bảo toàn bố cục, bảng biểu & công thức</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-xs bg-black/20 px-2.5 py-1 rounded-full">
+          <div className="flex items-center gap-2 text-xs bg-black/20 px-2.5 py-1 rounded-full whitespace-nowrap">
             <span
               className={`w-2 h-2 rounded-full ${
                 backendReady && !engineBlocked ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
@@ -291,15 +324,15 @@ export const App: React.FC = () => {
               {backendReady && !engineBlocked ? 'Bộ xử lý sẵn sàng' : backendReady ? 'Đang chuẩn bị dữ liệu...' : 'Đang kết nối bộ xử lý...'}
             </span>
           </div>
-          <img src="./icon.png" alt="PDF Translate" className="w-8 h-8 rounded-md object-cover" />
+          <img src="./icon.png" alt="PDF Translate" className="hidden xl:block w-8 h-8 rounded-md object-cover" />
         </div>
       </header>
 
       {/* Action & Configuration Panel */}
-      <div className="bg-white border-b border-gray-200 px-5 py-3 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white border-b border-gray-200 px-3 py-2 lg:px-5 lg:py-3 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 lg:gap-4">
           {/* File Picker */}
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2 lg:gap-3">
             <input
               type="file"
               ref={fileInputRef}
@@ -310,29 +343,29 @@ export const App: React.FC = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isTranslating}
-              className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-3.5 py-2 rounded-md border border-gray-300 transition-colors disabled:opacity-50"
+              className="flex shrink-0 items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-md border border-gray-300 transition-colors disabled:opacity-50"
             >
               <FileUp size={16} />
               <span>{selectedFile ? 'Chọn file khác' : 'Chọn file PDF'}</span>
             </button>
 
             {selectedFile ? (
-              <div className="flex items-center gap-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-md">
+              <div className="flex min-w-0 items-center gap-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 px-2 py-1 lg:px-3 lg:py-1.5 rounded-md" title={selectedFile.name}>
                 <FileText size={16} className="text-[#14452F]" />
-                <span className="font-medium truncate max-w-xs">{selectedFile.name}</span>
-                <span className="text-xs text-gray-400">
+                <span className="font-medium truncate max-w-[9rem] md:max-w-[14rem] xl:max-w-xs">{selectedFile.name}</span>
+                <span className="hidden lg:inline text-xs text-gray-400">
                   ({(selectedFile.size / 1024).toFixed(1)} KB)
                 </span>
               </div>
             ) : (
-              <span className="text-xs text-gray-400">Chưa chọn tệp tin (Kéo thả hoặc bấm nút)</span>
+              <span className="hidden md:inline text-xs text-gray-400">Chưa chọn tệp tin (Kéo thả hoặc bấm nút)</span>
             )}
           </div>
 
           {/* Language Selection & Translate Button */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 lg:gap-3">
             <div className="flex items-center gap-2">
-              <label htmlFor="target-lang" className="text-xs font-semibold text-gray-600">
+              <label htmlFor="target-lang" className="sr-only xl:not-sr-only text-xs font-semibold text-gray-600">
                 Ngôn ngữ đích:
               </label>
               <select
@@ -340,7 +373,8 @@ export const App: React.FC = () => {
                 value={targetLanguage}
                 onChange={(e) => setTargetLanguage(e.target.value)}
                 disabled={isTranslating}
-                className="text-sm bg-white border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
+                title="Ngôn ngữ đích"
+                className="w-36 xl:w-auto max-w-[16rem] text-sm bg-white border border-gray-300 rounded-md px-2 py-1.5 lg:px-3 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
               >
                 {TARGET_LANGUAGES.map((lang) => (
                   <option key={lang.code} value={lang.code}>
@@ -351,7 +385,7 @@ export const App: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <label htmlFor="domain" className="text-xs font-semibold text-gray-600">
+              <label htmlFor="domain" className="sr-only xl:not-sr-only text-xs font-semibold text-gray-600">
                 Lĩnh vực:
               </label>
               <select
@@ -360,7 +394,7 @@ export const App: React.FC = () => {
                 onChange={(e) => setDomain(e.target.value)}
                 disabled={isTranslating}
                 title="Ép đúng thuật ngữ chuyên ngành thay vì để bộ xử lý tự dịch (tùy chọn)"
-                className="text-sm bg-white border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
+                className="w-36 xl:w-auto max-w-[16rem] text-sm bg-white border border-gray-300 rounded-md px-2 py-1.5 lg:px-3 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
               >
                 {DOMAINS.map((item) => (
                   <option key={item.code} value={item.code}>
@@ -377,7 +411,7 @@ export const App: React.FC = () => {
               onClick={startTranslation}
               disabled={!selectedFile || isTranslating || !backendReady || engineBlocked}
               title={engineBlocked ? 'Mức xử lý chưa sẵn sàng – xem thông báo bên dưới' : undefined}
-              className="flex items-center gap-2 bg-[#14452F] hover:bg-[#0f3624] text-white text-sm font-medium px-6 py-2 rounded-md shadow transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="flex shrink-0 items-center gap-2 bg-[#14452F] hover:bg-[#0f3624] text-white text-sm font-medium px-4 py-1.5 lg:px-6 lg:py-2 rounded-md shadow transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isTranslating ? (
                 <>
@@ -396,8 +430,8 @@ export const App: React.FC = () => {
 
         {/* Translation Progress Bar */}
         {isTranslating && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <div className="flex items-center justify-between text-xs text-gray-600 mb-1 font-medium">
+          <div className="mt-2 pt-2 lg:mt-3 lg:pt-3 border-t border-gray-100">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-600 mb-1 font-medium">
               <span className="flex items-center gap-1.5 text-[#14452F]">
                 <Loader2 size={13} className="animate-spin" />
                 Đang xử lý dịch tài liệu...
@@ -428,6 +462,8 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        {/* Notices scroll inside a capped band so a short projector screen keeps room for the PDF. */}
+        <div className="max-h-[22vh] overflow-y-auto">
         {!isTranslating && <LocalStatusNotice info={engineInfo} profile={profile} />}
 
         {finishedJob && <TranslationWarningBanner result={finishedJob} />}
@@ -445,10 +481,11 @@ export const App: React.FC = () => {
             <div className="flex-1 font-medium leading-relaxed">{errorText}</div>
           </div>
         )}
+        </div>
       </div>
 
       {/* Main Workspace (Dual PDF Viewers or Drag & Drop Area) */}
-      <main className="flex-1 min-h-0 p-4 overflow-hidden">
+      <main className="flex-1 min-h-0 p-2 lg:p-4 overflow-hidden">
         {selectedFile ? (
           <PdfComparison
             key={selectedFile.name + ':' + selectedFile.lastModified}

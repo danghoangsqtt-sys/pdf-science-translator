@@ -3,6 +3,26 @@ import axios from 'axios';
 export const API_BASE_URL = window.pdftranslate?.apiBaseUrl || 'http://127.0.0.1:8089/api';
 export const API_TOKEN_HEADER = 'X-PDFTranslate-Token';
 export const POLL_INTERVAL_MS = 750;
+// While a status request keeps failing, wait longer between tries, up to this.
+export const POLL_MAX_BACKOFF_MS = 5000;
+// Stop following a job only after the backend has not answered for this long.
+// Finishing a large PDF can hold the backend for tens of seconds.
+export const POLL_GIVE_UP_MS = 120000;
+
+/** How a failed request should be treated by a caller that is polling. */
+export type RequestFailure = 'transient' | 'not_found' | 'other';
+
+export const classifyRequestError = (error: unknown): RequestFailure => {
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status;
+    if (status === 404) return 'not_found';
+    // No response at all: timeout, refused connection, backend restarting.
+    if (status === undefined || status === 408 || status === 429 || status >= 500) {
+      return 'transient';
+    }
+  }
+  return 'other';
+};
 
 export interface JobProgress {
   done: number;
@@ -51,8 +71,10 @@ export interface CapabilitiesResponse {
   profiles: ProfileInfo[];
 }
 
+// Electron's preload supplies a per-launch token. Only a Vite dev build falls
+// back to the dev token, which the backend accepts only with PDFTRANSLATE_DEV=1.
 const getApiToken = (): string => {
-  return window.pdftranslate?.apiToken || 'dev-token';
+  return window.pdftranslate?.apiToken || (import.meta.env.DEV ? 'dev-token' : '');
 };
 
 const authHeaders = () => ({

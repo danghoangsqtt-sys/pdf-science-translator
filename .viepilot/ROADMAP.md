@@ -72,3 +72,18 @@ Người dùng đã chốt thứ tự; lượt này chỉ lập kế hoạch. Pr
   BUG-011 (Android) và `PDF2ZH_CACHE_DIR` được gộp. P1-T5 vẫn chờ Android SDK platform 35.
 - Giao diện Tkinter, trình tự cập nhật và đóng gói PyInstaller đã bỏ; ứng dụng desktop chỉ còn Electron offline.
 - Tiếp theo: sắp xếp lại cây thư mục, rồi build hai bản Máy mạnh / Máy yếu.
+
+## Phase 8 — Tiến độ không kẹt và khung giao diện đa kích thước (09/11/2026)
+
+Nguồn: audit `audit-codebase-2026-11-09.md` + yêu cầu người dùng (máy chiếu 4:3, màn khổ vuông).
+Độc lập với Phase 6–7; có thể chạy trước. Mục tiêu sản phẩm vẫn 0.4.0.
+
+| Task | Request | Trạng thái |
+| --- | --- | --- |
+| [P8-T1](phases/08-progress-responsive/tasks/P8-T1.md): job luôn kết thúc, UI theo dõi bền | BUG-017 | technical_verified |
+| [P8-T2](phases/08-progress-responsive/tasks/P8-T2.md): dọn upload/output/job cũ | BUG-014 | technical_verified |
+| [P8-T3](phases/08-progress-responsive/tasks/P8-T3.md): token API và CORS | BUG-015 | technical_verified |
+| [P8-T4](phases/08-progress-responsive/tasks/P8-T4.md): cửa sổ Electron theo màn hình | ENH-004 | technical_verified |
+| [P8-T5](phases/08-progress-responsive/tasks/P8-T5.md): bố cục co giãn, chế độ một khung, QA 5 kích thước | ENH-004 | technical_verified |
+
+Chưa lên lịch: BUG-016 (liên kết Zalo, chờ chủ sở hữu chọn), BUG-018 (trạng thái/tài liệu), ENH-003.

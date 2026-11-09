@@ -24,13 +24,32 @@ from scripts.translate_pdf import DOMAINS, TARGET_LANGUAGES
 from pdf2zh.offline import PROFILES, OfflineError, active
 from server.services import offline_service
 from server.services.runtime_service import runtime
-from server.services.job_service import FINISHED_WITH_RESULT, TranslationJobManager
+from server.services.job_service import FINISHED_WITH_RESULT, TranslationJobManager, remove_leftovers
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("pdf_translate.backend")
 
 API_TOKEN_HEADER = "X-PDFTranslate-Token"
-API_TOKEN = os.environ.get("PDFTRANSLATE_API_TOKEN") or "dev-token"
+DEV_TOKEN = "dev-token"
+
+
+def session_token() -> str:
+    """The token every API call must carry.
+
+    Electron passes a fresh random token per launch. The well-known dev token
+    is accepted only when a developer asks for it; otherwise a backend started
+    without a token picks one nobody knows, so it answers no one rather than
+    anyone on this machine.
+    """
+    token = os.environ.get("PDFTRANSLATE_API_TOKEN")
+    if token:
+        return token
+    if os.environ.get("PDFTRANSLATE_DEV") == "1":
+        return DEV_TOKEN
+    return secrets.token_urlsafe(32)
+
+
+API_TOKEN = session_token()
 
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MiB
 DATA_DIR = Path(os.environ.get("PDFTRANSLATE_DATA_DIR") or (PROJECT_ROOT / "server" / "data"))
@@ -40,11 +59,13 @@ OUTPUTS_DIR = DATA_DIR / "outputs"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
-job_manager = TranslationJobManager()
+job_manager = TranslationJobManager(outputs_root=OUTPUTS_DIR)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Files from an earlier session belong to jobs that no longer exist.
+    await asyncio.to_thread(remove_leftovers, UPLOADS_DIR, OUTPUTS_DIR)
     # Ensure job manager queue worker is running on app startup
     await job_manager.start()
     if active():
@@ -64,20 +85,19 @@ async def invalid_request(_request, _error):
     return JSONResponse(status_code=422, content={"detail": "Yêu cầu không hợp lệ.",
                                                  "code": "INVALID_REQUEST"})
 
-# Allow requests from local frontend (Electron / Vite dev server)
+# Only the app's own renderers: the packaged file:// page (origin "null") and
+# the Vite dev server. Not every localhost port - any local web page could
+# otherwise read responses. The API uses a header token, never cookies.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "null",  # Packaged Electron file:// renderer; protected by per-session token.
+        "null",
         "http://127.0.0.1:5173",
         "http://localhost:5173",
-        "http://127.0.0.1:8089",
-        "http://localhost:8089",
     ],
-    allow_origin_regex=r"^https?://(127\.0\.0\.1|localhost)(:\d+)?$",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=[API_TOKEN_HEADER, "Content-Type"],
 )
 
 

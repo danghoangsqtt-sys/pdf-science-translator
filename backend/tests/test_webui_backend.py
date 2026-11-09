@@ -19,13 +19,14 @@ DATA_DIR = tempfile.TemporaryDirectory()
 
 if HAS_FASTAPI:
     os.environ.setdefault("PDFTRANSLATE_DATA_DIR", DATA_DIR.name)
+    os.environ.setdefault("PDFTRANSLATE_API_TOKEN", "test-session-token")
     from fastapi.testclient import TestClient
 
     from server import main as backend
     from server.services import offline_service, job_service
     from pdf2zh.offline import profile_for
 
-TOKEN = {"X-PDFTranslate-Token": "dev-token"}
+TOKEN = {"X-PDFTranslate-Token": backend.API_TOKEN} if HAS_FASTAPI else {}
 PDF = b"%PDF-1.7\n%test\n"
 
 
@@ -72,6 +73,41 @@ class JobOutcomeTests(unittest.TestCase):
         self.assertEqual(len(warnings), 6)
         self.assertTrue(warnings[0].startswith("Bộ xử lý cục bộ"))
         self.assertIn("Trang 3, 7 là ảnh quét", warnings[-1])
+
+
+@unittest.skipUnless(HAS_FASTAPI, "webui backend dependencies are not installed")
+class SessionTokenTests(unittest.TestCase):
+    def test_a_backend_without_a_token_does_not_accept_the_dev_token(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            first, second = backend.session_token(), backend.session_token()
+        self.assertNotEqual(first, backend.DEV_TOKEN)
+        self.assertNotEqual(first, second)
+        self.assertGreaterEqual(len(first), 32)
+
+    def test_the_dev_token_needs_an_explicit_opt_in(self):
+        with mock.patch.dict(os.environ, {"PDFTRANSLATE_DEV": "1"}, clear=True):
+            self.assertEqual(backend.session_token(), backend.DEV_TOKEN)
+        with mock.patch.dict(os.environ, {"PDFTRANSLATE_API_TOKEN": "abc", "PDFTRANSLATE_DEV": "1"}, clear=True):
+            self.assertEqual(backend.session_token(), "abc")
+
+
+@unittest.skipUnless(HAS_FASTAPI, "webui backend dependencies are not installed")
+class LeftoverCleanupTests(unittest.TestCase):
+    def test_startup_empties_only_the_given_folders(self):
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            uploads, outputs, keep = root / "uploads", root / "outputs", root / "keep.txt"
+            (outputs / "old-job").mkdir(parents=True)
+            (outputs / "old-job" / "paper-vi.pdf").write_bytes(PDF)
+            uploads.mkdir()
+            (uploads / "old-job.pdf").write_bytes(PDF)
+            keep.write_text("user file")
+
+            job_service.remove_leftovers(uploads, outputs, root / "missing")
+
+            self.assertEqual(list(uploads.iterdir()), [])
+            self.assertEqual(list(outputs.iterdir()), [])
+            self.assertTrue(keep.exists())
 
 
 @unittest.skipUnless(HAS_FASTAPI, "webui backend dependencies are not installed")
@@ -188,6 +224,43 @@ class BackendApiTests(unittest.TestCase):
         result = self.client.get(f"/api/jobs/{job_id}/result", headers=TOKEN)
         self.assertEqual(result.status_code, 409)
 
+    def test_a_failure_after_translation_still_ends_the_job(self):
+        """BUG-017: an error while reading the result left the job 'running'."""
+        fake = mock.Mock(side_effect=self._writes_output(10, {}))
+        with mock.patch.object(job_service, "translate_pdf", fake), \
+                mock.patch.object(job_service.TranslationJob, "record",
+                                  side_effect=KeyError("kept_by_reason")):
+            body = self._wait(self._submit())
+
+        self.assertEqual(body["status"], "error")
+        self.assertEqual(body["error_code"], "PROCESSING_FAILED")
+        self.assertNotIn("kept_by_reason", body["error"])
+
+    def test_the_upload_is_deleted_when_the_job_ends_but_the_result_stays(self):
+        """BUG-014: every source PDF used to stay in the data folder forever."""
+        fake = mock.Mock(side_effect=self._writes_output(10, {}))
+        with mock.patch.object(job_service, "translate_pdf", fake):
+            job_id = self._submit()
+            self._wait(job_id)
+
+        self.assertFalse((backend.UPLOADS_DIR / f"{job_id}.pdf").exists())
+        result = self.client.get(f"/api/jobs/{job_id}/result", headers=TOKEN)
+        self.assertEqual(result.status_code, 200)
+
+    def test_only_the_newest_finished_jobs_are_kept(self):
+        fake = mock.Mock(side_effect=self._writes_output(10, {}))
+        with mock.patch.object(job_service, "translate_pdf", fake):
+            jobs = []
+            for _ in range(job_service.MAX_KEPT_JOBS + 1):
+                jobs.append(self._submit())
+                self._wait(jobs[-1])
+
+        oldest, newest = jobs[0], jobs[-1]
+        self.assertEqual(self.client.get(f"/api/jobs/{oldest}", headers=TOKEN).status_code, 404)
+        self.assertFalse((backend.OUTPUTS_DIR / oldest).exists())
+        self.assertEqual(
+            self.client.get(f"/api/jobs/{newest}/result", headers=TOKEN).status_code, 200)
+
     def test_cancelling_an_unknown_job_is_not_found(self):
         response = self.client.post("/api/jobs/missing/cancel", headers=TOKEN)
         self.assertEqual(response.status_code, 404)
@@ -235,6 +308,21 @@ class BackendApiTests(unittest.TestCase):
             files={'file':('paper.pdf',PDF,'application/pdf')}, data={'profile':'PRIVATE_MODEL'})
         self.assertIn(response.status_code, (400,503))
         self.assertNotIn('PRIVATE_MODEL', response.text)
+
+    def test_other_local_pages_get_no_cors_access(self):
+        """BUG-015: any localhost port used to be an allowed origin."""
+        for origin in ("http://localhost:3000", "http://127.0.0.1:8089", "https://example.com"):
+            with self.subTest(origin=origin):
+                response = self.client.options('/api/capabilities', headers={
+                    'Origin': origin, 'Access-Control-Request-Method': 'GET',
+                    'Access-Control-Request-Headers': 'X-PDFTranslate-Token',
+                })
+                self.assertNotIn('access-control-allow-origin', response.headers)
+
+    def test_the_public_dev_token_is_refused(self):
+        self.assertNotEqual(backend.API_TOKEN, backend.DEV_TOKEN)
+        response = self.client.get('/api/capabilities', headers={'X-PDFTranslate-Token': 'dev-token'})
+        self.assertEqual(response.status_code, 401)
 
     def test_capabilities_needs_token(self):
         self.assertEqual(self.client.get('/api/capabilities').status_code,401)

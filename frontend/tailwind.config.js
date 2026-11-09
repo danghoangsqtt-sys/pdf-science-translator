@@ -6,6 +6,11 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        // Short windows (projectors at 1024x768 and below): trim chrome so
+        // the PDF keeps most of the height.
+        short: { raw: '(max-height: 760px)' },
+      },
       colors: {
         brand: {
           DEFAULT: '#14452F',

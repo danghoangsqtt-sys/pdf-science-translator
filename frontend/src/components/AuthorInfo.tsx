@@ -24,8 +24,8 @@ export const AuthorFooter: React.FC = () => {
 
   return (
     <>
-      <footer className="flex items-center justify-between gap-3 border-t border-gray-200 bg-white px-5 py-1.5 text-xs text-gray-500">
-        <span>{COPYRIGHT}. Bảo lưu mọi quyền.</span>
+      <footer className="flex items-center justify-between gap-3 border-t border-gray-200 bg-white px-3 lg:px-5 py-1 lg:py-1.5 text-xs text-gray-500 whitespace-nowrap">
+        <span className="truncate">{COPYRIGHT}<span className="hidden sm:inline">. Bảo lưu mọi quyền.</span></span>
         <button
           type="button"
           onClick={() => setOpen(true)}

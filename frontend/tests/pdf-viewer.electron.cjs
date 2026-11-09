@@ -49,6 +49,10 @@ function pdfBytes(count) {
 }
 let resultPdf = pdfBytes(9);
 let resourcesReady = false;
+// Job status requests to drop before answering (backend busy or restarting),
+// and whether the job has vanished (backend restarted: 404).
+let statusFailures = 0;
+let statusNotFound = false;
 async function selectFile(bytes, name) {
   await js('(() => { const bytes = Uint8Array.from(atob(' + JSON.stringify(bytes.toString('base64')) + '), c => c.charCodeAt(0)); const data = new DataTransfer(); data.items.add(new File([bytes], ' + JSON.stringify(name) + ', {type:"application/pdf"})); const input = document.querySelector("input[type=file]"); input.files=data.files; input.dispatchEvent(new Event("change",{bubbles:true})); })()');
 }
@@ -101,6 +105,16 @@ app.whenReady().then(async () => {
     const url = new URL(event.request.url);
     let body;
     let contentType = 'application/json';
+    let responseCode = 200;
+    const isStatus = event.request.method === 'GET' && /\/jobs\/[^/]+$/.test(url.pathname);
+    if (isStatus && statusFailures > 0) {
+      statusFailures -= 1;
+      await win.webContents.debugger.sendCommand('Fetch.failRequest', {
+        requestId: event.requestId, errorReason: 'ConnectionRefused',
+      });
+      return;
+    }
+    if (isStatus && statusNotFound) responseCode = 404;
     if (event.request.method === 'OPTIONS') body = Buffer.from('');
     else if (url.pathname.endsWith('/health')) body = Buffer.from(JSON.stringify({ status: 'ready' }));
     else if (url.pathname.endsWith('/capabilities')) body = Buffer.from(JSON.stringify({
@@ -115,9 +129,10 @@ app.whenReady().then(async () => {
     }));
     else if (url.pathname.endsWith('/result')) { body = resultPdf; contentType = 'application/pdf'; }
     else if (url.pathname.endsWith('/jobs')) body = Buffer.from(JSON.stringify({ job_id: 'viewer-test' }));
+    else if (responseCode === 404) body = Buffer.from(JSON.stringify({ detail: 'Không tìm thấy tác vụ.' }));
     else body = Buffer.from(JSON.stringify({ status: 'complete', progress: { done: 9, total: 9 } }));
     await win.webContents.debugger.sendCommand('Fetch.fulfillRequest', {
-      requestId: event.requestId, responseCode: 200, responseHeaders: [
+      requestId: event.requestId, responseCode, responseHeaders: [
         { name: 'Content-Type', value: contentType }, { name: 'Access-Control-Allow-Origin', value: '*' },
         { name: 'Access-Control-Allow-Headers', value: '*' }, { name: 'Access-Control-Allow-Methods', value: '*' },
       ], body: body.toString('base64'),
@@ -126,6 +141,8 @@ app.whenReady().then(async () => {
   await win.loadFile(path.join(__dirname, '../dist/index.html'));
   await win.webContents.debugger.sendCommand('Emulation.setFocusEmulationEnabled', { enabled: true });
   await until('document.querySelector("input[type=file]")', 'app ready');
+  // A mode picked in an earlier run must not change this run's layout.
+  await js('localStorage.clear()');
   assert.equal(await js('window.pdftranslate?.apiBaseUrl'), 'http://127.0.0.1:38089/api');
   assert.equal(await js('window.pdftranslate?.apiToken'), 'viewer-test');
   checks.push('Production sandbox preload supplies the private API port and session token');
@@ -154,8 +171,12 @@ app.whenReady().then(async () => {
   const beforeResult = views[0].top;
   checks.push('Continuous wheel scrolling across pages');
   await until('Array.from(document.querySelectorAll("button")).some(e=>e.textContent.includes("Dịch ngay")&&!e.disabled)', 'translate available');
+  statusFailures = 2;
   await clickText('Dịch ngay');
   await until('document.querySelectorAll("[data-pdf-viewport]").length === 2 && document.querySelectorAll("[data-page-number]:not(.react-pdf__Page)").length === 18', 'result pages');
+  assert.equal(statusFailures, 0, 'both dropped status requests were retried');
+  assert.ok(!await js('document.body.innerText.includes("Không thể kiểm tra tiến độ")'));
+  checks.push('Transient status failures are retried instead of abandoning the job');
   await delay(300);
   await aligned('Late result follows the source reading position');
   assert.ok(Math.abs((await metrics())[0].top - beforeResult) <= 2);
@@ -212,6 +233,61 @@ app.whenReady().then(async () => {
   checks.push('Mirrored scrolling settles without feedback');
 
   fs.writeFileSync(path.join(out, 'viewer-paired.png'), (await win.webContents.capturePage()).toPNG());
+
+  // ENH-004: projector 4:3, 5:4 and wide screens.
+  const pageShown = (index) => js('(() => { const v = document.querySelectorAll("[data-pdf-viewport]")[' + index
+    + ']; const m = v && v.closest("section").innerText.match(/Trang (\\d+)/); return m ? Number(m[1]) : 0; })()');
+  for (const [width, height] of [[800, 600], [1024, 768], [1280, 1024], [1366, 768], [1920, 1080]]) {
+    win.setContentSize(width, height);
+    await delay(500);
+    const layout = await js(`(() => {
+      const inView = (e) => { if (!e) return false; const r = e.getBoundingClientRect();
+        return r.width > 0 && r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 0.5 && r.bottom <= innerHeight + 0.5; };
+      const button = (text) => Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes(text));
+      const panes = Array.from(document.querySelectorAll("[data-pdf-viewport]"));
+      return { innerWidth, innerHeight, scrollWidth: document.documentElement.scrollWidth,
+        bodyScroll: document.body.scrollWidth, translate: inView(button("Dịch ngay")),
+        download: inView(button("Tải")), panes: panes.length,
+        paneHeight: Math.max(0, ...panes.map(p => p.closest("section").getBoundingClientRect().height)),
+        mode: document.querySelector("[data-view-mode][aria-pressed=true]")?.dataset.viewMode };
+    })()`);
+    const label = width + 'x' + height;
+    assert.equal(layout.innerWidth, width, label + ' content size');
+    assert.ok(layout.scrollWidth <= width && layout.bodyScroll <= width, label + ' no horizontal page scroll: ' + JSON.stringify(layout));
+    assert.ok(layout.translate, label + ' translate button visible: ' + JSON.stringify(layout));
+    assert.ok(layout.download, label + ' download button visible: ' + JSON.stringify(layout));
+    assert.ok(layout.paneHeight >= height * 0.55, label + ' PDF keeps most of the height: ' + JSON.stringify(layout));
+    if (width < 1200) {
+      assert.equal(layout.panes, 1, label + ' one pane on a narrow screen');
+      assert.equal(layout.mode, 'translated', label + ' a fresh result is shown first');
+    } else {
+      assert.equal(layout.panes, 2, label + ' side by side when wide enough');
+    }
+    fs.writeFileSync(path.join(out, 'viewer-' + label + '.png'), (await win.webContents.capturePage()).toPNG());
+    checks.push('Usable layout at ' + label);
+  }
+  win.setContentSize(1024, 768);
+  await delay(400);
+  await wheel(0, 1500);
+  const readingPage = await pageShown(0);
+  assert.ok(readingPage > 1, 'scrolled into the document');
+  await clickText('Bản gốc');
+  await delay(600);
+  assert.equal(await js('document.querySelectorAll("[data-pdf-viewport]").length'), 1);
+  assert.equal(await pageShown(0), readingPage, 'switching panes keeps the reading page');
+  await clickText('Song song');
+  await delay(600);
+  assert.equal(await js('document.querySelectorAll("[data-pdf-viewport]").length'), 2, 'side by side on request');
+  await aligned('Single-pane switching keeps the reading position and Song song can be forced');
+  win.setContentSize(1360, 960);
+  await delay(400);
+
+  statusNotFound = true;
+  await clickText('Dịch ngay');
+  await until('document.body.innerText.includes("khởi động lại")', 'restarted backend reported');
+  await until('Array.from(document.querySelectorAll("button")).some(e=>e.textContent.includes("Dịch ngay")&&!e.disabled)', 'translate available again');
+  statusNotFound = false;
+  checks.push('A job lost to a backend restart is reported and translation can start again');
   await selectFile(pdfBytes(200), 'viewer-book.pdf');
   await until('document.querySelectorAll("[data-page-number]:not(.react-pdf__Page)").length === 200', 'large document');
   await delay(300);

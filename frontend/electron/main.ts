@@ -1,10 +1,11 @@
-import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, screen, session } from 'electron';
 import path from 'node:path';
 import { spawn, ChildProcess } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import net from 'node:net';
+import { centredIn, displayFor, parseSavedWindow, planWindow, type Rect } from './windowBounds';
 
 // Diagnostic-only file log: console output from a windowed (non-console)
 // Electron build is not reliably captured by a parent shell even when its
@@ -204,13 +205,59 @@ function startPythonBackend() {
   });
 }
 
+const WINDOW_STATE_PATH = () => path.join(app.getPath('userData'), 'window-state.json');
+
+function workAreas(): Rect[] {
+  return screen.getAllDisplays().map((display) => display.workArea);
+}
+
+/** The screen the user is looking at: where the pointer is when the app starts. */
+function currentWorkArea(): Rect {
+  return screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
+}
+
+function readWindowState() {
+  try {
+    return parseSavedWindow(JSON.parse(fs.readFileSync(WINDOW_STATE_PATH(), 'utf8')));
+  } catch {
+    return null;
+  }
+}
+
+function saveWindowState(window: BrowserWindow) {
+  try {
+    const state = { bounds: window.getNormalBounds(), maximized: window.isMaximized() };
+    fs.writeFileSync(WINDOW_STATE_PATH(), JSON.stringify(state));
+  } catch {
+    // A lost window position is not worth an error dialog.
+  }
+}
+
+/** A projector unplugged or a resolution change can leave the window off screen. */
+function keepWindowOnScreen() {
+  // A maximized or full-screen window is placed by the system itself.
+  if (!win || win.isDestroyed() || win.isMaximized() || win.isFullScreen()) return;
+  const areas = workAreas();
+  const bounds = win.getBounds();
+  const home = displayFor(bounds, areas);
+  if (home) {
+    if (bounds.width > home.width || bounds.height > home.height) {
+      win.setBounds(centredIn(home));
+    }
+    return;
+  }
+  win.setBounds(centredIn(screen.getPrimaryDisplay().workArea));
+}
+
 function createWindow() {
   const preloadPath = path.join(__dirname, 'preload.mjs');
   fileLog('createWindow start, preload =', preloadPath, 'exists =', fs.existsSync(preloadPath));
   const windowIconPath = path.join(process.env.VITE_PUBLIC as string, 'icon.png');
+  const plan = planWindow(currentWorkArea(), readWindowState(), workAreas());
   win = new BrowserWindow({
-    width: 1360,
-    height: 880,
+    ...plan.bounds,
+    minWidth: plan.minWidth,
+    minHeight: plan.minHeight,
     title: 'PDF Translate',
     icon: windowIconPath,
     webPreferences: {
@@ -224,6 +271,8 @@ function createWindow() {
     },
   });
   fileLog('BrowserWindow constructed');
+  if (plan.maximize) win.maximize();
+  win.on('close', () => { if (win) saveWindowState(win); });
   win.removeMenu();
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
 
@@ -296,6 +345,8 @@ app.whenReady().then(async () => {
       callback({ cancel: !(localAsset || localApi || localDev) });
     } catch { callback({ cancel: true }); }
   });
+  screen.on('display-removed', keepWindowOnScreen);
+  screen.on('display-metrics-changed', keepWindowOnScreen);
   fileLog('app ready, isPackaged =', app.isPackaged, 'resourcesPath =', process.resourcesPath);
   startPythonBackend();
   createWindow();

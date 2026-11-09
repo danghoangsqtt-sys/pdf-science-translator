@@ -66,6 +66,18 @@ python3 -m venv .venv
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
+### Backend API token
+
+`npm run dev` starts Electron, which passes a fresh token to the backend and
+renderer on every launch. A backend started on its own (`python
+backend/server/run_server.py`) without `PDFTRANSLATE_API_TOKEN` picks a random
+token and answers nobody; set `PDFTRANSLATE_DEV=1` to accept the dev token that
+a plain Vite page (`http://localhost:5173`) sends. CORS allows only the
+packaged `file://` renderer (origin `null`) and the Vite dev server.
+
+Each job's upload is deleted when the job ends; the last five finished jobs
+keep their output, and startup clears both folders, since jobs are in memory only.
+
 ## Code and Tests
 
 Use four-space indentation, type annotations, concise docstrings,

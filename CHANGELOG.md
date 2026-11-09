@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased] — Phase 8 (đã triển khai và kiểm thử kỹ thuật 09/11/2026, chưa commit)
+
+- BUG-017: job luôn về trạng thái cuối; giao diện thử lại khi kiểm tra tiến độ lỗi tạm thời và báo rõ khi bộ xử lý khởi động lại.
+- BUG-014: dọn tệp tải lên, kết quả và job cũ.
+- BUG-015: bỏ token mặc định cố định, thu hẹp CORS.
+- ENH-004: cửa sổ và bố cục dùng được trên máy chiếu 4:3, màn 5:4; chế độ xem Gốc / Bản dịch / Song song.
+
 ## [Unreleased] — hợp nhất release/0.4.0 (02/11/2026)
 
 ### Removed

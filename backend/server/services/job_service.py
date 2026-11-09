@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import shutil
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -22,6 +23,8 @@ FINISHED_WITH_RESULT = ("complete", "complete_with_warnings")
 # Below this share of translated text the result is still delivered, but the
 # status itself says it is mostly untranslated, not only a warning beside it.
 WARNING_RATIO = 0.5
+# Finished jobs whose result stays downloadable; older ones are deleted.
+MAX_KEPT_JOBS = 5
 
 
 def _utc_now() -> str:
@@ -118,11 +121,59 @@ class TranslationJob:
         self.warnings = translation_warnings(translation)
 
 
+def _inside(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
+
+
+def _remove(path: Path) -> None:
+    """Delete one file or folder without following links out of it."""
+    try:
+        if path.is_symlink() or getattr(path, "is_junction", lambda: False)():
+            path.unlink()
+        elif path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink(missing_ok=True)
+    except OSError:
+        logger.warning("Could not remove %s", path.name)
+
+
+def remove_leftovers(*directories: Path) -> None:
+    """Empty upload/output folders a previous session left behind.
+
+    Jobs live in memory only, so after a restart nothing can reach these
+    files any more; keeping them just fills the user's disk.
+    """
+    for directory in directories:
+        if not directory.is_dir():
+            continue
+        for child in directory.iterdir():
+            _remove(child)
+
+
 class TranslationJobManager:
-    def __init__(self) -> None:
+    def __init__(self, outputs_root: Path | None = None,
+                 max_kept_jobs: int = MAX_KEPT_JOBS) -> None:
         self._jobs: dict[str, TranslationJob] = {}
         self._queue: asyncio.Queue[str] = asyncio.Queue()
         self._worker_task: asyncio.Task[None] | None = None
+        # Output folders are deleted only inside this root.
+        self._outputs_root = outputs_root
+        self._max_kept_jobs = max_kept_jobs
+
+    def _settle(self, job: TranslationJob) -> None:
+        """A job has ended: drop its upload and forget the oldest finished jobs."""
+        job.upload_path.unlink(missing_ok=True)
+        finished = [item for item in self._jobs.values()
+                    if item.status not in ("queued", "running")]
+        for old in finished[:max(0, len(finished) - self._max_kept_jobs)]:
+            self._jobs.pop(old.job_id, None)
+            if self._outputs_root is not None and _inside(old.output_dir, self._outputs_root):
+                _remove(old.output_dir)
 
     async def start(self) -> None:
         if self._worker_task is None or self._worker_task.done():
@@ -169,19 +220,26 @@ class TranslationJobManager:
             if job.status == "queued":
                 job.status = "cancelled"
                 job.updated_at = _utc_now()
+                self._settle(job)
         return job
 
     async def _worker(self) -> None:
         logger.info("Translation single-worker queue started.")
         while True:
             job_id = await self._queue.get()
+            job: TranslationJob | None = None
             try:
                 job = self._jobs.get(job_id)
                 if job is None or job.status == "cancelled":
                     continue
                 await self._run_job(job)
             except Exception:
-                logger.error("Unexpected local job failure")
+                # _run_job already ends every job it started; this only guards
+                # a failure before that, so the client never polls forever.
+                logger.exception("Unexpected local job failure")
+                if job is not None and job.status in ("queued", "running"):
+                    _fail(job, RuntimeError("unexpected job failure"))
+                    self._settle(job)
             finally:
                 self._queue.task_done()
 
@@ -197,6 +255,9 @@ class TranslationJobManager:
             job.progress = {"done": int(done), "total": int(total)}
             job.updated_at = _utc_now()
 
+        # Everything after "running" sits in one try: a failure while reading
+        # the result (not only inside translate_pdf) must still end the job,
+        # or the window keeps showing progress for a job that has stopped.
         try:
             policy = await asyncio.to_thread(require_profile, job.profile)
             os.environ["PDF_TRANSLATE_PROCESSING_PROFILE"] = policy.id
@@ -213,28 +274,31 @@ class TranslationJobManager:
                 on_progress=on_progress,
                 cancel_event=job.cancel_event,
             )
+            job.record(translation)
+            if translation.path and translation.path.is_file():
+                job.result_path = translation.path
+                job.status = finished_status(translation)
+                logger.info(
+                    "Job %s finished (%s, %.0f%% translated): %s",
+                    job.job_id, job.status, 100 * translation.translated_ratio, job.result_path,
+                )
+            else:
+                job.status = "error"
+                job.error_code = "PROCESSING_FAILED"
+                job.error = "Không tìm thấy file PDF kết quả sau khi dịch."
+                logger.error("Job %s finished without output path.", job.job_id)
         except TranslationCancelled:
             job.status = "cancelled"
-            job.updated_at = _utc_now()
             logger.info("Job %s cancelled.", job.job_id)
-            return
         except Exception as exc:
-            job.status = "error"
-            job.error_code, job.error = public_failure(exc)
+            _fail(job, exc)
+            logger.exception("Local job %s failed (%s)", job.job_id, job.error_code)
+        finally:
             job.updated_at = _utc_now()
-            logger.error("Local job %s failed (%s)", job.job_id, job.error_code)
-            return
+            self._settle(job)
 
-        job.record(translation)
-        if translation.path and translation.path.is_file():
-            job.result_path = translation.path
-            job.status = finished_status(translation)
-            logger.info(
-                "Job %s finished (%s, %.0f%% translated): %s",
-                job.job_id, job.status, 100 * translation.translated_ratio, job.result_path,
-            )
-        else:
-            job.status = "error"
-            job.error = "Không tìm thấy file PDF kết quả sau khi dịch."
-            logger.error("Job %s finished without output path.", job.job_id)
-        job.updated_at = _utc_now()
+
+def _fail(job: TranslationJob, error: BaseException) -> None:
+    job.status = "error"
+    job.error_code, job.error = public_failure(error)
+    job.updated_at = _utc_now()

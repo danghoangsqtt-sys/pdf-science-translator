@@ -76,10 +76,13 @@ class LocalRuntime:
         self._registered = False
         self._process_lock = threading.RLock()
         self._job = _kill_with_parent_job()
+        # Set whenever a _prepare run ends, ready or not; restart() waits on it.
+        self._settled = threading.Event()
 
     def start(self) -> None:
         if self._thread is None:
             self._stop.clear()
+            self._settled.clear()
             self._thread = threading.Thread(target=self._prepare, daemon=True)
             self._thread.start()
             if not self._registered:
@@ -87,6 +90,12 @@ class LocalRuntime:
                 self._registered = True
 
     def _prepare(self) -> None:
+        try:
+            self._prepare_worker()
+        finally:
+            self._settled.set()
+
+    def _prepare_worker(self) -> None:
         try:
             pack = self._reuse_pack
             self._reuse_pack = None
@@ -193,6 +202,11 @@ class LocalRuntime:
         thread = self._thread
         if thread is not None and thread is not threading.current_thread():
             thread.join(timeout=5)
+            if thread.is_alive():
+                # Starting a second _prepare now would race the first one for
+                # self.process/self.pack and leave an orphan worker behind.
+                self.state = "LOCAL_RUNTIME_UNAVAILABLE"
+                raise OfflineError(self.state)
         self._thread = None
         self._reuse_pack = self.pack
         self.pack = None
@@ -200,9 +214,7 @@ class LocalRuntime:
         self.state = "LOCAL_PREPARING"
         self._backend = backend
         self.start()
-        deadline = time.monotonic() + timeout
-        while self.state == "LOCAL_PREPARING" and time.monotonic() < deadline:
-            time.sleep(0.1)
+        self._settled.wait(timeout)
         self.require()
 
     def probe(self, alias: str, policy: EffectivePolicy, timeout: float = 60) -> bool:

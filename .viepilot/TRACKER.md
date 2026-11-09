@@ -1,5 +1,17 @@
 # Nhật ký audit sản phẩm
 
+## VP-AUTO — Phase 8 technical verified (09/11/2026)
+- P8-T1..T5 technical_verified: BUG-017, BUG-014, BUG-015, ENH-004.
+- 404/404 unittest, ruff, tsc, node 12/12, Chromium 24/24 ở 800×600, 1024×768, 1280×1024, 1366×768, 1920×1080.
+- Chưa kiểm tay trong Electron; chưa commit/push/tag (persistence pending_user_scope).
+
+## Evolve — Phase 8 tiến độ + giao diện đa kích thước (09/11/2026)
+- Mode: Add Feature kèm sửa lỗi; mục tiêu 0.4.0 giữ nguyên, không bump.
+- Audit 09/11 trên `release/0.4.0`: 394/394 unittest, `tsc` đạt; ghi BUG-014..018, ENH-003, ENH-004.
+- Phase 8: P8-T1 BUG-017 (job kẹt + UI bỏ theo dõi sau 1 lỗi poll), P8-T2 BUG-014, P8-T3 BUG-015, P8-T4/T5 ENH-004 (máy chiếu 4:3, 5:4).
+- Nhánh kế hoạch: `claude/evolve-progress-fixes-responsive-ui` từ `release/0.4.0`; chưa commit/push.
+- Next: `/vp-auto --from 8`.
+
 ## VP-AUTO — Phase 4 technical verified (28/10/2026)
 - BUG-008: 22/22 tệp phục hồi có provenance; source bảo vệ giữ nguyên hash.
 - 424/424 unittest, pip/Ruff/diff/smoke, 16/16 Chromium; fresh portable đạt.
@@ -46,6 +58,7 @@ Không suy diễn PASS hoặc tạo tag từ các kết quả kiểm tra cục b
 
 | Ngày | Quyết định | Nguồn | Trạng thái |
 | --- | --- | --- | --- |
+| 2026-11-09 | Phase 8 lập kế hoạch: BUG-017, BUG-014, BUG-015, ENH-004; hoãn BUG-016/018, ENH-003. | `vp-evolve` | Planned |
 | 2026-10-28 | BUG-008 auto-logged by vp-audit Tier 1/2: thiếu tệp tracked/build/docs từ trước dọn. | `vp-audit` | Backlog |
 | 2026-10-28 | ENH-002 auto-logged by vp-audit Tier 3: phân tích máy và gói offline nhẹ cho laptop. | `vp-audit` | Backlog |
 | 2026-10-27 | BUG-001: Từ chối câu trả lời Ollama sai kiểu hoặc chưa hoàn tất; cache revision 3. | vp-audit Tier 3 | Đã sửa, có hồi quy |
