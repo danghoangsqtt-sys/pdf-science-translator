@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
 import path from 'node:path';
-import { spawn, ChildProcess } from 'node:child_process';
+import { spawn, spawnSync, ChildProcess } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -255,7 +255,9 @@ app.on('window-all-closed', () => {
     safeLog('Killing python backend process...');
     try {
       if (process.platform === 'win32' && pythonProcess.pid) {
-        spawn('taskkill', ['/pid', String(pythonProcess.pid), '/f', '/t'], { windowsHide: true });
+        // Wait for the whole tree (backend + local worker) to stop before quitting;
+        // a fire-and-forget taskkill could lose the race with app.quit().
+        spawnSync('taskkill', ['/pid', String(pythonProcess.pid), '/f', '/t'], { windowsHide: true, timeout: 15000 });
       } else {
         pythonProcess.kill('SIGTERM');
       }
