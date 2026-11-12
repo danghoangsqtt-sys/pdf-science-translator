@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from pdf2zh.rules import drawing_shape, figure_labels
+from pdf2zh.rules import drawing_shape, figure_labels, occluded_glyphs, visible_words
 
 FIGURE = (0, 0, 400, 300)
 
@@ -119,6 +119,101 @@ class FigureLabelTests(unittest.TestCase):
         self.assertIsNone(drawing_shape(connector))
         box = {"rect": (0, 0, 50, 20), "type": "s", "items": [("re", (0, 0, 50, 20))]}
         self.assertEqual(drawing_shape(box), (0.0, 0.0, 50.0, 20.0, True))
+
+    def test_decision_branch_words_are_translated(self):
+        words = [word(300, 100, 312, 107, "Yes"), word(20, 100, 26, 107, "x")]
+        self.assertEqual([label.text for label in figure_labels(words, FIGURE, [])], ["Yes"])
+
+    def test_left_aligned_list_lines_are_separate_left_labels(self):
+        words = [
+            word(20, 100, 50, 108, "Statistical"),
+            word(52, 100, 80, 108, "methods"),
+            word(20, 110, 55, 118, "Probability"),
+            word(57, 110, 90, 118, "estimation"),
+        ]
+        labels = figure_labels(words, FIGURE, [])
+        self.assertEqual(
+            [label.text for label in labels],
+            ["Statistical methods", "Probability estimation"],
+        )
+        for label in labels:
+            self.assertFalse(label.centred)
+            self.assertEqual(label.bounds[0], 20)
+
+    def test_centred_wrapped_label_outside_a_shape_stays_one_label(self):
+        words = [word(213, 100, 230, 108, "Best"), word(205, 110, 238, 118, "Individual")]
+        labels = figure_labels(words, FIGURE, [])
+        self.assertEqual([label.text for label in labels], ["Best Individual"])
+        self.assertTrue(labels[0].centred)
+
+
+class OccludedGlyphTests(unittest.TestCase):
+    @staticmethod
+    def trace(seqno, text, x0, y0, width=4.0):
+        chars = [
+            (ord(ch), 0, (x0 + i * width, y0 + 6), (x0 + i * width, y0, x0 + (i + 1) * width, y0 + 8))
+            for i, ch in enumerate(text)
+        ]
+        return {"seqno": seqno, "type": 0, "chars": chars}
+
+    @staticmethod
+    def fill(seqno, rect, fill=(1.0, 1.0, 1.0)):
+        return {
+            "seqno": seqno,
+            "type": "f",
+            "fill": fill,
+            "fill_opacity": 1.0,
+            "rect": rect,
+            "items": [("re", rect, 1)],
+        }
+
+    def test_text_under_a_later_fill_is_hidden_and_text_on_top_is_not(self):
+        traces = [self.trace(1, "Z", 50, 50), self.trace(3, "Fit", 60, 50)]
+        drawings = [self.fill(2, (40, 40, 100, 70))]
+        hidden = occluded_glyphs(traces, drawings)
+        self.assertEqual([glyph[4] for glyph in hidden], ["Z"])
+        words = [word(50, 50, 54, 58, "Z"), word(60, 50, 72, 58, "Fit")]
+        self.assertEqual([w[4] for w in visible_words(words, hidden)], ["Fit"])
+
+    def test_glyph_at_a_shape_edge_stays_visible(self):
+        traces = [self.trace(1, "No", 98, 50)]
+        drawings = [self.fill(2, (40, 40, 100, 70))]
+        self.assertEqual(occluded_glyphs(traces, drawings), [])
+
+    def test_glyph_outside_a_diamond_but_inside_its_box_stays_visible(self):
+        diamond = {
+            "seqno": 2,
+            "type": "f",
+            "fill": (1.0, 1.0, 1.0),
+            "rect": (0, 0, 80, 40),
+            "items": [
+                ("l", (40, 0), (80, 20)),
+                ("l", (80, 20), (40, 40)),
+                ("l", (40, 40), (0, 20)),
+                ("l", (0, 20), (40, 0)),
+            ],
+        }
+        corner = self.trace(1, "A", 2, 2)
+        centre = self.trace(1, "B", 38, 16)
+        hidden = occluded_glyphs([corner, centre], [diamond])
+        self.assertEqual([glyph[4] for glyph in hidden], ["B"])
+
+    def test_translucent_fill_hides_nothing(self):
+        drawings = [dict(self.fill(2, (40, 40, 100, 70)), fill_opacity=0.3)]
+        self.assertEqual(occluded_glyphs([self.trace(1, "Z", 50, 50)], drawings), [])
+
+    def test_converter_drops_only_the_first_matching_copy(self):
+        from types import SimpleNamespace
+
+        from pdf2zh.converter import take_hidden_glyph
+
+        def glyph():
+            return SimpleNamespace(x0=50.0, x1=54.0, y0=50.0, y1=58.0, get_text=lambda: "T")
+
+        hidden = [(50.0, 49.0, 54.0, 59.0, "T")]
+        self.assertTrue(take_hidden_glyph(glyph(), hidden))
+        # The visible duplicate drawn later at the same spot is kept.
+        self.assertFalse(take_hidden_glyph(glyph(), hidden))
 
 
 class FigureLabelPlacementTests(unittest.TestCase):

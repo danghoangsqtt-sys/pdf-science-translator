@@ -429,6 +429,153 @@ def drawing_shape(drawing: Mapping[str, Any]) -> tuple[float, float, float, floa
     return (*bounds, rectangular)
 
 
+def _path_polygons(drawing: Mapping[str, Any]) -> list[list[tuple[float, float]]]:
+    """Return the closed subpaths of a drawing as point lists (curves as chords)."""
+    polygons: list[list[tuple[float, float]]] = []
+    current: list[tuple[float, float]] = []
+
+    def point(value: Any) -> tuple[float, float]:
+        return (float(value[0]), float(value[1]))
+
+    def flush() -> None:
+        if len(current) >= 3:
+            polygons.append(list(current))
+        current.clear()
+
+    for item in drawing.get("items", ()):
+        if not item:
+            continue
+        kind = item[0]
+        try:
+            if kind == "re":
+                flush()
+                x0, y0, x1, y1 = (float(value) for value in tuple(item[1])[:4])
+                polygons.append([(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
+            elif kind == "qu":
+                flush()
+                quad = item[1]
+                polygons.append(
+                    [point(quad[0]), point(quad[1]), point(quad[3]), point(quad[2])]
+                )
+            elif kind in ("l", "c"):
+                start, end = point(item[1]), point(item[-1])
+                if current and (
+                    abs(current[-1][0] - start[0]) > 0.01
+                    or abs(current[-1][1] - start[1]) > 0.01
+                ):
+                    flush()
+                if not current:
+                    current.append(start)
+                if kind == "c":
+                    current.extend((point(item[2]), point(item[3])))
+                current.append(end)
+        except (TypeError, IndexError, ValueError):
+            return []
+    flush()
+    return polygons
+
+
+def _inside_polygon(polygon: Sequence[tuple[float, float]], x: float, y: float) -> bool:
+    inside = False
+    count = len(polygon)
+    for index in range(count):
+        ax, ay = polygon[index]
+        bx, by = polygon[(index + 1) % count]
+        if (ay > y) != (by > y):
+            crossing = ax + (y - ay) * (bx - ax) / (by - ay)
+            if x < crossing:
+                inside = not inside
+    return inside
+
+
+def occluded_glyphs(
+    traces: Iterable[Mapping[str, Any]],
+    drawings: Iterable[Mapping[str, Any]],
+) -> list[tuple[float, float, float, float, str]]:
+    """Return glyphs a later opaque fill paints over, so the reader never sees.
+
+    Diagram tools leave stray text under the shapes drawn after it (a "Z" under
+    a box, a "No" under a diamond). Re-drawing text after the page's graphics
+    would reveal it, and grouping it with the visible label would garble that
+    label. ``traces`` are PyMuPDF ``get_texttrace()`` spans and ``drawings``
+    ``get_drawings()`` entries, both in top-left coordinates with ``seqno``.
+    The result is per glyph: (x0, y0, x1, y1, character).
+    """
+    fills = []
+    for drawing in drawings:
+        if drawing.get("fill") is None or drawing.get("type") not in ("f", "fs"):
+            continue
+        opacity = drawing.get("fill_opacity")
+        if opacity is not None and float(opacity) < 0.99:
+            continue
+        rect = _rect(tuple(drawing.get("rect") or ()))
+        if rect is None:
+            continue
+        polygons = _path_polygons(drawing)
+        if polygons:
+            fills.append((int(drawing.get("seqno", -1)), rect, polygons))
+    if not fills:
+        return []
+    hidden: list[tuple[float, float, float, float, str]] = []
+    for trace in traces:
+        sequence = int(trace.get("seqno", -1))
+        if trace.get("type") == 3:
+            continue
+        later = [fill for fill in fills if fill[0] > sequence]
+        if not later:
+            continue
+        for character in trace.get("chars", ()):
+            try:
+                code, bbox = int(character[0]), _rect(tuple(character[3]))
+            except (TypeError, IndexError, ValueError):
+                continue
+            if bbox is None:
+                continue
+            cx, cy = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
+            for _, rect, polygons in later:
+                if not _centre_inside(rect, (cx, cy)):
+                    continue
+                # Every corner, not only the centre, so a glyph at a shape's
+                # edge (still partly visible) is kept.
+                corners = (
+                    (bbox[0] + 0.5, bbox[1] + 0.5),
+                    (bbox[2] - 0.5, bbox[1] + 0.5),
+                    (bbox[0] + 0.5, bbox[3] - 0.5),
+                    (bbox[2] - 0.5, bbox[3] - 0.5),
+                )
+                if all(
+                    any(_inside_polygon(polygon, px, py) for polygon in polygons)
+                    for px, py in corners
+                ):
+                    hidden.append((*bbox, chr(code)))
+                    break
+    return hidden
+
+
+def visible_words(
+    words: Iterable[Sequence[Any]],
+    hidden: Sequence[tuple[float, float, float, float, str]],
+) -> list[Sequence[Any]]:
+    """Drop words whose glyphs are mostly painted over (see occluded_glyphs)."""
+    if not hidden:
+        return list(words)
+    result = []
+    for word in words:
+        bounds = _rect(word)
+        if bounds is None:
+            result.append(word)
+            continue
+        covered = 0.0
+        for gx0, gy0, gx1, gy1, _ in hidden:
+            overlap_x = min(bounds[2], gx1) - max(bounds[0], gx0)
+            overlap_y = min(bounds[3], gy1) - max(bounds[1], gy0)
+            if overlap_x > 0 and overlap_y > 0:
+                covered += overlap_x
+        if covered < 0.5 * max(0.1, bounds[2] - bounds[0]):
+            result.append(word)
+    return result
+
+
 @dataclass(frozen=True)
 class FigureLabel:
     """A short text label drawn inside a vector figure.
@@ -443,6 +590,24 @@ class FigureLabel:
     text: str
     words: tuple[Sequence[Any], ...]
     enclosed: bool
+    # False for a line of a left-aligned list (a description beside a
+    # timeline): it keeps its left edge and grows only to the right.
+    centred: bool = True
+
+
+# Short words that flowcharts use as whole labels ("Yes"/"No" on decision
+# branches). The table-cell predicate keeps capitalised three-letter tokens as
+# source because in tables they are mostly codes and units.
+FIGURE_WORDS = frozenset(
+    {"yes", "no", "end", "start", "stop", "new", "old", "true", "false", "out", "input", "output"}
+)
+
+
+def _figure_line_translatable(text: str) -> bool:
+    value = " ".join(text.split())
+    if value.strip(".:?!").lower() in FIGURE_WORDS:
+        return True
+    return should_translate_table_cell(value)
 
 
 def _contains(
@@ -581,8 +746,17 @@ def figure_labels(
             last_height = max(0.1, last[3] - last[1])
             gap = y0 - last[3]
             overlap = min(x1, last[2]) - max(x0, last[0])
+            # Outside any shape, lines that share a left edge and each start
+            # with a capital are list items, not one wrapped phrase.
+            first_word = min(line["words"], key=lambda item: float(item[0]))
+            list_item = (
+                line["holder"] is None
+                and abs(x0 - last[0]) <= 0.5 * height
+                and str(first_word[4])[:1].isupper()
+            )
             if (
                 label["holder"] == line["holder"]
+                and not list_item
                 and -0.3 * height <= gap <= 0.6 * height
                 and overlap > 0.3 * min(x1 - x0, last[2] - last[0])
                 and max(height, last_height) <= 1.3 * min(height, last_height)
@@ -620,7 +794,7 @@ def figure_labels(
         # The remaining lines must be contiguous, or the translation would be
         # fitted over the line left in place.
         flags = [
-            should_translate_table_cell(
+            _figure_line_translatable(
                 " ".join(
                     str(item[4])
                     for item in sorted(line["words"], key=lambda item: float(item[0]))
@@ -689,6 +863,27 @@ def figure_labels(
                     free_left = min(free_left, lx0 - edge)
                 elif edge >= lx1:
                     free_right = min(free_right, edge - lx1)
+        # A label lined up on its left edge with another free label directly
+        # above or below is part of a list and keeps that edge.
+        left_aligned = any(
+            other_index != index
+            and labels[other_index]["holder"] is None
+            and abs(other[0] - lx0) <= 0.5 * height
+            and (0 <= ly0 - other[3] <= 1.5 * height or 0 <= other[1] - ly1 <= 1.5 * height)
+            for other_index, other in enumerate(label_boxes)
+        )
+        if left_aligned:
+            grow = max(0.0, min(free_right - 2.0, 0.5 * (lx1 - lx0)))
+            result.append(
+                FigureLabel(
+                    (lx0, ly0 - 0.5, lx1 + grow, ly1 + 0.5),
+                    text,
+                    label_words,
+                    False,
+                    centred=False,
+                )
+            )
+            continue
         widen = max(0.0, min(free_left - 2.0, free_right - 2.0, 0.3 * (lx1 - lx0)))
         result.append(
             FigureLabel(

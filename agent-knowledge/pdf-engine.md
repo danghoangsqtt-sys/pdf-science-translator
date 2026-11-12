@@ -68,7 +68,18 @@ translatable. The source page stream stays exact for wholly protected pages.
   diamond only its inscribed half; a box holding any other word lends
   nothing. Name/code lines, ticks, units, overprinted glyphs and raster
   figures stay source. Label pixels are painted 0.4 line heights below the
-  PyMuPDF word box because pdfminer glyph corners sit lower.
+  PyMuPDF word box because pdfminer glyph corners sit lower. Outside any
+  shape, left-aligned lines starting with a capital are separate list items
+  and keep their left edge (`FigureLabel.centred=False`); flowchart words
+  such as Yes/No pass via `FIGURE_WORDS` although the table predicate keeps
+  short capitalised tokens.
+- Inside figure regions, glyphs that a later opaque fill fully covers
+  (`rules.occluded_glyphs`, by `seqno` and path geometry) are dropped: not
+  grouped into labels and not redrawn (`converter.take_hidden_glyph`).
+  Diagram tools leave stray text under boxes ("Z" under a box, "No" under a
+  diamond), and charts print each label twice, once under their white
+  background; each hidden entry consumes only the first matching glyph in
+  drawing order, so the visible duplicate survives.
 - Fully protected blocks replay source glyph matrices, font size, horizontal
   scaling and rise without prose fitting. Their horizontal grid rules stay in
   the source stream. Array operands use PDF whitespace syntax, not Python list

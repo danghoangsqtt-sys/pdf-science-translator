@@ -238,6 +238,27 @@ def output_font_lacks_glyph(text: str, font: Font | None) -> bool:
 PARAGRAPH_END_RATIO = 0.75
 
 
+def take_hidden_glyph(character: LTChar, hidden: list) -> bool:
+    """Remove and report the painted-over glyph in ``hidden`` matching ``character``.
+
+    Charts often print every label twice, once under their white background
+    and once on top of it, at nearly the same spot. Glyphs arrive in drawing
+    order and the covered copy is drawn first, so each hidden entry consumes
+    only the first matching glyph and the visible copy is kept.
+    """
+    cx = (character.x0 + character.x1) / 2
+    text = character.get_text()
+    for index, (x0, y0, x1, y1, hidden_text) in enumerate(hidden):
+        if hidden_text != text or not x0 - 0.5 <= cx <= x1 + 0.5:
+            continue
+        # pdfminer's glyph box spans ascent to descent and PyMuPDF's the
+        # font bbox, so they agree on x but only overlap on y.
+        if min(character.y1, y1) - max(character.y0, y0) > 0:
+            del hidden[index]
+            return True
+    return False
+
+
 def glyph_layout_class(
     layout: np.ndarray,
     bbox: tuple[float, float, float, float],
@@ -802,6 +823,7 @@ class TranslateConverter(PDFConverterEx):
         ocr_paragraph_classes: Dict | None = None,
         domain: str | None = None,
         figure_label_classes: Dict | None = None,
+        hidden_glyphs: Dict | None = None,
     ) -> None:
         super().__init__(rsrcmgr)
         # Empty when no domain was requested, so mask_domain_terms() below is
@@ -823,6 +845,9 @@ class TranslateConverter(PDFConverterEx):
         self.figure_label_classes = (
             figure_label_classes if figure_label_classes is not None else {}
         )
+        # Per page, glyphs painted over by a later fill, as (x0, y0, x1, y1,
+        # char) in PDF coordinates. Dropped so they stay invisible.
+        self.hidden_glyphs = hidden_glyphs if hidden_glyphs is not None else {}
         self.noto_name = noto_name
         self.noto = noto
         self.style_font_names = style_font_names or {0: noto_name}
@@ -1032,9 +1057,12 @@ class TranslateConverter(PDFConverterEx):
             )
 
         ############################################################
+        page_hidden = list(self.hidden_glyphs.get(ltpage.pageid, ()))
         for child in ltpage:
             if isinstance(child, LTChar):
                 if is_outside_page(child, self.page_clip):
+                    continue
+                if page_hidden and take_hidden_glyph(child, page_hidden):
                     continue
                 cur_v = False
                 layout = self.layout[ltpage.pageid]

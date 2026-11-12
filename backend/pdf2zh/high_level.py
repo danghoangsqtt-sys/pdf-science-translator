@@ -35,6 +35,8 @@ from pdf2zh.rules import (
     cluster_table_words,
     drawing_shape,
     figure_labels,
+    occluded_glyphs,
+    visible_words,
     formula_regions,
     is_scanned_page,
     matching_table_cells,
@@ -266,6 +268,7 @@ def translate_patch(
     # Labels inside vector figures are fitted like table cells but centred in
     # the shape that holds them.
     figure_label_classes = {}
+    hidden_glyphs = {}
     scanned_pages = set()
     skip_backing_pages = skip_backing_pages or set()
     ocr_regions_by_page = ocr_regions_by_page or {}
@@ -292,6 +295,7 @@ def translate_patch(
         ocr_paragraph_classes,
         domain=domain,
         figure_label_classes=figure_label_classes,
+        hidden_glyphs=hidden_glyphs,
     )
 
     assert device is not None
@@ -444,14 +448,30 @@ def translate_patch(
             # Raster figures have no words here and are untouched.
             if model_figure_bounds:
                 try:
+                    page_drawings = source_page.get_drawings()
                     figure_shapes = [
                         shape
-                        for shape in (
-                            drawing_shape(drawing)
-                            for drawing in source_page.get_drawings()
-                        )
+                        for shape in (drawing_shape(drawing) for drawing in page_drawings)
                         if shape is not None
                     ]
+                    # Text a later fill paints over stays invisible: it is
+                    # neither part of a label nor re-drawn on top.
+                    hidden = [
+                        glyph
+                        for glyph in occluded_glyphs(
+                            source_page.get_texttrace(), page_drawings
+                        )
+                        if any(
+                            fx0 <= (glyph[0] + glyph[2]) / 2 <= fx1
+                            and fy0 <= (glyph[1] + glyph[3]) / 2 <= fy1
+                            for fx0, fy0, fx1, fy1 in model_figure_bounds
+                        )
+                    ]
+                    hidden_glyphs[page.pageno] = [
+                        (gx0, page_height - gy1, gx1, page_height - gy0, character)
+                        for gx0, gy0, gx1, gy1, character in hidden
+                    ]
+                    figure_words = visible_words(page_words, hidden)
                 except Exception as error:
                     logger.warning(
                         "Page %s drawing extraction failed; preserving figures: %s",
@@ -463,7 +483,7 @@ def translate_patch(
                     page.pageno, set()
                 )
                 for figure_bounds in model_figure_bounds if figure_shapes is not None else ():
-                    for label in figure_labels(page_words, figure_bounds, figure_shapes):
+                    for label in figure_labels(figure_words, figure_bounds, figure_shapes):
                         for word in label.words:
                             wx0, wy0, wx1, wy1 = (
                                 float(value) for value in word[:4]
@@ -487,7 +507,8 @@ def translate_patch(
                             lx1,
                             page_height - ly0,
                         )
-                        page_figure_classes.add(next_class)
+                        if label.centred:
+                            page_figure_classes.add(next_class)
                         next_class += 1
 
             # Technical documents often use ordinary prose fonts for equations.
