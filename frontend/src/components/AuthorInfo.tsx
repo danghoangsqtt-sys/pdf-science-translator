@@ -19,12 +19,12 @@ const openExternal = (event: React.MouseEvent, url: string) => {
 };
 
 /** Copyright line along the bottom edge, with the way into the author card. */
-export const AuthorFooter: React.FC = () => {
+export const AuthorFooter: React.FC<{ hidden?: boolean }> = ({ hidden = false }) => {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <footer className="flex items-center justify-between gap-3 border-t border-gray-200 bg-white px-3 lg:px-5 py-1 lg:py-1.5 text-xs text-gray-500 whitespace-nowrap">
+      <footer className={(hidden ? 'hidden ' : 'flex ') + 'items-center justify-between gap-3 border-t border-gray-200 bg-white px-3 lg:px-5 py-1 lg:py-1.5 text-xs text-gray-500 whitespace-nowrap'}>
         <span className="truncate">{COPYRIGHT}<span className="hidden sm:inline">. Bảo lưu mọi quyền.</span></span>
         <button
           type="button"

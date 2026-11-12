@@ -7,11 +7,15 @@ import {
   CheckCircle2,
   RefreshCw,
   XCircle,
+  ChevronUp,
+  ChevronDown,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { PdfComparison } from './components/PdfComparison.tsx';
 import { ProfilePicker, LocalStatusNotice } from './components/EnginePicker.tsx';
 import { TranslationWarningBanner } from './components/TranslationWarningBanner.tsx';
 import { AuthorFooter } from './components/AuthorInfo.tsx';
+import { useCollapsibleChrome } from './components/useCollapsibleChrome.ts';
 import {
   createTranslationJob,
   cancelTranslationJob,
@@ -84,6 +88,22 @@ const DOMAINS = [
 export const App: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [targetLanguage, setTargetLanguage] = useState<string>('vi');
+  // 'auto' lets the translator recognise Vietnamese per paragraph and treat
+  // anything else as English; naming the source is better for other languages.
+  const [sourceLanguage, setSourceLanguage] = useState<string>('auto');
+  const chooseSource = (code: string) => {
+    setSourceLanguage(code);
+    if (code === targetLanguage) setTargetLanguage(code === 'vi' ? 'en' : 'vi');
+  };
+  const chooseTarget = (code: string) => {
+    setTargetLanguage(code);
+    if (code === sourceLanguage) setSourceLanguage('auto');
+  };
+  const swapLanguages = () => {
+    if (sourceLanguage === 'auto') return;
+    setSourceLanguage(targetLanguage);
+    setTargetLanguage(sourceLanguage);
+  };
   const [domain, setDomain] = useState<string>('');
   const [backendReady, setBackendReady] = useState<boolean>(false);
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
@@ -97,6 +117,15 @@ export const App: React.FC = () => {
   const [finishedJob, setFinishedJob] = useState<JobStatusResponse | null>(null);
   const [isCancelling, setIsCancelling] = useState<boolean>(false);
   const [noticeText, setNoticeText] = useState<string | null>(null);
+  // The reader collapses the toolbar with the ▲/▼ button; nothing to read yet,
+  // or a cancel in progress, keeps it on screen.
+  const chrome = useCollapsibleChrome(!selectedFile || isCancelling);
+  const { expand: expandChrome } = chrome;
+  // Anything the user must read opens it again: an error, a notice, or a
+  // finished job's result and warnings.
+  useEffect(() => {
+    if (errorText || noticeText || finishedJob) expandChrome();
+  }, [errorText, noticeText, finishedJob, expandChrome]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pollingTimerRef = useRef<number | null>(null);
@@ -197,6 +226,7 @@ export const App: React.FC = () => {
         targetLanguage,
         domain,
         profile,
+        sourceLanguage,
       );
       jobIdRef.current = job_id;
 
@@ -301,6 +331,22 @@ export const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen min-w-0 overflow-hidden bg-gray-50 text-gray-900">
+      {/* While the toolbar is hidden a translation still shows its progress. */}
+      {chrome.hidden && isTranslating && (
+        <div data-reading-progress role="progressbar" aria-label="Tiến độ dịch"
+          aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}
+          title={progress.total > 0 ? `Đã dịch ${progress.done} / ${progress.total} trang (${progressPercent}%)` : 'Đang chuẩn bị bộ xử lý...'}
+          className="fixed inset-x-0 top-0 z-50 h-[3px] bg-gray-200">
+          <div className="h-full bg-[#14452F] transition-all duration-300"
+            style={{ width: progress.total > 0 ? `${progressPercent}%` : '20%' }} />
+        </div>
+      )}
+      {/* Header and toolbar collapse together; a grid row animates to 0. */}
+      <div data-chrome data-hidden={chrome.hidden ? 'true' : 'false'}
+        inert={chrome.hidden}
+        className={'grid shrink-0 transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none '
+          + (chrome.hidden ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100')}>
+      <div className="min-h-0 overflow-hidden">
       {/* Top Navigation Bar */}
       <header className="bg-[#14452F] text-white px-3 py-2 lg:px-5 lg:py-3 short:py-1.5 shadow-md flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -364,17 +410,45 @@ export const App: React.FC = () => {
 
           {/* Language Selection & Translate Button */}
           <div className="flex flex-wrap items-center gap-2 lg:gap-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 lg:gap-2">
+              <label htmlFor="source-lang" className="sr-only xl:not-sr-only text-xs font-semibold text-gray-600">
+                Dịch từ:
+              </label>
+              <select
+                id="source-lang"
+                value={sourceLanguage}
+                onChange={(e) => chooseSource(e.target.value)}
+                disabled={isTranslating}
+                title="Ngôn ngữ của tài liệu gốc. Tự nhận diện: tiếng Việt hoặc tiếng Anh; ngôn ngữ khác hãy chọn đúng tên."
+                className="w-32 lg:w-36 xl:w-auto max-w-[16rem] text-sm bg-white border border-gray-300 rounded-md px-2 py-1.5 lg:px-3 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
+              >
+                <option value="auto">Tự nhận diện</option>
+                {TARGET_LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={swapLanguages}
+                disabled={isTranslating || sourceLanguage === 'auto'}
+                title={sourceLanguage === 'auto' ? 'Chọn ngôn ngữ nguồn để đảo chiều dịch' : 'Đảo chiều: dịch ngược lại'}
+                aria-label="Đảo chiều ngôn ngữ"
+                className="p-1.5 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+              >
+                <ArrowLeftRight size={15} />
+              </button>
               <label htmlFor="target-lang" className="sr-only xl:not-sr-only text-xs font-semibold text-gray-600">
-                Ngôn ngữ đích:
+                sang:
               </label>
               <select
                 id="target-lang"
                 value={targetLanguage}
-                onChange={(e) => setTargetLanguage(e.target.value)}
+                onChange={(e) => chooseTarget(e.target.value)}
                 disabled={isTranslating}
                 title="Ngôn ngữ đích"
-                className="w-36 xl:w-auto max-w-[16rem] text-sm bg-white border border-gray-300 rounded-md px-2 py-1.5 lg:px-3 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
+                className="w-32 lg:w-36 xl:w-auto max-w-[16rem] text-sm bg-white border border-gray-300 rounded-md px-2 py-1.5 lg:px-3 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
               >
                 {TARGET_LANGUAGES.map((lang) => (
                   <option key={lang.code} value={lang.code}>
@@ -394,7 +468,7 @@ export const App: React.FC = () => {
                 onChange={(e) => setDomain(e.target.value)}
                 disabled={isTranslating}
                 title="Ép đúng thuật ngữ chuyên ngành thay vì để bộ xử lý tự dịch (tùy chọn)"
-                className="w-36 xl:w-auto max-w-[16rem] text-sm bg-white border border-gray-300 rounded-md px-2 py-1.5 lg:px-3 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
+                className="w-32 lg:w-36 xl:w-auto max-w-[16rem] text-sm bg-white border border-gray-300 rounded-md px-2 py-1.5 lg:px-3 focus:outline-none focus:ring-2 focus:ring-[#14452F] disabled:opacity-50 font-medium"
               >
                 {DOMAINS.map((item) => (
                   <option key={item.code} value={item.code}>
@@ -483,6 +557,25 @@ export const App: React.FC = () => {
         )}
         </div>
       </div>
+      </div>
+      </div>
+
+      {/* Outside the collapsing area, so it stays reachable when collapsed. */}
+      {chrome.canCollapse && (
+        <div className="flex shrink-0 justify-center">
+          <button
+            type="button"
+            data-chrome-toggle
+            onClick={chrome.toggle}
+            aria-expanded={!chrome.hidden}
+            aria-label={chrome.hidden ? 'Mở rộng thanh công cụ' : 'Thu gọn thanh công cụ'}
+            title={chrome.hidden ? 'Mở rộng thanh công cụ' : 'Thu gọn thanh công cụ'}
+            className="flex h-4 w-14 items-center justify-center rounded-b-md border border-t-0 border-gray-200 bg-white text-gray-500 shadow-sm hover:bg-gray-100 hover:text-[#14452F] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14452F]"
+          >
+            {chrome.hidden ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+          </button>
+        </div>
+      )}
 
       {/* Main Workspace (Dual PDF Viewers or Drag & Drop Area) */}
       <main className="flex-1 min-h-0 p-2 lg:p-4 overflow-hidden">
@@ -523,7 +616,7 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      <AuthorFooter />
+      <AuthorFooter hidden={chrome.hidden} />
     </div>
   );
 };

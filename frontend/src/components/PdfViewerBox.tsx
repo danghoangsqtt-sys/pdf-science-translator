@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
-import { ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut } from 'lucide-react';
-import { clampScale, pageAtOffset, type ReadingPosition } from './pdfViewport.ts';
+import { ChevronLeft, ChevronRight, Download, MoveHorizontal, ZoomIn, ZoomOut } from 'lucide-react';
+import {
+  clampScale, fitWidthScale, pageAtOffset, type ReadingPosition, type ZoomMode,
+} from './pdfViewport.ts';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url,
@@ -16,11 +18,15 @@ interface Props {
   onScaleChange: (scale: number) => void;
   position: ReadingPosition | null;
   onPositionChange: (position: ReadingPosition) => void;
+  /** 'fit' keeps the widest page as wide as the pane; any manual zoom is 'custom'. */
+  zoomMode: ZoomMode;
+  onZoomModeChange: (mode: ZoomMode) => void;
 }
 interface PageSize { width: number; height: number }
 
 export const PdfViewerBox: React.FC<Props> = ({
   title, file, onDownload, scale, onScaleChange, position, onPositionChange,
+  zoomMode, onZoomModeChange,
 }) => {
   const [sizes, setSizes] = useState<PageSize[]>([]);
   const [visible, setVisible] = useState(new Set([1]));
@@ -37,8 +43,8 @@ export const PdfViewerBox: React.FC<Props> = ({
     page: number; offset: number; pageX: number; clientX: number; clientY: number;
   } | null>(null);
   const frame = useRef<number | null>(null);
-  const latest = useRef({ scale, onScaleChange, onPositionChange });
-  latest.current = { scale, onScaleChange, onPositionChange };
+  const latest = useRef({ scale, onScaleChange, onPositionChange, zoomMode, onZoomModeChange });
+  latest.current = { scale, onScaleChange, onPositionChange, zoomMode, onZoomModeChange };
 
   useEffect(() => {
     setSizes([]);
@@ -124,7 +130,9 @@ export const PdfViewerBox: React.FC<Props> = ({
     current.current = read();
     setPageNumber(current.current.page);
   };
-  const zoom = (next: number, clientX?: number, clientY?: number) => {
+  // Rescale around a point of the pane (its centre by default) so the text
+  // under it stays put. Used by manual zoom and by fit-to-width alike.
+  const rescale = (next: number, clientX?: number, clientY?: number) => {
     const container = viewport.current;
     const value = clampScale(next);
     if (!container || value === latest.current.scale || !pages.current.size) return;
@@ -138,6 +146,25 @@ export const PdfViewerBox: React.FC<Props> = ({
     };
     latest.current.onScaleChange(value);
   };
+  const zoom = (next: number, clientX?: number, clientY?: number) => {
+    if (latest.current.zoomMode !== 'custom') latest.current.onZoomModeChange('custom');
+    rescale(next, clientX, clientY);
+  };
+  const fitScale = () => {
+    const container = viewport.current;
+    if (!container || !sizes.length) return null;
+    const style = getComputedStyle(container);
+    const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    return fitWidthScale(container.clientWidth, sizes.map((size) => size.width), padding);
+  };
+  const fit = () => {
+    const target = fitScale();
+    if (target !== null && Math.abs(target - latest.current.scale) > latest.current.scale * 0.005) {
+      rescale(target);
+    }
+  };
+  const fitHandler = useRef(fit);
+  fitHandler.current = fit;
   const zoomHandler = useRef(zoom);
   zoomHandler.current = zoom;
 
@@ -157,6 +184,22 @@ export const PdfViewerBox: React.FC<Props> = ({
     container.addEventListener('wheel', wheel, { passive: false });
     return () => container.removeEventListener('wheel', wheel);
   }, [file]);
+
+  useEffect(() => {
+    const container = viewport.current;
+    if (!container || !sizes.length || zoomMode !== 'fit') return;
+    fitHandler.current();
+    let pending: number | null = null;
+    const observer = new ResizeObserver(() => {
+      if (pending !== null) return;
+      pending = requestAnimationFrame(() => { pending = null; fitHandler.current(); });
+    });
+    observer.observe(container);
+    return () => {
+      observer.disconnect();
+      if (pending !== null) cancelAnimationFrame(pending);
+    };
+  }, [sizes, zoomMode]);
 
   useLayoutEffect(() => {
     const container = viewport.current;
@@ -208,9 +251,13 @@ export const PdfViewerBox: React.FC<Props> = ({
           <div className="flex items-center bg-gray-50 rounded border border-gray-200">
             <button disabled={scale <= 0.4} onClick={() => zoom(scale - 0.2)}
               className="p-1 text-gray-600 disabled:opacity-30" title="Thu nhỏ (Ctrl + lăn chuột)"><ZoomOut size={15} /></button>
-            <span className="text-xs text-gray-600 w-10 text-center" aria-label="Mức thu phóng">{Math.round(scale * 100)}%</span>
+            <span className="text-xs text-gray-600 min-w-10 px-1 text-center whitespace-nowrap" aria-label="Mức thu phóng"
+              title={Math.round(scale * 100) + '%'}>{zoomMode === 'fit' ? 'Vừa khung' : Math.round(scale * 100) + '%'}</span>
             <button disabled={scale >= 4} onClick={() => zoom(scale + 0.2)}
               className="p-1 text-gray-600 disabled:opacity-30" title="Phóng to (Ctrl + lăn chuột)"><ZoomIn size={15} /></button>
+            <button disabled={zoomMode === 'fit'} onClick={() => onZoomModeChange('fit')} data-fit-width
+              className="p-1 text-gray-600 border-l border-gray-200 disabled:text-brand disabled:opacity-60"
+              title="Vừa khung: trang rộng bằng khung xem"><MoveHorizontal size={15} /></button>
           </div>
           {onDownload && <button onClick={onDownload}
             className="flex items-center gap-1 bg-brand hover:bg-brand-hover text-white text-xs px-2 py-1 rounded" title="Tải tệp PDF đã dịch">
@@ -243,7 +290,7 @@ export const PdfViewerBox: React.FC<Props> = ({
         }}
         onPointerCancel={stopPan} onLostPointerCapture={stopPan}
         className={'flex-1 min-h-0 overflow-auto relative bg-gray-100 p-2 lg:p-4 select-none overscroll-contain ' + (dragging ? 'cursor-grabbing' : 'cursor-grab')}
-        style={{ overflowAnchor: 'none' }}>
+        style={{ overflowAnchor: 'none', scrollbarGutter: 'stable' }}>
         <Document file={file} onLoadSuccess={loadPages} onLoadError={() => setLoadError(true)}
           className="flex flex-col items-center gap-4 w-max min-w-full"
           loading={<p className="p-8 text-sm text-gray-500">Đang tải tệp PDF...</p>}

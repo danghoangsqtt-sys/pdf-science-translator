@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Columns2, FileText, Languages, Link2, Unlink2 } from 'lucide-react';
 import { PdfViewerBox } from './PdfViewerBox.tsx';
-import type { ReadingPosition } from './pdfViewport.ts';
+import type { ReadingPosition, ZoomMode } from './pdfViewport.ts';
 import {
   readStoredMode, storeMode, useViewportLayout, type ComparisonMode,
 } from './useViewportLayout.ts';
@@ -24,6 +24,9 @@ export const PdfComparison: React.FC<Props> = ({ original, translated, language,
   const [sync, setSync] = useState(true);
   const [leftScale, setLeftScale] = useState(1);
   const [rightScale, setRightScale] = useState(1);
+  // A new document (this component remounts per file) starts fitted to width.
+  const [leftZoomMode, setLeftZoomMode] = useState<ZoomMode>('fit');
+  const [rightZoomMode, setRightZoomMode] = useState<ZoomMode>('fit');
   const [leftPosition, setLeftPosition] = useState<ReadingPosition | null>(null);
   const [rightPosition, setRightPosition] = useState<ReadingPosition | null>(null);
   // A mode the user picked by hand wins over the one the window size suggests.
@@ -49,6 +52,10 @@ export const PdfComparison: React.FC<Props> = ({ original, translated, language,
     active.current = side;
     if (sync || side === 'left') setLeftScale(scale);
     if (sync || side === 'right') setRightScale(scale);
+  };
+  const setZoomMode = (side: 'left' | 'right', next: ZoomMode) => {
+    if (sync || side === 'left') setLeftZoomMode(next);
+    if (sync || side === 'right') setRightZoomMode(next);
   };
   const choose = (next: ComparisonMode) => {
     setShowArrival(false);
@@ -79,7 +86,9 @@ export const PdfComparison: React.FC<Props> = ({ original, translated, language,
       <button type="button" aria-pressed={sync} onClick={() => {
         if (!sync) {
           const scale = active.current === 'left' ? leftScale : rightScale;
+          const mode = active.current === 'left' ? leftZoomMode : rightZoomMode;
           setLeftScale(scale); setRightScale(scale);
+          setLeftZoomMode(mode); setRightZoomMode(mode);
           setLeftPosition({ ...lastPosition.current }); setRightPosition({ ...lastPosition.current });
         } else { setLeftPosition(null); setRightPosition(null); }
         setSync(!sync);
@@ -92,9 +101,11 @@ export const PdfComparison: React.FC<Props> = ({ original, translated, language,
     <div className={'grid gap-2 lg:gap-4 flex-1 min-h-0 min-w-0 ' + (mode === 'both' ? 'grid-cols-2' : 'grid-cols-1')}>
       {showLeft && <PdfViewerBox title="Tài liệu gốc (Original)" file={original} scale={leftScale}
         onScaleChange={(scale) => zoom('left', scale)} position={leftPosition}
+        zoomMode={leftZoomMode} onZoomModeChange={(next) => setZoomMode('left', next)}
         onPositionChange={(position) => move('left', position)} />}
       {showRight && <PdfViewerBox title={'Tài liệu đã dịch (' + language.toUpperCase() + ')'} file={translated} scale={rightScale}
         onScaleChange={(scale) => zoom('right', scale)} position={rightPosition}
+        zoomMode={rightZoomMode} onZoomModeChange={(next) => setZoomMode('right', next)}
         onPositionChange={(position) => move('right', position)} onDownload={translated ? onDownload : undefined} />}
     </div>
   </div>;

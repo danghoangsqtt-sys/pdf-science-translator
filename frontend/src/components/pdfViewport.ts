@@ -6,6 +6,21 @@ export interface ReadingPosition {
 export const clampScale = (value: number): number =>
   Math.min(4, Math.max(0.4, Number(value.toFixed(2))));
 
+export type ZoomMode = 'fit' | 'custom';
+
+/**
+ * The scale at which the widest page fills the pane. `available` is the
+ * pane's inner width (scrollbar excluded) and `padding` its horizontal padding.
+ */
+export function fitWidthScale(available: number, pageWidths: ReadonlyArray<number>, padding = 32): number {
+  const widest = Math.max(0, ...pageWidths);
+  const room = available - padding;
+  if (widest <= 0 || room <= 0) return 1;
+  // Round down: clampScale rounds to two decimals, and rounding up makes the
+  // page a few pixels wider than the pane and brings back a sideways scrollbar.
+  return clampScale(Math.floor((room / widest) * 100) / 100);
+}
+
 // Page-relative positions avoid drift when page sizes or viewport widths differ.
 export function pageAtOffset(
   pages: ReadonlyArray<{ top: number; height: number }>, y: number,
