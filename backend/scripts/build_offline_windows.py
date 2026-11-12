@@ -32,7 +32,7 @@ def brand_executable(exe: Path) -> None:
     if not rcedit.is_file():
         raise FileNotFoundError("rcedit.exe is missing; run npm install in frontend/")
     icon = exe.with_name("PDFTranslate.ico")
-    Image.open(FRONTEND / "icon.png").convert("RGBA").save(
+    Image.open(FRONTEND / "public/icon.png").convert("RGBA").save(
         icon, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
     try:
         subprocess.run([str(rcedit), str(exe), "--set-icon", str(icon),
@@ -148,7 +148,7 @@ def build(destination: Path, pack_root: Path) -> None:
     env = dict(os.environ, PYTHONNOUSERSITE="1", PDF_TRANSLATE_OFFLINE="1")
     subprocess.run([str(python), "-s", "-m", "pip", "check"], env=env, cwd=resources, check=True)
     subprocess.run([str(python), "-s", "-c",
-                    "import fitz, onnxruntime, tkinter; import pdf2zh.offline; import server.main; "
+                    "import fitz, onnxruntime; import pdf2zh.offline; import server.main; "
                     "assert pdf2zh.offline.active(); print('Portable dependencies ready')"],
                    env=env, cwd=resources / "backend", check=True)
     print(f"Portable Windows build ready: {destination}", flush=True)

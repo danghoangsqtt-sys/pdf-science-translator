@@ -4,7 +4,7 @@ import math
 import re
 import unicodedata
 from collections import Counter
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable
 from enum import Enum, IntEnum
 from string import Template
 from typing import Dict
