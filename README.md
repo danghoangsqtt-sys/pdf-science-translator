@@ -1,13 +1,3 @@
-# PDF Translate — Windows ngoại tuyến
-
-Bản Windows đang phát triển xử lý hoàn toàn trên máy, kể cả lần mở đầu. Mở `PDFTranslate.exe` trong toàn bộ thư mục portable được cấp; không dùng bản ZIP legacy bên dưới để thay thế. Giao diện chỉ có **Nhanh / Cân bằng / Chất lượng cao**, không yêu cầu Internet hay cài công cụ AI riêng. Không tự kiểm tra hoặc tải cập nhật. PDF nguồn được giữ nguyên; hãy đối chiếu phần dịch và cảnh báo.
-
-Phát triển: Python **3.12**, `.venv312/Scripts/python.exe`; quy tắc dùng chung tại [agent-knowledge/index.md](agent-knowledge/index.md). Dựng offline bằng `backend/scripts/build_offline_windows.py` từ tài nguyên local đã xác minh; [hướng dẫn và QA hiện hành](docs/bao-cao/offline-windows-2026-10-28.md). Không chạy lệnh tải tài nguyên hoặc cập nhật dependency khi kiểm thử offline.
-
-## Tài liệu legacy được giữ để bảo toàn lịch sử
-
-Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dịch vụ mạng và cập nhật. Các lựa chọn đó không áp dụng cho bản Windows ngoại tuyến. Thông tin branding người dùng được giữ nguyên; ghi công và giấy phép gốc nằm trong LICENSE và THIRD_PARTY_NOTICES.md.
-
 <p align="center">
   <img src=".github/assets/logo.png" alt="PDF Translate logo" width="160">
 </p>
@@ -21,6 +11,21 @@ Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dị
 <p align="center">
   <sub>Phát triển và duy trì bởi <strong>dhsystem</strong></sub>
 </p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/danghoangsqtt-sys/pdf-science-translator?style=flat-square" alt="Giấy phép AGPL-3.0"></a>
+  <a href="#giấy-phép-và-ghi-công"><img src="https://img.shields.io/badge/ghi_công-VI--Translate_·_PDFMathTranslate-555?style=flat-square" alt="Ghi công"></a>
+</p>
+
+## Bản Windows ngoại tuyến
+
+Bản Windows đang phát triển xử lý hoàn toàn trên máy, kể cả lần mở đầu. Mở `PDFTranslate.exe` trong toàn bộ thư mục portable được cấp; không dùng bản ZIP legacy bên dưới để thay thế. Giao diện chỉ có **Nhanh / Cân bằng / Chất lượng cao**, không yêu cầu Internet hay cài công cụ AI riêng. Không tự kiểm tra hoặc tải cập nhật. PDF nguồn được giữ nguyên; hãy đối chiếu phần dịch và cảnh báo.
+
+Phát triển: Python **3.12**, `.venv312/Scripts/python.exe`; quy tắc dùng chung tại [agent-knowledge/index.md](agent-knowledge/index.md). Dựng offline bằng `backend/scripts/build_offline_windows.py` từ tài nguyên local đã xác minh; [hướng dẫn và QA hiện hành](docs/bao-cao/offline-windows-2026-10-28.md). Không chạy lệnh tải tài nguyên hoặc cập nhật dependency khi kiểm thử offline.
+
+## Tài liệu legacy được giữ để bảo toàn lịch sử
+
+Phần sau mô tả phiên bản desktop/agent/macOS/Android cũ, bao gồm dịch vụ mạng và cập nhật. Các lựa chọn đó không áp dụng cho bản Windows ngoại tuyến. Thông tin branding người dùng được giữ nguyên; ghi công và giấy phép gốc nằm trong LICENSE và THIRD_PARTY_NOTICES.md.
 
 <p align="center">
   <a href="https://github.com/danghoangsqtt-sys/pdf-science-translator/releases?q=android-v">
