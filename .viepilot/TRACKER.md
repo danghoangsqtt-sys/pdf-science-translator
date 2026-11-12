@@ -1,5 +1,8 @@
 # Nhật ký audit sản phẩm
 
+## BUG-023 technical verified (12/11/2026)
+- Số giữ nguyên như nguồn: sửa dấu phân cách tại chỗ, mất/đổi số → thử lại → giữ đoạn gốc. 445/445; bài 2307.15299v5 mọi chuỗi số 6 trang khớp, 114/114 đoạn dịch.
+
 ## VP-AUTO — Phase 10 technical verified (12/11/2026)
 - BUG-020: dòng công thức giữ nguyên, `f(s)` giữa câu một marker. BUG-021: trang 6 dịch văn xuôi, danh mục giữ nguyên dạng sắp chữ. BUG-022: tiêu đề small-caps mượn bề rộng cột.
 - 436/436 unittest, Ruff lỗi cứng; gate PDF thật 2307.15299v5 (translategemma:12b) đạt mọi kiểm Phase 10.

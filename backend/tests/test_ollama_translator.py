@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import unittest
 from collections import Counter
 from pathlib import Path
@@ -670,7 +671,13 @@ class OllamaPipelineTests(unittest.TestCase):
         self.assertIn("Không kết nối được Ollama", report.service_failure)
 
     def test_a_working_server_translates_every_segment(self):
-        post = mock.Mock(return_value=_reply("Đoạn văn giải thích phương pháp."))
+        def faithful(*_args, **kwargs):
+            # Keep each paragraph's own number, as a faithful translation does;
+            # an answer that loses it is refused (NumbersChangedError).
+            number = re.findall(r"\d+", kwargs["json"]["prompt"])[-1]
+            return _reply(f"Đoạn văn số {number} giải thích phương pháp.")
+
+        post = mock.Mock(side_effect=faithful)
 
         report = self._translate(post)
 

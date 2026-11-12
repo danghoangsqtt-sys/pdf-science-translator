@@ -214,10 +214,14 @@ class BaseTranslator:
         use_cache = not (self.ignore_cache or ignore_cache)
         if use_cache:
             cached = self.cache.get(text)
-            if cached is not None and markers_intact(text, cached):
-                return cached
-        translated = self.do_translate(text)
-        if use_cache and markers_intact(text, translated):
+            if cached is not None:
+                # Entries cached before numbers were checked may hold a
+                # localised or lost figure; repair or ask again.
+                cached = restore_number_notation(text, cached)
+                if markers_intact(text, cached) and numbers_intact(text, cached):
+                    return cached
+        translated = restore_number_notation(text, self.do_translate(text))
+        if use_cache and markers_intact(text, translated) and numbers_intact(text, translated):
             self.cache.set(text, translated)
         return translated
 
@@ -621,8 +625,15 @@ class OllamaTranslator(BaseTranslator):
         extra requests. When every attempt fails, the first answer is returned
         and the converter rejects it as before.
         """
-        first = self._request_with_retries(text)
-        if markers_intact(text, first) and plausible_length(text, first):
+        def acceptable(candidate: str) -> bool:
+            return (
+                markers_intact(text, candidate)
+                and plausible_length(text, candidate)
+                and numbers_intact(text, candidate)
+            )
+
+        first = restore_number_notation(text, self._request_with_retries(text))
+        if acceptable(first):
             return first
         braceable = (
             not markers_intact(text, first)
@@ -646,7 +657,8 @@ class OllamaTranslator(BaseTranslator):
                 raise
             except Exception:  # noqa: BLE001 - the first answer still stands
                 break
-            if markers_intact(text, candidate) and plausible_length(text, candidate):
+            candidate = restore_number_notation(text, candidate)
+            if acceptable(candidate):
                 return candidate
         rescued = self._translate_with_fallback(text)
         if rescued is not None:
@@ -655,6 +667,11 @@ class OllamaTranslator(BaseTranslator):
             raise ImplausibleTranslationError(
                 f"translation of {len(strip_markers(text))} characters came back as "
                 f"{len(strip_markers(first))}; the model added text of its own"
+            )
+        if markers_intact(text, first) and not numbers_intact(text, first):
+            lost = sorted((number_tokens(text) - number_tokens(first)).elements())
+            raise NumbersChangedError(
+                f"translation lost or rewrote the numbers {', '.join(lost)}"
             )
         return first
 
@@ -681,6 +698,9 @@ class OllamaTranslator(BaseTranslator):
             f"belongs in the {target} sentence.\n"
             "- Keep proper nouns, model and metric names, citations such as "
             "(Salimans et al., 2016) and URLs unchanged.\n"
+            "- Copy every number exactly as written, separators included "
+            "(96,432 stays 96,432; 0.1 stays 0.1), and keep forms such as 3D, 2D "
+            "and 1st as they are instead of spelling them out.\n"
             "- Do not add explanations, lists or text that is not in the source.\n"
             + (f"- Use these {target} terms:\n{glossary}" if glossary else "")
             + f"\nText:\n{text}"
@@ -697,7 +717,12 @@ class OllamaTranslator(BaseTranslator):
         except Exception as error:  # noqa: BLE001 - never let the fallback end the run
             logger.warning("Fallback model %s failed: %s", self.fallback_model, error)
             return None
-        if markers_intact(text, candidate) and plausible_length(text, candidate):
+        candidate = restore_number_notation(text, candidate)
+        if (
+            markers_intact(text, candidate)
+            and plausible_length(text, candidate)
+            and numbers_intact(text, candidate)
+        ):
             with self._fallback_lock:
                 self.fallback_rescues += 1
             logger.info("Fallback model %s translated a segment TranslateGemma lost",
@@ -861,6 +886,62 @@ def plausible_length(sent: str, translated: str) -> bool:
     return len(strip_markers(translated)) <= (
         PLAUSIBLE_LENGTH_RATIO * source_length + PLAUSIBLE_LENGTH_SLACK
     )
+
+
+class NumbersChangedError(ImplausibleTranslationError):
+    """The answer lost or rewrote a number the source states.
+
+    translategemma wrote "96,432 rows" as "96.432 dòng", "a 3D to a 2D tensor"
+    as "tensor ba chiều thành một tensor hai chiều" and dropped the "1st" of
+    an author line. Markers and length were fine, so nothing caught it, and a
+    reader of a scientific paper cannot tell a rewritten figure from a real
+    one. Such a segment keeps its source text unless a retry keeps the numbers.
+    """
+
+
+# A number as the source writes it: digits, and the separators inside it
+# ("96,432", "0.0001", "1735-1780" is two numbers, "2309.02600").
+NUMBER_TOKEN_PATTERN = re.compile(r"\d+(?:[.,:/]\d+)*")
+
+
+def number_tokens(text: str) -> Counter:
+    """The numbers in a segment, ignoring marker tags such as ``<b12>``."""
+    return Counter(NUMBER_TOKEN_PATTERN.findall(strip_markers(text)))
+
+
+def numbers_intact(sent: str, translated: str) -> bool:
+    """Every number of the source appears in the answer, written the same way.
+
+    Numbers the answer adds are fine ("July" becomes "tháng 7"); a number it
+    loses or rewrites is not.
+    """
+    return not (number_tokens(sent) - number_tokens(translated))
+
+
+def restore_number_notation(sent: str, translated: str) -> str:
+    """Put back the source's own way of writing a number the answer localised.
+
+    "96,432" written as "96.432" or "96 432", "0.1" as "0,1": the value is the
+    same and only the separators moved, so the source spelling can be restored
+    without asking the model again. Anything else that went missing is left
+    for ``numbers_intact`` to refuse.
+    """
+    missing = number_tokens(sent) - number_tokens(translated)
+    for token, count in missing.items():
+        if not any(separator in token for separator in ".,"):
+            continue
+        swapped = token.translate(str.maketrans({",": ".", ".": ","}))
+        variants = {swapped, token.replace(",", " "), token.replace(",", " ")}
+        variants.discard(token)
+        for variant in variants:
+            pattern = re.compile(
+                rf"(?<![\d.,]){re.escape(variant)}(?![\d]|[.,]\d)"
+            )
+            translated, replaced = pattern.subn(token, translated, count=count)
+            count -= replaced
+            if count <= 0:
+                break
+    return translated
 
 
 BRACED_NUMBER_PATTERN = re.compile(r"\{(\d+)\}")

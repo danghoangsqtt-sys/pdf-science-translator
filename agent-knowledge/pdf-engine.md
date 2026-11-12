@@ -203,6 +203,16 @@ The desktop app (`frontend/` + `backend/server/`) lets the user pick the engine 
   still pass `markers_intact`, so a rescue cannot return a damaged formula.
   It also pads answers with invented text: an answer over 1.6x the source plus
   20 characters is retried, then refused as `ImplausibleTranslationError`.
+- Numbers are kept as the source writes them. A number whose separators the
+  model localised ("96,432" as "96.432" or "96 432", "0.1" as "0,1") is put
+  back in source notation without another request (`restore_number_notation`,
+  also applied to cached answers). A number lost or spelled out ("3D" as
+  "ba chiều", a dropped "1st") fails `numbers_intact`: the segment goes
+  through the same rescue attempts and fallback (whose prompt says to copy
+  numbers), then is refused as `NumbersChangedError` (a subclass of
+  `ImplausibleTranslationError`) and keeps its source text. Such answers are
+  neither cached nor served from the cache. Numbers inside marker tags do not
+  count; numbers an answer adds ("July" as "tháng 7") are fine.
 - **Azure** sends `textType=html` with prose escaped and marker tags left as
   tags. The converter hands each page's outgoing segments to
   `translator.prefetch`, which Azure batches within 1,000 elements and 50,000

@@ -1,6 +1,12 @@
 # Changelog
 
-## [Unreleased] — Phase 10 (đã triển khai và kiểm thử kỹ thuật 12/11/2026, chưa commit)
+## [Unreleased] — Giữ nguyên số liệu (12/11/2026)
+
+- BUG-023: bản dịch giữ đúng cách viết số của bản gốc ("96,432" không còn thành "96.432", "0.1"
+  không thành "0,1"); đoạn mà model làm mất hoặc viết số thành chữ được dịch lại, và nếu vẫn sai
+  thì giữ nguyên đoạn gốc thay vì đưa ra số sai.
+
+## [Unreleased] — Phase 10 (đã triển khai và kiểm thử kỹ thuật 12/11/2026)
 
 - BUG-020: công thức nội dòng không còn bị viết lại (ngoặc trong `f(s)` đi cùng công thức; dòng công thức giữ nguyên).
 - BUG-021: trang có cả văn xuôi và tài liệu tham khảo được dịch phần văn xuôi thay vì giữ nguyên cả trang; danh mục vẫn giữ nguyên dạng sắp chữ.
