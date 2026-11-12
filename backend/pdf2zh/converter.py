@@ -238,6 +238,27 @@ def output_font_lacks_glyph(text: str, font: Font | None) -> bool:
 PARAGRAPH_END_RATIO = 0.75
 
 
+def take_hidden_glyph(character: LTChar, hidden: list) -> bool:
+    """Remove and report the painted-over glyph in ``hidden`` matching ``character``.
+
+    Charts often print every label twice, once under their white background
+    and once on top of it, at nearly the same spot. Glyphs arrive in drawing
+    order and the covered copy is drawn first, so each hidden entry consumes
+    only the first matching glyph and the visible copy is kept.
+    """
+    cx = (character.x0 + character.x1) / 2
+    text = character.get_text()
+    for index, (x0, y0, x1, y1, hidden_text) in enumerate(hidden):
+        if hidden_text != text or not x0 - 0.5 <= cx <= x1 + 0.5:
+            continue
+        # pdfminer's glyph box spans ascent to descent and PyMuPDF's the
+        # font bbox, so they agree on x but only overlap on y.
+        if min(character.y1, y1) - max(character.y0, y0) > 0:
+            del hidden[index]
+            return True
+    return False
+
+
 def glyph_layout_class(
     layout: np.ndarray,
     bbox: tuple[float, float, float, float],
@@ -698,6 +719,8 @@ class Paragraph:
         self.brk: bool = brk
         self.cls: int = int(cls)
         self.layout_bound: tuple[float, float, float, float] | None = None
+        # A figure label is centred in its bounds instead of left-aligned.
+        self.centred = False
         self.orientation = text_orientation(matrix or (1, 0, 0, 1))
         self.rotated_chars: list[LTChar] = []
         self.open_style = TextStyle.REGULAR
@@ -799,6 +822,8 @@ class TranslateConverter(PDFConverterEx):
         class_bounds: Dict | None = None,
         ocr_paragraph_classes: Dict | None = None,
         domain: str | None = None,
+        figure_label_classes: Dict | None = None,
+        hidden_glyphs: Dict | None = None,
     ) -> None:
         super().__init__(rsrcmgr)
         # Empty when no domain was requested, so mask_domain_terms() below is
@@ -816,6 +841,13 @@ class TranslateConverter(PDFConverterEx):
         self.ocr_paragraph_classes = (
             ocr_paragraph_classes if ocr_paragraph_classes is not None else {}
         )
+        # Filled by high_level after construction, like layout_bounds.
+        self.figure_label_classes = (
+            figure_label_classes if figure_label_classes is not None else {}
+        )
+        # Per page, glyphs painted over by a later fill, as (x0, y0, x1, y1,
+        # char) in PDF coordinates. Dropped so they stay invisible.
+        self.hidden_glyphs = hidden_glyphs if hidden_glyphs is not None else {}
         self.noto_name = noto_name
         self.noto = noto
         self.style_font_names = style_font_names or {0: noto_name}
@@ -1025,9 +1057,12 @@ class TranslateConverter(PDFConverterEx):
             )
 
         ############################################################
+        page_hidden = list(self.hidden_glyphs.get(ltpage.pageid, ()))
         for child in ltpage:
             if isinstance(child, LTChar):
                 if is_outside_page(child, self.page_clip):
+                    continue
+                if page_hidden and take_hidden_glyph(child, page_hidden):
                     continue
                 cur_v = False
                 layout = self.layout[ltpage.pageid]
@@ -1211,6 +1246,11 @@ class TranslateConverter(PDFConverterEx):
                 preserved_segments.add(sstk[index])
 
         page_bounds = self.layout_bounds.get(ltpage.pageid, {})
+        page_figure_labels = self.figure_label_classes.get(ltpage.pageid, set())
+        # A label the converter split into several paragraphs (a style change
+        # between its lines) cannot centre each part in the same room without
+        # stacking them on one another; those parts keep their own anchors.
+        paragraphs_per_class = Counter(paragraph.cls for paragraph in pstk)
         for paragraph in pstk:
             bound = page_bounds.get(paragraph.cls)
             if bound is None:
@@ -1219,6 +1259,17 @@ class TranslateConverter(PDFConverterEx):
             if paragraph.orientation == IDENTITY_ORIENTATION:
                 paragraph.x = max(paragraph.x, paragraph.x0)
             paragraph.layout_bound = bound
+            if (
+                paragraph.cls in page_figure_labels
+                and paragraph.orientation == IDENTITY_ORIENTATION
+                and paragraphs_per_class[paragraph.cls] == 1
+            ):
+                # Lines start at the left edge and are centred afterwards; a
+                # shape tall enough for a second line may wrap into it.
+                paragraph.centred = True
+                paragraph.x = paragraph.x0
+                if bound[3] - bound[1] >= 2.2 * paragraph.size:
+                    paragraph.brk = True
         log.debug("\n==========[VSTACK]==========\n")
         for id, v in enumerate(var):
             l = max([vch.x1 for vch in v]) - v[0].x0
@@ -1730,6 +1781,8 @@ class TranslateConverter(PDFConverterEx):
             # may be indented, every later line starts at x0.
             first_line_x = x
             ops_vals: list[dict] = []
+            built_size = size
+            line_right: dict[int, float] = {}
 
             while ptr < len(new):
                 style_tag = STYLE_TAG_PATTERN.match(new, ptr)
@@ -1882,6 +1935,8 @@ class TranslateConverter(PDFConverterEx):
                 adv -= mod
                 fcur = fcur_
                 x += adv
+                if vy_regex or ch not in (" ", "\n"):
+                    line_right[lidx] = max(line_right.get(lidx, x), x)
                 if log.isEnabledFor(logging.DEBUG):
                     lstk.append(LTLine(0.1, (_x, _y), (x, y)))
                     _x, _y = x, y
@@ -1954,13 +2009,31 @@ class TranslateConverter(PDFConverterEx):
                     rescale_operations(ops_vals, scale, first_line_x, x0)
                     ink = operation_ink(ops_vals)
 
+            if pstk[id].centred and line_right and size > 0:
+                # Every advance is linear in the size, so a line's final width
+                # is its built width scaled by the shrink applied since.
+                factor = size / built_size if built_size else 1.0
+                for line_index, right in line_right.items():
+                    start = first_line_x if line_index == 0 else x0
+                    width = (right - start) * factor
+                    shift = x0 + max(0.0, (x1 - x0 - width) / 2) - start
+                    for vals in ops_vals:
+                        if vals["lidx"] == line_index:
+                            vals["x"] += shift
+
             # Formula slack stays charged to the paragraph's own box, so a
             # formula in an already tight paragraph is still somewhat cramped.
             # The room borrowed from below is only spent on not colliding.
             offsets = line_offsets(ink, lidx, size, line_height,
                                    budget=height - (lidx + 1) * size * line_height)
 
-            if pstk[id].layout_bound is not None:
+            if pstk[id].centred:
+                # A two-line label that now fits on one line would otherwise
+                # stay on the first line's baseline, hugging the top of its box.
+                y += vertical_centre_shift(
+                    y, ink, offsets, pstk[id].y0, pstk[id].y1
+                )
+            elif pstk[id].layout_bound is not None:
                 y += vertical_shift_to_bounds(
                     y,
                     ink,
@@ -2128,6 +2201,26 @@ def vertical_ink_extent(
     if not extents:
         return 0.0
     return max(high for _low, high in extents) - min(low for low, _high in extents)
+
+
+def vertical_centre_shift(
+    baseline: float,
+    ink: dict[int, tuple[float, float]],
+    offsets: list[float],
+    lower: float,
+    upper: float,
+) -> float:
+    """Return the shift that centres a paragraph's ink between two edges."""
+    extents = [
+        (baseline + low - offsets[index], baseline + high - offsets[index])
+        for index, (low, high) in ink.items()
+        if index < len(offsets)
+    ]
+    if not extents or upper <= lower:
+        return 0.0
+    minimum = min(low for low, _high in extents)
+    maximum = max(high for _low, high in extents)
+    return (lower + upper) / 2 - (minimum + maximum) / 2
 
 
 def vertical_shift_to_bounds(
