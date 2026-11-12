@@ -1,7 +1,7 @@
 # Hướng dẫn cài đặt — PDF Translate (vp-pdf)
 
 Tài liệu này dành cho việc chạy và kiểm thử từ mã nguồn trên máy Windows hiện
-tại. Không sửa đổi bất kỳ file mã nguồn nào trong `backend/pdf2zh/`, `webui/`, `backend/scripts/`.
+tại. Không sửa đổi bất kỳ file mã nguồn nào trong `backend/pdf2zh/`, `backend/server/`, `backend/scripts/`, `frontend/`.
 
 ## 1. Yêu cầu hệ thống
 
@@ -18,7 +18,7 @@ cd pdf-science-translator
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt        # core dịch + OCR
 .\.venv\Scripts\python.exe -m pip install -r backend\requirements-webui.txt  # backend cho app desktop
-.\.venv\Scripts\python.exe scripts\fetch_assets.py                   # tải model layout + font Unicode
+.\.venv\Scripts\python.exe backend\scripts\fetch_assets.py           # tải model layout + font Unicode
 ```
 
 `fetch_assets.py` tải `doclayout.onnx` (~75 MB) và font `GoNotoKurrent-Regular.ttf`

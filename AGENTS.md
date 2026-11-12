@@ -17,8 +17,8 @@ those details into this file; update the shared knowledge when behavior changes.
   `unittest` suite, `pip check`, hard-error Ruff checks, and proportionate PDF
   render QA before handoff.
 - Do not commit, push, merge, tag, publish, sign, or overwrite user output
-  unless the user has authorized that operation. A release must have matching
-  `APP_VERSION` and `v*` tag values.
+  unless the user has authorized that operation. The desktop version lives in
+  `frontend/package.json`; a release tag `v*` must match it.
 - Keep UI text consistent with the existing Vietnamese application. Follow
   nearby Python style: four spaces, type annotations, `snake_case` functions,
   `PascalCase` classes, `UPPER_CASE` constants, and `pathlib.Path` for paths.

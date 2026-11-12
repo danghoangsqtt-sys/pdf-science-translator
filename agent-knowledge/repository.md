@@ -5,15 +5,15 @@
 For the end-to-end component map and desktop/API/Android boundaries, see
 [`docs/kien-truc/codebase-architecture.md`](../docs/kien-truc/codebase-architecture.md).
 
-- `app/errors.py`: user-facing failure codes and the copyable error report.
 - `backend/app/assets/`, `backend/app/fonts/`: layout model, Unicode PDF font and OCR font;
   the offline build packages them from here.
 - `backend/scripts/translate_pdf.py`: supported CLI and stable output staging.
-- `webui/`: Electron + React frontend (`frontend/src`) and the FastAPI backend
-  (`backend/main.py`, `backend/services/`) it starts on a private 127.0.0.1 port.
+- `frontend/`: Electron + React desktop UI (`src/`, `electron/`); it starts the
+  FastAPI backend in `backend/server/` (`main.py`, `services/`) on a private
+  127.0.0.1 port.
   `/api/capabilities` reports the three public profiles; `/api/engines` returns 410.
   Jobs accept `profile`, refuse engine/model/unknown fields, and report the translated share.
-  The development launcher prefers `.venv312` before `.venv`; the packaged
+  The development launcher prefers `BAN-CHAY/.venv312` before `.venv`; the packaged
   app continues to use its bundled `python_runtime`.
 - `backend/scripts/fetch_assets.py`: downloads the layout model and Unicode PDF font.
 - `backend/scripts/prepare_offline_pack.py`: assembles verified resources already on disk.
@@ -37,7 +37,7 @@ them after the build, since they duplicate the model store. Do not recreate
   workflow yet.
 
 The CustomTkinter GUI, its self-updater and PyInstaller packaging were
-removed on 2026-10-29 in favour of `webui/`. Do not reintroduce them.
+removed on 2026-10-29 in favour of the Electron UI. Do not reintroduce them.
 
 ## Commands
 
@@ -50,11 +50,12 @@ Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt -r backend\requirements-webui.txt
-.\.venv\Scripts\python.exe scripts\fetch_assets.py
-.\.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-cd frontend; npm install; npm run dev
+.\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt -r backend\requirements-webui.txt
+cd backend
+..\.venv\Scripts\python.exe scripts\fetch_assets.py
+..\.venv\Scripts\python.exe scripts\translate_pdf.py INPUT.pdf --output-dir OUT
+..\.venv\Scripts\python.exe -m unittest discover -s tests -t .
+cd ..\frontend; npm install; npm run dev
 ```
 
 macOS:
@@ -63,7 +64,7 @@ macOS:
 python3 -m venv .venv
 .venv/bin/python -m pip install -r backend/requirements.txt
 .venv/bin/python backend/scripts/translate_pdf.py INPUT.pdf --output-dir OUT
-.venv/bin/python -m unittest discover -s tests -v
+cd backend && ../.venv/bin/python -m unittest discover -s tests -t .
 ```
 
 ### Backend API token

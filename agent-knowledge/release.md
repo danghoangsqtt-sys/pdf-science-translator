@@ -1,6 +1,7 @@
 # Desktop Build and Release
 
-The desktop app is the Electron + React UI in `webui/`. The Android app
+The desktop app is the Electron + React UI in `frontend/`, which starts the
+FastAPI backend in `backend/server/`. The Android app
 releases under the separate `android-v*` namespace; see
 [android.md](android.md).
 
@@ -11,8 +12,12 @@ Only publish when the user explicitly requests it.
 There is no automated desktop release yet. The CustomTkinter app, its
 self-updater, `build.ps1`, `build-macos.sh`, the PyInstaller specs and the
 `release.yml`/`macos-artifacts.yml` workflows were removed on 2026-10-29.
-Before the next desktop release, add: a reproducible `webui/python_runtime`
-build, a CI workflow, a packaged smoke test, macOS targets and an updater.
+The editions users actually receive are the portable builds from
+`backend/scripts/build_offline_windows.py` (see [repository.md](repository.md));
+the electron-builder config in `frontend/package.json` makes an installer
+without the offline data pack. Before the next desktop release, add: a
+reproducible `BAN-CHAY/python_runtime` build, a CI workflow, a packaged smoke
+test, macOS targets and an updater.
 
 Windows installer, built locally:
 
