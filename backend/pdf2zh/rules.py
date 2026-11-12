@@ -383,6 +383,324 @@ def cluster_table_words(
     return result
 
 
+def drawing_shape(drawing: Mapping[str, Any]) -> tuple[float, float, float, float, bool] | None:
+    """Reduce a PyMuPDF ``get_drawings()`` entry to its box and squareness.
+
+    Rectangles, quads and paths built only from horizontal/vertical lines and
+    corner curves (rounded boxes, cylinders) count as rectangular; any slanted
+    line (a diamond, an arrow head) does not.
+    """
+    rect = drawing.get("rect")
+    if rect is None:
+        return None
+    bounds = _rect(tuple(rect))
+    if bounds is None:
+        return None
+    items = list(drawing.get("items", ()))
+    # An open polyline (a connector between boxes) has a bounding box too, and
+    # a label beside it is not inside it.
+    closed = (
+        bool(drawing.get("closePath"))
+        or drawing.get("type") in ("f", "fs")
+        or any(item and item[0] in ("re", "qu") for item in items)
+    )
+    if not closed:
+        return None
+    rectangular = True
+    for item in items:
+        if not item:
+            continue
+        if item[0] == "l" and len(item) >= 3:
+            (ax, ay), (bx, by) = (item[1][0], item[1][1]), (item[2][0], item[2][1])
+            if abs(ax - bx) > 0.5 and abs(ay - by) > 0.5:
+                rectangular = False
+                break
+        elif item[0] == "qu" and len(item) >= 2:
+            # A quad drawn as a diamond is still a quad; only an axis-aligned
+            # one is a box.
+            try:
+                ul, ur, ll = item[1][0], item[1][1], item[1][2]
+                tilted = abs(ul[1] - ur[1]) > 0.5 or abs(ul[0] - ll[0]) > 0.5
+            except (TypeError, IndexError):
+                tilted = True
+            if tilted:
+                rectangular = False
+                break
+    return (*bounds, rectangular)
+
+
+@dataclass(frozen=True)
+class FigureLabel:
+    """A short text label drawn inside a vector figure.
+
+    ``bounds`` is the room the translation may use. ``enclosed`` says it came
+    from the drawn shape around the label (a flowchart box), so the label is
+    centred in it; otherwise it is the label's own extent, widened only into
+    empty space on both sides equally.
+    """
+
+    bounds: tuple[float, float, float, float]
+    text: str
+    words: tuple[Sequence[Any], ...]
+    enclosed: bool
+
+
+def _contains(
+    outer: tuple[float, float, float, float],
+    inner: tuple[float, float, float, float],
+    tolerance: float = 1.0,
+) -> bool:
+    return (
+        outer[0] <= inner[0] + tolerance
+        and outer[1] <= inner[1] + tolerance
+        and outer[2] >= inner[2] - tolerance
+        and outer[3] >= inner[3] - tolerance
+    )
+
+
+def _centre_inside(
+    rectangle: tuple[float, float, float, float],
+    point: tuple[float, float],
+) -> bool:
+    return rectangle[0] <= point[0] <= rectangle[2] and rectangle[1] <= point[1] <= rectangle[3]
+
+
+def figure_labels(
+    words: Iterable[Sequence[Any]],
+    figure: Sequence[Any],
+    shapes: Iterable[Sequence[Any]] = (),
+) -> list[FigureLabel]:
+    """Group the words of a vector figure into translatable labels.
+
+    Words are PyMuPDF ``get_text("words")`` tuples and ``figure``/``shapes`` are
+    rectangles in the same top-left coordinates. Only labels that read as
+    natural language are returned: axis ticks, variables, units and codes stay
+    as source glyphs together with every line, arrow and fill of the figure.
+    A label whose words overlap each other (an icon glyph printed over a word)
+    is left alone rather than guessed at.
+    """
+    area = _rect(figure)
+    if area is None:
+        return []
+    fx0, fy0, fx1, fy1 = area
+    figure_area = max(0.0, fx1 - fx0) * max(0.0, fy1 - fy0)
+    items = []
+    for word in words:
+        bounds = _rect(word)
+        if bounds is None or len(word) < 5:
+            continue
+        centre = ((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+        if _centre_inside(area, centre):
+            items.append((bounds, word))
+    if not items:
+        return []
+
+    # A shape is (x0, y0, x1, y1[, rectangular]). Its full box decides which
+    # words belong together; the room it lends a translation is the whole box
+    # only when it is axis-aligned. A diamond or ellipse lends the rectangle
+    # inscribed in it, roughly the middle half each way.
+    outers: list[tuple[float, float, float, float]] = []
+    rooms: list[tuple[float, float, float, float]] = []
+    for shape in shapes:
+        bounds = _rect(shape)
+        if bounds is None:
+            continue
+        sx0, sy0, sx1, sy1 = bounds
+        if sx1 - sx0 < 4 or sy1 - sy0 < 4:
+            continue
+        if (sx1 - sx0) * (sy1 - sy0) > 0.5 * figure_area:
+            continue
+        rectangular = bool(shape[4]) if len(shape) > 4 else True
+        room = bounds
+        if not rectangular:
+            qx, qy = (sx1 - sx0) / 4, (sy1 - sy0) / 4
+            room = (sx0 + qx, sy0 + qy, sx1 - qx, sy1 - qy)
+        outers.append(bounds)
+        rooms.append(room)
+
+    def holder(box: Sequence[float]) -> int | None:
+        inner = (box[0], box[1], box[2], box[3])
+        candidates = [
+            index for index, shape in enumerate(outers) if _contains(shape, inner)
+        ]
+        if not candidates:
+            return None
+        return min(
+            candidates,
+            key=lambda index: (outers[index][2] - outers[index][0])
+            * (outers[index][3] - outers[index][1]),
+        )
+
+    # Words -> lines: same baseline band, a word space apart, same shape.
+    # Columns in a figure can sit closer than a word space in prose, so the
+    # gap is half the line height and a shape boundary always separates.
+    lines: list[dict[str, Any]] = []
+    for bounds, word in sorted(items, key=lambda item: (item[0][0], item[0][1])):
+        x0, y0, x1, y1 = bounds
+        height = max(0.1, y1 - y0)
+        centre_y = (y0 + y1) / 2
+        word_holder = holder(bounds)
+        target = None
+        for line in lines:
+            line_height = max(0.1, line["box"][3] - line["box"][1])
+            line_centre = (line["box"][1] + line["box"][3]) / 2
+            if abs(centre_y - line_centre) > 0.4 * max(height, line_height):
+                continue
+            if line["holder"] != word_holder:
+                continue
+            gap = x0 - line["box"][2]
+            if gap <= 0.5 * max(height, line_height):
+                target = line
+                break
+        if target is None:
+            lines.append(
+                {
+                    "box": [x0, y0, x1, y1],
+                    "words": [word],
+                    "overlap": False,
+                    "holder": word_holder,
+                }
+            )
+            continue
+        if x0 < target["box"][2] - 0.5:
+            target["overlap"] = True
+        target["words"].append(word)
+        box = target["box"]
+        box[:] = [min(box[0], x0), min(box[1], y0), max(box[2], x1), max(box[3], y1)]
+
+    # Lines -> labels: stacked lines of a similar size that overlap
+    # horizontally and sit in the same drawn shape form one multi-line label.
+    lines.sort(key=lambda line: (line["box"][1], line["box"][0]))
+    labels: list[dict[str, Any]] = []
+    for line in lines:
+        x0, y0, x1, y1 = line["box"]
+        height = max(0.1, y1 - y0)
+        target = None
+        for label in labels:
+            last = label["lines"][-1]["box"]
+            last_height = max(0.1, last[3] - last[1])
+            gap = y0 - last[3]
+            overlap = min(x1, last[2]) - max(x0, last[0])
+            if (
+                label["holder"] == line["holder"]
+                and -0.3 * height <= gap <= 0.6 * height
+                and overlap > 0.3 * min(x1 - x0, last[2] - last[0])
+                and max(height, last_height) <= 1.3 * min(height, last_height)
+            ):
+                target = label
+                break
+        if target is None:
+            labels.append({"lines": [line], "holder": line["holder"]})
+        else:
+            target["lines"].append(line)
+
+    all_centres = [
+        ((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2, id(word))
+        for bounds, word in items
+    ]
+    label_boxes = []
+    for label in labels:
+        boxes = [line["box"] for line in label["lines"]]
+        label_boxes.append(
+            (
+                min(box[0] for box in boxes),
+                min(box[1] for box in boxes),
+                max(box[2] for box in boxes),
+                max(box[3] for box in boxes),
+            )
+        )
+
+    result: list[FigureLabel] = []
+    for index, label in enumerate(labels):
+        if any(line["overlap"] for line in label["lines"]):
+            continue
+        # A line of names or codes inside a label ("Word2vec (NPLM), NLPS"
+        # above its description) stays as source glyphs: such lines are where
+        # unusual punctuation lives, and a re-drawn copy can only get it wrong.
+        # The remaining lines must be contiguous, or the translation would be
+        # fitted over the line left in place.
+        flags = [
+            should_translate_table_cell(
+                " ".join(
+                    str(item[4])
+                    for item in sorted(line["words"], key=lambda item: float(item[0]))
+                )
+            )
+            for line in label["lines"]
+        ]
+        if not any(flags):
+            continue
+        first, last = flags.index(True), len(flags) - 1 - flags[::-1].index(True)
+        if not all(flags[first:last + 1]):
+            continue
+        kept = label["lines"][first:last + 1]
+        label_words = tuple(
+            word
+            for line in kept
+            for word in sorted(line["words"], key=lambda item: float(item[0]))
+        )
+        text = " ".join(str(word[4]) for word in label_words)
+        own = {id(word) for word in label_words}
+        lx0 = min(line["box"][0] for line in kept)
+        ly0 = min(line["box"][1] for line in kept)
+        lx1 = max(line["box"][2] for line in kept)
+        ly1 = max(line["box"][3] for line in kept)
+        height = max(0.1, max(line["box"][3] - line["box"][1] for line in kept))
+        # A shape still holding a line left in place is not this label's to
+        # use: the centre test below sees that line's words and declines.
+        owner = holder((lx0, ly0, lx1, ly1))
+        shape = rooms[owner] if owner is not None else None
+        if (
+            shape is not None
+            and _contains(shape, (lx0, ly0, lx1, ly1))
+            and not any(
+                _centre_inside(outers[owner], (cx, cy))
+                for cx, cy, identity in all_centres
+                if identity not in own
+            )
+        ):
+            inset = max(1.0, 0.15 * height)
+            bounds = (
+                min(lx0, shape[0] + inset),
+                min(ly0, shape[1] + 0.5),
+                max(lx1, shape[2] - inset),
+                max(ly1, shape[3] - 0.5),
+            )
+            result.append(FigureLabel(bounds, text, label_words, True))
+            continue
+
+        # No shape of its own: widen equally into free space on both sides.
+        free_left = lx0 - fx0
+        free_right = fx1 - lx1
+        for other_index, other in enumerate(label_boxes):
+            if other_index == index:
+                continue
+            if other[3] < ly0 or other[1] > ly1:
+                continue
+            if other[2] <= lx0:
+                free_left = min(free_left, lx0 - other[2])
+            elif other[0] >= lx1:
+                free_right = min(free_right, other[0] - lx1)
+        for shape_box in outers:
+            if shape_box[3] < ly0 or shape_box[1] > ly1:
+                continue
+            for edge in (shape_box[0], shape_box[2]):
+                if edge <= lx0:
+                    free_left = min(free_left, lx0 - edge)
+                elif edge >= lx1:
+                    free_right = min(free_right, edge - lx1)
+        widen = max(0.0, min(free_left - 2.0, free_right - 2.0, 0.3 * (lx1 - lx0)))
+        result.append(
+            FigureLabel(
+                (lx0 - widen, ly0 - 0.5, lx1 + widen, ly1 + 0.5),
+                text,
+                label_words,
+                False,
+            )
+        )
+    return result
+
+
 def page_has_image(blocks: Iterable[Mapping[str, Any]]) -> bool:
     """Return whether the page draws any raster image at all.
 

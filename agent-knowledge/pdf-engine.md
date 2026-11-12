@@ -59,6 +59,16 @@ translatable. The source page stream stays exact for wholly protected pages.
 - Tables translate per reliable cell only when the model region and
   `PyMuPDF.find_tables()` overlap by at least 50%. Grid, fill, and border
   operators remain source content. Unreliable tables stay protected.
+- Vector figures (model class `figure`) stay protected except natural-language
+  labels (`rules.figure_labels`): words group into lines and stacked lines
+  only within the same closed drawn shape (`rules.drawing_shape`; open
+  connectors are not shapes), at a word-space gap and similar size. Each
+  label gets its own class, is fitted like a table cell and centred
+  (`Paragraph.centred`). An axis-aligned box lends its whole interior; a
+  diamond only its inscribed half; a box holding any other word lends
+  nothing. Name/code lines, ticks, units, overprinted glyphs and raster
+  figures stay source. Label pixels are painted 0.4 line heights below the
+  PyMuPDF word box because pdfminer glyph corners sit lower.
 - Fully protected blocks replay source glyph matrices, font size, horizontal
   scaling and rise without prose fitting. Their horizontal grid rules stay in
   the source stream. Array operands use PDF whitespace syntax, not Python list

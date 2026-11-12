@@ -33,6 +33,8 @@ from pdf2zh.pdfinterp import PDFPageInterpreterEx
 from pdf2zh.rules import (
     classify_preserved_page,
     cluster_table_words,
+    drawing_shape,
+    figure_labels,
     formula_regions,
     is_scanned_page,
     matching_table_cells,
@@ -261,6 +263,9 @@ def translate_patch(
     # paragraph is fitted. This is only a measure to compare line ends against.
     class_bounds = {}
     ocr_paragraph_classes = {}
+    # Labels inside vector figures are fitted like table cells but centred in
+    # the shape that holds them.
+    figure_label_classes = {}
     scanned_pages = set()
     skip_backing_pages = skip_backing_pages or set()
     ocr_regions_by_page = ocr_regions_by_page or {}
@@ -286,6 +291,7 @@ def translate_patch(
         class_bounds,
         ocr_paragraph_classes,
         domain=domain,
+        figure_label_classes=figure_label_classes,
     )
 
     assert device is not None
@@ -324,6 +330,7 @@ def translate_patch(
             h, w = box.shape
             vcls = ["abandon", "figure", "table", "isolate_formula", "formula_caption"]
             model_table_bounds = []
+            model_figure_bounds = []
             # Process non-vcls boxes in ascending confidence order so that
             # higher-confidence boxes overwrite lower-confidence ones
             non_vcls_boxes = [
@@ -354,6 +361,10 @@ def translate_patch(
                     )
                     if name == "table":
                         model_table_bounds.append(
+                            (raw_x0, raw_y0, raw_x1, raw_y1)
+                        )
+                    elif name == "figure":
+                        model_figure_bounds.append(
                             (raw_x0, raw_y0, raw_x1, raw_y1)
                         )
                     x0, y0, x1, y1 = raw_x0, raw_y0, raw_x1, raw_y1
@@ -424,6 +435,59 @@ def translate_patch(
                         )
                         if padded[2] > padded[0] and padded[3] > padded[1]:
                             page_bounds[next_class] = padded
+                        next_class += 1
+
+            # A vector figure stays protected as a whole except for its
+            # natural-language labels: each gets its own class, so it is
+            # translated alone and fitted to the shape around it, while every
+            # line, arrow, fill, number and symbol remains source content.
+            # Raster figures have no words here and are untouched.
+            if model_figure_bounds:
+                try:
+                    figure_shapes = [
+                        shape
+                        for shape in (
+                            drawing_shape(drawing)
+                            for drawing in source_page.get_drawings()
+                        )
+                        if shape is not None
+                    ]
+                except Exception as error:
+                    logger.warning(
+                        "Page %s drawing extraction failed; preserving figures: %s",
+                        pageno + 1,
+                        error,
+                    )
+                    figure_shapes = None
+                page_figure_classes = figure_label_classes.setdefault(
+                    page.pageno, set()
+                )
+                for figure_bounds in model_figure_bounds if figure_shapes is not None else ():
+                    for label in figure_labels(page_words, figure_bounds, figure_shapes):
+                        for word in label.words:
+                            wx0, wy0, wx1, wy1 = (
+                                float(value) for value in word[:4]
+                            )
+                            # The converter looks a glyph up by its lower-left
+                            # corner, and pdfminer puts that corner up to a
+                            # third of the line height below PyMuPDF's word
+                            # box; a one-point pad lost every second line.
+                            descent = 0.4 * max(0.0, wy1 - wy0)
+                            px0, py0, px1, py1 = (
+                                np.clip(int(wx0 - 1.5), 0, w - 1),
+                                np.clip(int(h - wy1 - descent - 1), 0, h - 1),
+                                np.clip(int(wx1 + 1.5), 0, w - 1),
+                                np.clip(int(h - wy0 + 1), 0, h - 1),
+                            )
+                            box[py0:py1, px0:px1] = next_class
+                        lx0, ly0, lx1, ly1 = label.bounds
+                        page_bounds[next_class] = (
+                            lx0,
+                            page_height - ly1,
+                            lx1,
+                            page_height - ly0,
+                        )
+                        page_figure_classes.add(next_class)
                         next_class += 1
 
             # Technical documents often use ordinary prose fonts for equations.
