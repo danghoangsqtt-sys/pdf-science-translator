@@ -53,6 +53,10 @@ from pdf2zh.pdfinterp import PDFPageInterpreterEx, extgstate_is_safe
 from pdfminer.pdfinterp import PDFGraphicState, PDFResourceManager
 from pdfminer.psparser import PSLiteral
 
+# The output font is a gitignored asset (backend/scripts/fetch_assets.py), so a
+# fresh clone or worktree skips the tests that need it instead of erroring.
+OUTPUT_FONT = Path(__file__).resolve().parents[1] / "app/assets/GoNotoKurrent-Regular.ttf"
+
 
 class RecordingDevice:
     """Just enough of a PDFDevice to see what do_S hands over."""
@@ -545,21 +549,23 @@ class OrientationAndStyleTests(unittest.TestCase):
         self.assertFalse(is_outside_page(inside, page))
         self.assertFalse(is_outside_page(edge, None))
 
+    @unittest.skipUnless(OUTPUT_FONT.is_file(), "output font asset not fetched")
     def test_a_character_the_output_font_cannot_draw_is_preserved(self):
         """A missing glyph draws as .notdef and extracts as U+0000.
 
         The list markers of a chemistry textbook and the apostrophe in a
         physiology textbook's own title were lost that way.
         """
-        font = pymupdf.Font("probe", "app/assets/GoNotoKurrent-Regular.ttf")
+        font = pymupdf.Font("probe", str(OUTPUT_FONT))
         self.assertTrue(output_font_lacks_glyph("➤", font))
         self.assertTrue(output_font_lacks_glyph("☐", font))
         self.assertFalse(output_font_lacks_glyph("ệ", font))
         self.assertFalse(output_font_lacks_glyph("e", font))
 
+    @unittest.skipUnless(OUTPUT_FONT.is_file(), "output font asset not fetched")
     def test_spaces_and_a_missing_font_are_never_preserved(self):
         """Preserving a space would break a paragraph at every word."""
-        font = pymupdf.Font("probe", "app/assets/GoNotoKurrent-Regular.ttf")
+        font = pymupdf.Font("probe", str(OUTPUT_FONT))
         self.assertFalse(output_font_lacks_glyph(" ", font))
         self.assertFalse(output_font_lacks_glyph("", font))
         self.assertFalse(output_font_lacks_glyph("➤", None))

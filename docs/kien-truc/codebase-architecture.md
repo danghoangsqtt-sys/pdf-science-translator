@@ -1,20 +1,23 @@
 # Bản đồ mã nguồn và các ranh giới bảo toàn
 
-Ngày đối chiếu: 27/10/2026, nhánh `feature/offline-engine`.
+Ngày đối chiếu: 12/11/2026, bố cục `backend/` + `frontend/` (nhánh `release/0.4.0`
+và Phase 9). Ứng dụng desktop Tkinter đã bị gỡ ngày 29/10/2026.
 
 ## Luồng dịch
 
 ```mermaid
 flowchart TD
-    E[Electron / React] --> A[FastAPI: main.py]
-    A --> J[Hàng đợi: job_service.py]
+    E[frontend: Electron / React] --> A[backend/server/main.py: FastAPI 127.0.0.1 + token]
+    A --> J[job_service.py: hàng đợi một worker]
+    A --> OS[offline_service.py: profile Nhanh / Cân bằng / Chất lượng]
+    OS --> RT[runtime_service.py: worker Ollama riêng từ gói offline-data]
     J --> C[backend/scripts/translate_pdf.py]
-    T[Desktop Tkinter] --> C
     CLI[Dòng lệnh] --> C
     C --> H[high_level.py: bố cục, bảo toàn, trang PDF]
     H --> V[converter.py: đoạn văn, marker, dàn chữ]
     V --> R[translator.py: engine, kiểm tra, cache]
-    R --> O[Ollama / Azure / Google / handoff]
+    R --> O[Ollama cục bộ / handoff]
+    R --> RT
     V --> P[pdfinterp.py: giữ đồ họa và glyph gốc]
     P --> OUT[PDF mono riêng + báo cáo phần chưa dịch]
 ```
@@ -28,11 +31,14 @@ flowchart TD
 | `backend/pdf2zh/translator.py` | Registry engine, mạng, thử lại, marker, thuật ngữ, phát hiện kết quả không đáng tin. |
 | `backend/pdf2zh/cache.py` | Cache SQLite theo engine, tham số, ngôn ngữ và nội dung; Ollama bổ sung phiên bản xử lý và fallback. |
 | `backend/pdf2zh/ocr.py` | OCR cục bộ có điều kiện; không dịch vùng scan không đủ bằng chứng an toàn. |
-| `backend/server/services/engine_service.py` | Trạng thái Ollama/Azure và hướng dẫn thiết lập; không nạp mô hình khi hỏi danh sách. |
+| `backend/server/main.py` | API `health`, `capabilities`, `jobs`; kiểm tra token, magic `%PDF-`, giới hạn 100 MiB; `/api/engines` trả 410. |
+| `backend/server/services/offline_service.py`, `runtime_service.py` | Ánh xạ profile công khai sang model ẩn danh; khởi chạy worker Ollama riêng trên cổng ngẫu nhiên, gắn Job Object. |
 | `backend/server/services/job_service.py` | Một worker, hủy giữa các trang, tiến độ, tỷ lệ dịch và cảnh báo theo nguyên nhân. |
+| `backend/server/services/engine_service.py`, `device_check_service.py`, `hardware_service.py` | Chưa được API dùng (ENH-003): mô tả engine cũ và kiểm tra máy cho Phase 6. |
+| `frontend/electron/main.ts` | Chọn cổng, sinh token, spawn backend, chặn mọi request ngoài localhost. |
 | `frontend/src/components/PdfComparison.tsx` | Bật/tắt đồng bộ vị trí và zoom giữa hai bản PDF. |
 | `frontend/src/components/PdfViewerBox.tsx` | Đọc liên tục, kéo chuột, zoom tại con trỏ, chỉ tạo canvas gần viewport. |
-| `app/` | Desktop Tkinter, cập nhật, đóng gói; vẫn chọn Google riêng với mặc định Ollama của CLI/Electron. |
+| `backend/app/assets/`, `backend/app/fonts/` | Chỉ còn tài nguyên: model layout, font PDF Unicode, font OCR (gitignore phần nhị phân lớn). Tên `app/` là di sản; đổi tên theo ENH-010. |
 | `frontend/android/` | Engine PDFBox-Android độc lập; không thừa hưởng đầy đủ bảo toàn/OCR từ Python. |
 
 ## Những quyết định phải giữ
@@ -51,6 +57,5 @@ trong venv, toàn bộ `unittest`, `pip check`, hard-error Ruff và smoke test.
 Với frontend, chạy `npm run test:viewer` trong `frontend/`; trình chạy
 loại bỏ `ELECTRON_RUN_AS_NODE` để thực sự kiểm tra Chromium.
 
-Các thay đổi trong worktree này không tự xuất hiện trong checkout
-`D:/DataAdmin/vp-pdf` đang ở nhánh `feat/domain-glossary`. Cần xem xét tích hợp
-nhánh riêng trước khi đóng gói/phát hành; audit không tạo commit hoặc merge.
+Bố cục thư mục, lệnh build và quy ước `BAN-CHAY/`, `BAN-CAI-DAT/` nằm ở
+`agent-knowledge/repository.md`.

@@ -46,6 +46,8 @@ desktop.ini
 # tracked in AGENTS.md, CLAUDE.md, .claude/skills/, and agent-knowledge/.
 /CLAUDE.local.md
 /.claude/settings.local.json
+# Codex's config.toml holds machine-specific absolute paths (notify hooks).
+/.codex/
 
 # Offline development and native/model outputs.
 .venv312/

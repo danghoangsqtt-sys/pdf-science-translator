@@ -239,13 +239,13 @@ async def create_translation_job(
         await _read_validated_upload(file, upload_path, max_bytes=MAX_FILE_SIZE)
     except HTTPException:
         raise
-    except Exception:
+    except Exception as exc:
         upload_path.unlink(missing_ok=True)
         logger.error("Upload rejected")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Không thể đọc tài liệu được chọn.",
-        )
+        ) from exc
 
     await job_manager.submit(
         job_id=job_id,

@@ -107,7 +107,7 @@ export const createTranslationJob = async (
   formData.append('target_language', targetLanguage);
   formData.append('source_language', sourceLanguage);
   // Empty string means "no domain selected" - the backend treats it the
-  // same as omitting the field entirely (see webui/backend/main.py).
+  // same as omitting the field entirely (see backend/server/main.py).
   if (domain) {
     formData.append('domain', domain);
   }

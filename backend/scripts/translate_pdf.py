@@ -635,8 +635,7 @@ def translate_pdf(
         # Nothing was translatable, so the engine produced a copy of the source
         # with no translated text in it. Handing that over as a finished
         # translation is the one outcome the preservation rules forbid outright:
-        # say what the document actually needs instead. The message carries the
-        # words app/errors.py matches for E-PDF-03.
+        # say what the document actually needs instead.
         if report.translatable_segments == 0:
             if ocr != "off":
                 details = "; ".join(ocr_preparation.warnings) if ocr_preparation else ""
