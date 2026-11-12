@@ -27,6 +27,7 @@ from pdf2zh.rules import (
     is_bullet_character,
     is_formula_font,
     line_height_for_language,
+    looks_like_formula_line,
     looks_like_reference_entry,
     min_line_height_for_language,
 )
@@ -447,6 +448,79 @@ def paragraph_width_budget(x: float, x0: float, x1: float, lines: int) -> float:
     return first_line + max(0, lines - 1) * (x1 - x0)
 
 
+Box = tuple[float, float, float, float]
+
+
+def glyph_line_boxes(characters: Sequence[LTChar]) -> list[Box]:
+    """Boxes of the runs a glyph group draws, one per line and column.
+
+    A protected group can hold a whole bibliography in both columns; its
+    union box covers every line of the page and hides the empty space beside
+    a heading. A run ends at a new baseline or a gap wider than 2 em.
+    """
+    boxes: list[list[float]] = []
+    for character in sorted(characters, key=lambda c: (round(c.y0), c.x0)):
+        size = max(character.size, 1.0)
+        last = boxes[-1] if boxes else None
+        if (
+            last is not None
+            and abs(character.y0 - last[1]) <= 0.5 * size
+            and character.x0 - last[2] <= 2 * size
+        ):
+            last[2] = max(last[2], character.x1)
+            last[3] = max(last[3], character.y1)
+        else:
+            boxes.append([character.x0, character.y0, character.x1, character.y1])
+    return [tuple(box) for box in boxes]
+
+
+def single_line_room(
+    line: Box, body: Sequence[Box], others: Sequence[Box], size: float
+) -> tuple[float, float, bool] | None:
+    """Horizontal room a one-line heading may take in its column.
+
+    IEEE sets "III. PROPOSED APPROACH" in small caps: most letters at 80% of
+    the size, so the source line is narrow. The Vietnamese heading is longer
+    and all full-size capitals, and fitting it into the narrow source width
+    shrank it to 60% while the column beside it stood empty. The column is the
+    span of the nearest multi-line paragraph above or below the line (within
+    10 em: a table caption sits over its table, well away from the prose); it
+    is used only when nothing in ``others`` shares the line's band in the extra
+    width. ``others`` holds translatable paragraphs and the exact boxes of
+    protected glyphs, not the union box of a protected class, which spans
+    both columns of a page.
+
+    Returns ``(x0, x1, centred)``: a centred heading widens both ways and is
+    re-centred, a left-aligned one widens to the right.
+    """
+    x0, y0, x1, y1 = line
+
+    def distance(b: Box) -> float:
+        return max(0.0, b[1] - y1, y0 - b[3])
+
+    near = [b for b in body if b[0] < x1 and b[2] > x0 and distance(b) <= 10 * size]
+    if not near:
+        return None
+    nearest = min(near, key=distance)
+    cx0, cx1 = nearest[0], nearest[2]
+    if cx1 - cx0 <= x1 - x0 + size or x0 < cx0 - size or x1 > cx1 + size:
+        return None
+    left_aligned = abs(x0 - cx0) <= size
+    centred = (
+        not left_aligned
+        and abs((x0 + x1) / 2 - (cx0 + cx1) / 2) <= 0.06 * (cx1 - cx0)
+    )
+    if not (left_aligned or centred):
+        return None
+    new_x0 = x0 if left_aligned else cx0
+    for other in others:
+        if other == line or other[1] >= y1 or other[3] <= y0:
+            continue
+        if other[0] < cx1 and other[2] > new_x0:
+            return None
+    return new_x0, cx1, centred
+
+
 # Setting a colour leaves it in force for everything drawn after it, so a run
 # that states no colour of its own takes the colour of whatever ran before it -
 # a gold list bullet repainted the whole item that followed it. Every run
@@ -518,7 +592,28 @@ def is_translatable_segment(segment: str, preserved: Iterable[str]) -> bool:
         # A bibliography entry on a page that also carries prose, such as the
         # first page of a References section; see rules.looks_like_reference_entry.
         return False
+    if looks_like_formula_line(visible):
+        # A formula strung together by "for", "where", "find": the model
+        # rewrites its structure, so it keeps its source text.
+        return False
     return bool(visible) and PLACEHOLDER_ONLY_PATTERN.fullmatch(visible) is None
+
+
+# A bracket or digit set flush against a formula glyph belongs to the formula:
+# "f(s)" is set as f, "(", s, ")" with the brackets in the upright text font.
+FORMULA_ATTACHED_CHARACTERS = frozenset("()0123456789")
+
+
+def attaches_to_formula(previous: LTChar, child: LTChar) -> bool:
+    """Whether ``child`` is set flush against ``previous`` on its baseline.
+
+    Word spacing is at least a quarter em; math sets a bracket or digit after
+    a symbol with at most a thin space. The baseline test keeps a following
+    line from attaching to a formula that ended the line above.
+    """
+    size = max(child.size, 1.0)
+    gap = child.x0 - previous.x1
+    return -0.15 * size <= gap <= 0.2 * size and abs(child.y0 - previous.y0) <= 0.35 * size
 
 
 def styled_character_text(characters: list[LTChar]) -> str:
@@ -1088,18 +1183,30 @@ class TranslateConverter(PDFConverterEx):
                 if smaller_than_body or must_preserve:
                     cur_v = True
                 if not cur_v:
-                    # Keep brackets with a formula only when the formula starts
-                    # the segment. In prose such as "Factor C1 (applies...)" a
-                    # subscript leaves vstk populated; capturing the following
-                    # bracket then strands it at its source coordinate.
-                    if vstk and not pstk[-1].text_length and child.get_text() == "(":
+                    # Keep brackets with a formula when the formula starts the
+                    # segment, or when the bracket is set flush against a glyph
+                    # in a formula font ("f(s)" mid-sentence). In prose such as
+                    # "Factor C1 (applies...)" a subscript leaves vstk populated
+                    # but spaced off; capturing that bracket would strand it at
+                    # its source coordinate.
+                    character = child.get_text()
+                    flush = (
+                        bool(vstk)
+                        and not vstk_size_only
+                        and character in FORMULA_ATTACHED_CHARACTERS
+                        and attaches_to_formula(vstk[-1], child)
+                    )
+                    if vstk and character == "(" and (not pstk[-1].text_length or flush):
                         cur_v = True
                         must_preserve = True
                         vbkt += 1
-                    if vbkt and child.get_text() == ")":
+                    elif vbkt and character == ")":
                         cur_v = True
                         must_preserve = True
                         vbkt -= 1
+                    elif flush and character.isdigit():
+                        cur_v = True
+                        must_preserve = True
                 if (
                     not cur_v
                     or cls != xt_cls
@@ -1623,6 +1730,19 @@ class TranslateConverter(PDFConverterEx):
             for paragraph in pstk
         ]
         minimum_line_height = min_line_height_for_language(self.translator.lang_out)
+        # Columns a one-line heading may widen into (single_line_room).
+        paragraph_boxes = [(p.x0, p.y0, p.x1, p.y1) for p in pstk]
+        line_obstacles = [
+            box for p, box in zip(pstk, paragraph_boxes) if p.cls != 0
+        ] + [box for characters in var for box in glyph_line_boxes(characters)]
+        body_boxes = [
+            (p.x0, p.y0, p.x1, p.y1)
+            for p in pstk
+            if p.brk
+            and p.cls != 0
+            and p.layout_bound is None
+            and p.orientation == IDENTITY_ORIENTATION
+        ]
 
         for id, new in enumerate(news):
             if pstk[id].cls == 0:
@@ -1729,6 +1849,22 @@ class TranslateConverter(PDFConverterEx):
                         ch, int(measure_style), pstk[id].size
                     )[1]
                     tmp_ptr += 1
+            centre_in_room = pstk[id].centred
+            if (
+                not brk
+                and new != sstk[id]
+                and total_avail > 0
+                and total_new_width > total_avail * 1.05
+                and pstk[id].layout_bound is None
+                and not pstk[id].centred
+            ):
+                room = single_line_room(
+                    paragraph_boxes[id], body_boxes, line_obstacles, pstk[id].size
+                )
+                if room is not None:
+                    x0, x1, centre_in_room = room
+                    x = x0
+                    total_avail = x1 - x0
             if total_avail > 0 and total_new_width > total_avail * 1.05:
                 ratio = total_avail / total_new_width
                 if not brk and ratio < 0.5 and new != sstk[id]:
@@ -2009,7 +2145,7 @@ class TranslateConverter(PDFConverterEx):
                     rescale_operations(ops_vals, scale, first_line_x, x0)
                     ink = operation_ink(ops_vals)
 
-            if pstk[id].centred and line_right and size > 0:
+            if centre_in_room and line_right and size > 0:
                 # Every advance is linear in the size, so a line's final width
                 # is its built width scaled by the shrink applied since.
                 factor = size / built_size if built_size else 1.0

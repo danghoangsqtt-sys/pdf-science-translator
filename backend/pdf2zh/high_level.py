@@ -31,6 +31,7 @@ from pdf2zh.converter import TranslateConverter
 from pdf2zh.doclayout import OnnxModel
 from pdf2zh.pdfinterp import PDFPageInterpreterEx
 from pdf2zh.rules import (
+    bibliography_rects,
     classify_preserved_page,
     cluster_table_words,
     drawing_shape,
@@ -41,6 +42,7 @@ from pdf2zh.rules import (
     is_scanned_page,
     matching_table_cells,
     page_has_image,
+    prose_precedes_references,
     should_translate_table_cell,
 )
 
@@ -614,8 +616,26 @@ def translate_patch(
                         logger.info(f"Page {pageno + 1} detected as NOMENCLATURE (pairs={symbol_def_pairs}/{len(lines)}), preserving original layout")
                         box[:, :] = 0
 
-            # Detect REFERENCE / bibliography pages: numbered entries with years, ISBN/DOI
-            if not (toc_score >= 8) and box.any():
+            # Detect REFERENCE / bibliography pages: numbered entries with years, ISBN/DOI.
+            # A page whose prose ends before its References heading is not one:
+            # the converter keeps each entry by itself and translates the prose.
+            mixed_references = prose_precedes_references(lines)
+            if mixed_references:
+                reference_lines = [
+                    ("".join(span["text"] for span in line["spans"]), line["bbox"])
+                    for block in source_page.get_text("dict")["blocks"]
+                    for line in block.get("lines", ())
+                ]
+                for rx0, ry0, rx1, ry1 in bibliography_rects(reference_lines):
+                    box[
+                        np.clip(int(h - ry1 - 1), 0, h - 1):np.clip(int(h - ry0 + 1), 0, h - 1),
+                        np.clip(int(rx0 - 1), 0, w - 1):np.clip(int(rx1 + 1), 0, w - 1),
+                    ] = 0
+                logger.info(
+                    f"Page {pageno + 1} has prose before its references: "
+                    "translating the prose, keeping the list as typeset"
+                )
+            if not (toc_score >= 8) and box.any() and not mixed_references:
                 has_ref_header = any(
                     re.match(r'^[\xad]?(references?|bibliography|suggested\s+reading|further\s+reading|works?\s+cited)$', l, re.IGNORECASE)
                     for l in lines[:10]

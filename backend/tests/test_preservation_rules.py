@@ -8,6 +8,7 @@ from pdfminer.pdfinterp import PDFResourceManager
 from pdf2zh.converter import TranslateConverter, is_translatable_segment
 from pdf2zh.rules import (
     BULLET_CHARACTERS,
+    bibliography_rects,
     classify_preserved_page,
     cluster_table_words,
     formula_regions,
@@ -17,6 +18,7 @@ from pdf2zh.rules import (
     line_height_for_language,
     looks_like_reference_entry,
     page_has_image,
+    prose_precedes_references,
     matching_table_cells,
     min_line_height_for_language,
     should_translate_table_cell,
@@ -302,6 +304,61 @@ class ReferenceEntryTests(unittest.TestCase):
         decision = classify_preserved_page("\n".join(lines))
         self.assertIsNotNone(decision)
         self.assertEqual(decision.kind, "REFERENCES")
+
+    def test_a_last_page_with_conclusion_then_references_is_not_preserved_whole(self):
+        """arXiv 2307.15299v5 page 6: the conclusion and acknowledgement end in
+        the left column, then 26 IEEE entries follow. The whole page used to
+        stay in English (BUG-021); the entries are protected one by one."""
+        prose = [
+            "Evolution proved to be the best because of its mu-",
+            "tation and selection operators which not only allowed",
+            "the algorithm to thoroughly search the sample space",
+            "but the filter and refine the best solutions. Differential",
+            "Evolutions performance was then followed by Particle",
+            "Swarm Optimization and finally Genetic Algorithm.",
+            "VII. ACKNOWLEDGEMENT",
+            "This work was made possible through the generous",
+            "backing of Mitacs and the dedicated support of Dr. Chi",
+        ]
+        entries = []
+        for index in range(1, 27):
+            entries += [f"[{index}] Author{index}, A. & Other, B. A title of the work.",
+                        f"Journal Of Things. pp. 1-10 ({1990 + index}) https://doi.org/x"]
+        lines = prose + ["REFERENCES"] + entries
+        self.assertTrue(prose_precedes_references(lines))
+        self.assertIsNone(classify_preserved_page("\n".join(lines)))
+        # Each entry is still kept out of the translator.
+        self.assertFalse(
+            is_translatable_segment(
+                "[15] Bergstra, J. & Bengio, Y. Random Search for Hyper-Parameter "
+                "Optimization. <s2>Journal Of Machine Learning Research.</s2> 13, 281-305 (2012)",
+                set(),
+            )
+        )
+
+    def test_the_list_after_the_heading_is_protected_as_typeset(self):
+        """Page 6 geometry: prose and heading in the left column (x 72-301),
+        entries below it and the whole right column (x 313-540)."""
+        lines = [
+            ("Evolution proved to be the best because of its mu-", (72, 76, 301, 87)),
+            ("University, Canada.", (72, 330, 140, 341)),
+            ("REFERENCES", (155, 352, 218, 362)),
+            ("[1] Sofi, S. & Oseledets, I. A case study", (72, 368, 301, 378)),
+            ("techniques for Load forecasting. (2022)", (88, 378, 250, 388)),
+            ("[15] Bergstra, J. & Bengio, Y. Random Search", (313, 78, 540, 88)),
+        ]
+        rects = bibliography_rects(lines)
+        # One box per column, so wrapped lines never fall between two boxes.
+        self.assertEqual(rects, [(72, 368, 301, 388), (313, 78, 540, 88)])
+        self.assertEqual(bibliography_rects(lines[:2]), [])  # no heading, nothing
+
+    def test_a_reference_page_with_its_heading_on_top_is_still_preserved(self):
+        lines = ["References"] + [
+            f"[{index}] Author, A. ({2000 + index}). A title. https://doi.org/10.1/{index}"
+            for index in range(1, 20)
+        ]
+        self.assertFalse(prose_precedes_references(lines))
+        self.assertEqual(classify_preserved_page("\n".join(lines)).kind, "REFERENCES")
 
     def test_a_prose_page_with_a_few_entries_is_not_preserved_whole(self):
         lines = [f"Body text line {index} discussing results without citations."

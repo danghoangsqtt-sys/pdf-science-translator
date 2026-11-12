@@ -949,6 +949,98 @@ def looks_like_reference_entry(text: str) -> bool:
     return bool(REFERENCE_ENTRY_START.match(text)) and bool(BARE_YEAR.search(text))
 
 
+REFERENCE_HEADER = re.compile(
+    r"[\xad]?(references?|bibliography|suggested\s+reading|further\s+reading|works?\s+cited)",
+    re.IGNORECASE,
+)
+NUMBERED_ENTRY_START = re.compile(r"^(?:\[\d{1,3}\]|\d{1,3}\.\s)")
+
+
+def prose_precedes_references(lines: Sequence[str]) -> bool:
+    """Whether a References heading follows real prose on the same page.
+
+    The last page of a two-column paper often ends its conclusion and
+    acknowledgement in the left column before the bibliography starts. Its
+    32 entries satisfied the whole-page reference test and the prose above
+    them was never translated. Such a page is left to the converter, which
+    keeps each entry by itself (looks_like_reference_entry).
+    """
+    for index, line in enumerate(lines):
+        if REFERENCE_HEADER.fullmatch(line):
+            prose = [
+                earlier
+                for earlier in lines[:index]
+                if len(earlier) >= 30
+                and not NUMBERED_ENTRY_START.match(earlier)
+                and not REFERENCE_ENTRY_START.match(earlier)
+            ]
+            return len(prose) >= 6
+    return False
+
+
+def bibliography_rects(
+    lines: Sequence[tuple[str, Sequence[float]]],
+) -> list[tuple[float, float, float, float]]:
+    """Boxes of the bibliography on a page where prose comes first.
+
+    ``lines`` are (text, PyMuPDF bbox) in reading order. Everything after the
+    References heading that sits below it in its column, or in a column wholly
+    to its right, is the list itself. Protecting that area keeps every entry
+    exactly as typeset: reflowing an untranslated entry lost its hanging
+    indent and ran "[16] ... (2012) [17] Cao, T." together as one paragraph.
+    The heading itself is translated. One box per column, not one per line:
+    the glyphs of a wrapped line ("cessed February 6, 2024]") fell into the
+    gaps between line boxes and were sent for translation on their own.
+    """
+    for index, (text, heading) in enumerate(lines):
+        if not REFERENCE_HEADER.fullmatch(text.strip()):
+            continue
+        hx0, hy0, hx1, _ = heading[:4]
+        centre = (hx0 + hx1) / 2
+        below: list[Sequence[float]] = []
+        right: list[Sequence[float]] = []
+        for _, bbox in lines[index + 1:]:
+            x0, y0, x1, _ = bbox[:4]
+            if x0 <= centre <= x1 and y0 >= hy0:
+                below.append(bbox)
+            elif x0 > hx1:
+                right.append(bbox)
+        return [
+            (
+                min(b[0] for b in group),
+                min(b[1] for b in group),
+                max(b[2] for b in group),
+                max(b[3] for b in group),
+            )
+            for group in (below, right)
+            if group
+        ]
+    return []
+
+
+FORMULA_PLACEHOLDER = re.compile(r"\{v\d+\}")
+SEGMENT_WORD = re.compile(r"[^\W\d_]+(?:\.[^\W\d_]+)*\.?")
+
+
+def looks_like_formula_line(text: str) -> bool:
+    """A segment that is a formula with a few connecting words, not a sentence.
+
+    "For objective function f: X ⊆ ℝⁿ → ℝ where X ≠ ∅ find s ∈ X s.t.
+    f(s) ≤ f(x) ∀x ∈ X where f(s) ≠ −∞" reaches the converter as a dozen
+    formula placeholders strung together by "for", "where", "find" and the
+    punctuation between them. A model given that rewrites the structure,
+    turning "f(s) ≤ f(x)" into "s, ≤ f, x", and every marker still checks out.
+    Such a line keeps its source text. A sentence that merely contains
+    formulas has half again as many words as placeholders, or a run of more than three
+    words between two of them, and is translated as before.
+    """
+    placeholders = FORMULA_PLACEHOLDER.findall(text)
+    if len(placeholders) < 4:
+        return False
+    runs = [len(SEGMENT_WORD.findall(piece)) for piece in FORMULA_PLACEHOLDER.split(text)]
+    return max(runs) <= 3 and sum(runs) <= 1.5 * len(placeholders)
+
+
 def classify_preserved_page(page_text: str) -> PreservationDecision | None:
     """Classify pages whose number-heavy structure must not be reflowed."""
     lines = [line.strip() for line in page_text.splitlines() if line.strip()]
@@ -1059,6 +1151,9 @@ def classify_preserved_page(page_text: str) -> PreservationDecision | None:
     )
     all_refs = numbered_refs + author_year_refs + bracketed_refs
     reference_signals = all_refs + year_parentheses + isbn_doi
+    if prose_precedes_references(lines):
+        # Prose first, then the bibliography: entries are kept one by one.
+        return None
     if has_reference_header and reference_signals >= 5:
         return PreservationDecision(
             "REFERENCES",

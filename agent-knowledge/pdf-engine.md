@@ -46,6 +46,14 @@ Authors-first bibliography entries with bare years are protected individually
 on mixed prose/reference pages. A dense continuation bibliography without a
 heading is protected as a whole page; ordinary prose citing authors remains
 translatable. The source page stream stays exact for wholly protected pages.
+A page whose References heading follows at least six lines of prose (the last
+page of a two-column paper: conclusion, acknowledgement, then the list) is
+never protected whole, whatever its entry count (`rules.prose_precedes_references`,
+shared by `classify_preserved_page` and the inline check in `high_level.py`).
+Instead the list itself is protected as typeset: one box per column for every
+line after the heading that sits below it, or in a column to its right
+(`rules.bibliography_rects`). Reflowing untranslated entries lost their hanging
+indent and merged neighbours; per-line boxes left wrapped lines in the gaps.
 
 ## Preservation Invariants
 
@@ -54,6 +62,24 @@ translatable. The source page stream stays exact for wholly protected pages.
   stacked-token geometry.
 - `{vN}` is the internal formula placeholder. Translators receive safe
   `<bN></bN>` tags. Missing or reordered formula tags reject the translation.
+- Formulas are never rewritten. A bracket or digit set flush (at most 0.2 em,
+  same baseline) against a glyph in a formula font joins that formula, so
+  `f(s)` mid-sentence is one placeholder (`attaches_to_formula`); a spaced
+  bracket after a size-only subscript ("C1 (applies") stays prose. A segment
+  of four or more placeholders joined only by short connectives ("for",
+  "where", "find", "s.t.": at most three words in a row, words at most 1.5x
+  placeholders) is a formula line and keeps its source text without being
+  sent or counted as a failure (`rules.looks_like_formula_line`).
+- A one-line translation that overflows its source width may borrow its
+  column (the span of the nearest multi-line paragraph within 10 em above or
+  below; a table caption is 7.5 em from the prose over its table) when no
+  other text shares its band: a centred heading widens both ways and is
+  re-centred, a left-aligned one widens rightwards (`single_line_room`).
+  Obstacles are translatable paragraphs plus protected glyphs measured per
+  line and column (`glyph_line_boxes`): a protected class or formula group
+  can span both columns, and its union box blocked every heading on the page.
+  Small-caps headings are narrow in the source and would otherwise shrink to
+  60% in Vietnamese capitals.
 - `<s1>`, `<s2>`, and `<s3>` carry bold, italic, and bold-italic runs. Pairs may
   move with their phrase but must stay balanced and non-cross-nested.
 - Tables translate per reliable cell only when the model region and
