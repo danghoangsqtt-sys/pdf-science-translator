@@ -99,3 +99,18 @@ Nguồn: `docs/brainstorm/session-2026-11-09.md` (ENH-005). Nối tiếp Phase 8
 | [P9-T3](phases/09-reading-space/tasks/P9-T3.md): hồi quy Chromium 3 kích thước | ENH-005 | technical_verified |
 
 Để sau (Phase 2 của brainstorm): chế độ đọc toàn màn hình, "Vừa cả trang".
+
+## Phase 10 — Độ trung thực bản dịch: công thức, trang trộn tham khảo, tiêu đề (12/11/2026)
+
+Nguồn: `docs/brainstorm/session-2026-11-12.md` (bản dịch 2307.15299v5 người dùng gửi). Mục tiêu sản phẩm vẫn 0.4.0.
+Người dùng: không đụng vào công thức; thứ tự công thức → trang 6 → tiêu đề.
+
+| Task | Request | Trạng thái |
+| --- | --- | --- |
+| [P10-T1](phases/10-translation-fidelity/tasks/P10-T1.md): công thức giữ nguyên, `f(s)` một marker, dòng công thức không gửi model | BUG-020 | technical_verified |
+| [P10-T2](phases/10-translation-fidelity/tasks/P10-T2.md): trang trộn văn xuôi + tham khảo được dịch phần văn xuôi | BUG-021 | technical_verified |
+| [P10-T3](phases/10-translation-fidelity/tasks/P10-T3.md): tiêu đề small-caps giữ cỡ chữ | BUG-022 | technical_verified |
+| [P10-T4](phases/10-translation-fidelity/tasks/P10-T4.md): gate trên PDF thật + hồi quy | BUG-020..022 | technical_verified |
+
+Phase 10 technical_verified 12/11 (436/436, gate PDF thật). Mới: BUG-023 (model đổi cách viết số).
+Phase 11 (chưa lập task): ENH-011 — dịch nhãn sơ đồ khối, đồ thị, bảng dạng ảnh bằng OCR + phủ nhãn; giữ nguyên số liệu.

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] — Phase 10 (đã triển khai và kiểm thử kỹ thuật 12/11/2026, chưa commit)
+
+- BUG-020: công thức nội dòng không còn bị viết lại (ngoặc trong `f(s)` đi cùng công thức; dòng công thức giữ nguyên).
+- BUG-021: trang có cả văn xuôi và tài liệu tham khảo được dịch phần văn xuôi thay vì giữ nguyên cả trang; danh mục vẫn giữ nguyên dạng sắp chữ.
+- BUG-022: tiêu đề chữ hoa nhỏ, tiêu đề bảng và "References" không còn bị co nhỏ: dòng đơn được dùng bề rộng trống của cột.
+
 ## [Unreleased] — Chọn ngôn ngữ nguồn (11/11/2026, chưa commit)
 
 - ENH-006: ô "Dịch từ" với Tự nhận diện và 36 ngôn ngữ chữ Latin, nút đảo chiều dịch; dịch được Việt → Anh và ngôn ngữ khác → Việt. Tự nhận diện nhận ra đoạn tiếng Việt thay vì luôn coi là tiếng Anh. Cache bản dịch offline được làm mới một lần (revision 4).

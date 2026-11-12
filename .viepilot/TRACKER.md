@@ -1,5 +1,15 @@
 # Nhật ký audit sản phẩm
 
+## VP-AUTO — Phase 10 technical verified (12/11/2026)
+- BUG-020: dòng công thức giữ nguyên, `f(s)` giữa câu một marker. BUG-021: trang 6 dịch văn xuôi, danh mục giữ nguyên dạng sắp chữ. BUG-022: tiêu đề small-caps mượn bề rộng cột.
+- 436/436 unittest, Ruff lỗi cứng; gate PDF thật 2307.15299v5 (translategemma:12b) đạt mọi kiểm Phase 10.
+- Mới: BUG-023 — model đổi cách viết số trong văn xuôi (96,432 → 96.432; 3D → "ba chiều"). Chưa kiểm tay Electron; chưa commit.
+
+## Evolve — Phase 10 độ trung thực bản dịch (12/11/2026)
+- Mode: Add Feature (sửa lỗi) từ brainstorm 12/11: bài 2307.15299v5 — trang 6 bỏ sót (BUG-021), công thức trang 2 bị viết lại (BUG-020), tiêu đề small-caps thu nhỏ (BUG-022).
+- Người dùng: không đụng vào công thức; chỉ dịch sơ đồ khối/đồ thị/bảng, giữ số liệu (ENH-011, Phase 11 sau).
+- 4 task P10-T1..T4; không bump (0.4.0). ID BUG-019, ENH-008..010 dành cho audit vệ sinh 12/11. Next: `/vp-auto --from 10`.
+
 ## VP-AUTO — Phase 9 technical verified (11/11/2026)
 - ENH-005: PDF vừa bề rộng + thanh trên tự ẩn khi cuộn; tsc, node 17/17, Chromium 31/31, backend 404/404.
 - Chưa kiểm tay Electron; chưa commit.
