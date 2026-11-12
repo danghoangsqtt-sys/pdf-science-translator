@@ -194,6 +194,19 @@ is merely silent proves nothing, because ForceBold is rarely set (LaTeX's
 `NimbusRomNo9L-Medi` declares only `Flags=4`). A space never opens a styled run
 of its own: `<s2> </s2>` carries no ink and makes local models drop markers.
 
+## Source Language
+
+The desktop app sends `source_language` (`auto` by default) with each job; the
+API rejects a source outside the Latin-script list or equal to the target.
+TranslateGemma has no "auto", so the Ollama prompt names a source per
+paragraph: Vietnamese when the paragraph has letters only Vietnamese uses
+(breve/horn/stroke letters and precomposed tone marks, at least 2 and 3% of
+letters; circumflex vowels are excluded because French has them), otherwise
+English. Other source languages are reliable only when chosen by name. The
+Ollama cache revision was bumped to 4 when this changed, because Vietnamese
+paragraphs had been cached from a prompt that called them English. The domain
+glossary still applies only to a Vietnamese target.
+
 ## Large Documents
 
 The app requests mono output only; do not construct the unused interleaved

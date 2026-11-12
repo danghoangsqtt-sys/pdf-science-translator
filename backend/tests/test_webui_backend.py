@@ -261,6 +261,26 @@ class BackendApiTests(unittest.TestCase):
         self.assertEqual(
             self.client.get(f"/api/jobs/{newest}/result", headers=TOKEN).status_code, 200)
 
+    def test_the_chosen_source_language_reaches_the_translator(self):
+        fake = mock.Mock(side_effect=self._writes_output(10, {}))
+        with mock.patch.object(job_service, "translate_pdf", fake):
+            self._wait(self._submit(source_language="vi", target_language="en"))
+            self._wait(self._submit())
+
+        first, second = fake.call_args_list
+        self.assertEqual(first.kwargs["source_language"], "vi")
+        self.assertEqual(first.kwargs["target_language"], "en")
+        self.assertEqual(second.kwargs["source_language"], "auto")
+
+    def test_unsupported_or_identical_source_languages_are_refused(self):
+        for form in ({"source_language": "zh"}, {"source_language": "../x"},
+                     {"source_language": "vi", "target_language": "vi"}):
+            with self.subTest(form=form):
+                response = self.client.post(
+                    "/api/jobs", headers=TOKEN,
+                    files={"file": ("paper.pdf", PDF, "application/pdf")}, data=form)
+                self.assertEqual(response.status_code, 400)
+
     def test_cancelling_an_unknown_job_is_not_found(self):
         response = self.client.post("/api/jobs/missing/cancel", headers=TOKEN)
         self.assertEqual(response.status_code, 404)

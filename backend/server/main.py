@@ -172,6 +172,7 @@ async def create_translation_job(
     request: Request,
     file: UploadFile = File(...),
     target_language: str = Form("vi"),
+    source_language: str = Form("auto"),
     domain: str = Form(""),
     profile: str = Form("balanced"),
     engine: str = Form(""),
@@ -182,7 +183,8 @@ async def create_translation_job(
     _require_api_token(x_pdftranslate_token)
 
     form = await request.form()
-    if any(key not in {"file", "target_language", "domain", "profile", "engine", "model"} for key in form):
+    if any(key not in {"file", "target_language", "source_language", "domain", "profile", "engine", "model"}
+           for key in form):
         raise HTTPException(status_code=400, detail="Yêu cầu không hợp lệ.")
     if engine or model:
         raise HTTPException(status_code=400, detail="Chỉ được chọn mức xử lý của ứng dụng.")
@@ -201,6 +203,19 @@ async def create_translation_job(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Ngôn ngữ đích không được hỗ trợ. Hỗ trợ: {supported}",
+        )
+
+    # "auto" lets the translator recognise the language per paragraph. A named
+    # source must be one this build handles; non-Latin sources are not offered.
+    if source_language != "auto" and source_language not in TARGET_LANGUAGES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ngôn ngữ nguồn không được hỗ trợ.",
+        )
+    if source_language == target_language:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ngôn ngữ nguồn và ngôn ngữ đích đang trùng nhau.",
         )
 
     # Empty string means "no domain selected" - the dropdown's default. Only
@@ -238,6 +253,7 @@ async def create_translation_job(
         upload_path=upload_path,
         output_dir=job_output_dir,
         target_language=target_language,
+        source_language=source_language,
         domain=domain_value,
         profile=profile,
     )

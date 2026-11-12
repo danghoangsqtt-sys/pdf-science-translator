@@ -152,6 +152,27 @@ class OllamaTranslatorTests(unittest.TestCase):
         translator = OllamaTranslator("auto", "vi", ignore_cache=True)
         self.assertIn("English (en) to Vietnamese (vi)", translator.prompt("x"))
 
+    def test_auto_recognises_a_vietnamese_paragraph(self):
+        """A Vietnamese paper used to be described to the model as English."""
+        translator = OllamaTranslator("auto", "en", ignore_cache=True)
+        prompt = translator.prompt("Phương pháp này cải thiện độ chính xác của mô hình.")
+        self.assertIn("Vietnamese (vi) to English (en)", prompt)
+        self.assertIn("translate the following Vietnamese text into English", prompt)
+
+    def test_french_and_german_are_not_mistaken_for_vietnamese(self):
+        translator = OllamaTranslator("auto", "vi", ignore_cache=True)
+        for text in ("La forêt est à côté du château, même en été.",
+                     "Die Größe der Bäume übertrifft die Erwartungen.",
+                     "Đ"):
+            with self.subTest(text=text):
+                self.assertIn("English (en) to Vietnamese (vi)", translator.prompt(text))
+
+    def test_a_chosen_source_language_is_sent_as_is(self):
+        translator = OllamaTranslator("fr", "vi", ignore_cache=True)
+        self.assertIn("French (fr) to Vietnamese (vi)", translator.prompt("Bonjour à tous."))
+        translator = OllamaTranslator("vi", "en", ignore_cache=True)
+        self.assertIn("Vietnamese (vi) to English (en)", translator.prompt("Xin chào"))
+
     def test_formula_tags_that_survive_are_restored(self):
         source = "Let {v0} be the loss and {v1} its gradient."
         encoded = encode_formula_placeholders(source)

@@ -87,6 +87,7 @@ class TranslationJob:
     target_language: str
     domain: str | None = None
     profile: str = "balanced"
+    source_language: str = "auto"
     status: JobStatus = "queued"
     progress: dict[str, int] = field(default_factory=lambda: {"done": 0, "total": 0})
     error: str | None = None
@@ -191,6 +192,7 @@ class TranslationJobManager:
         target_language: str,
         domain: str | None = None,
         profile: str = "balanced",
+        source_language: str = "auto",
     ) -> TranslationJob:
         await self.start()
         job = TranslationJob(
@@ -201,6 +203,7 @@ class TranslationJobManager:
             target_language=target_language,
             domain=domain,
             profile=profile,
+            source_language=source_language,
         )
         self._jobs[job_id] = job
         await self._queue.put(job_id)
@@ -247,8 +250,8 @@ class TranslationJobManager:
         job.status = "running"
         job.updated_at = _utc_now()
         logger.info(
-            "Starting local job %s (target=%s, profile=%s)",
-            job.job_id, job.target_language, job.profile,
+            "Starting local job %s (%s -> %s, profile=%s)",
+            job.job_id, job.source_language, job.target_language, job.profile,
         )
 
         def on_progress(done: int, total: int) -> None:
@@ -266,6 +269,7 @@ class TranslationJobManager:
                 input_pdf=job.upload_path,
                 output_dir=job.output_dir,
                 target_language=job.target_language,
+                source_language=job.source_language,
                 domain=job.domain,
                 engine="ollama",
                 model=policy.model,

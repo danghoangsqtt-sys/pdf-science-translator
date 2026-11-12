@@ -130,6 +130,20 @@ def has_unrepairable_mojibake(value: str) -> bool:
 NUMBER_ABBREVIATION_PATTERN = re.compile(r"(?<![A-Za-z])no\.(?=\s*\d)")
 
 
+# Letters only Vietnamese uses among the Latin-script languages this build
+# reads: breve/horn/stroke letters and the precomposed tone-marked vowels of
+# Latin Extended Additional. Circumflex vowels are left out, French has them.
+_VIETNAMESE_ONLY = re.compile("[ăđơưĂĐƠƯẠ-ỹ]")
+
+
+def looks_vietnamese(text: str) -> bool:
+    """Whether a paragraph is Vietnamese, from letters no other source shares."""
+    text = unicodedata.normalize("NFC", text)
+    letters = sum(character.isalpha() for character in text)
+    marks = len(_VIETNAMESE_ONLY.findall(text))
+    return marks >= 2 and marks >= letters * 0.03
+
+
 def normalise_number_abbreviation(text: str) -> str:
     """Capitalise the ``no.`` that means "number" so it is not read as "not".
 
@@ -361,7 +375,9 @@ def ollama_model_name() -> str:
 DEFAULT_OLLAMA_FALLBACK_MODEL = "qwen3.5:9b"
 # Part of the offline engine's cache key: bump it when post-processing,
 # retries or the fallback change what the engine returns for the same text.
-OLLAMA_CACHE_REVISION = "3"
+# 4: "auto" now recognises Vietnamese sources; earlier answers for Vietnamese
+# paragraphs were produced from a prompt that called them English.
+OLLAMA_CACHE_REVISION = "4"
 
 
 def ollama_fallback_model_name() -> str | None:
@@ -546,9 +562,13 @@ class OllamaTranslator(BaseTranslator):
 
     def prompt(self, text: str) -> str:
         """TranslateGemma's documented prompt, including the two blank lines."""
-        # "auto" has no meaning to the model; the documents this app sees are
-        # overwhelmingly English, and --source-language overrides it.
-        source_code = "en" if self.lang_in in ("", "auto") else self.lang_in
+        # "auto" has no meaning to the model. Vietnamese is recognised from its
+        # own letters (a Vietnamese paper called "English" came back untranslated);
+        # anything else is taken as English, and a chosen source overrides both.
+        if self.lang_in in ("", "auto"):
+            source_code = "vi" if looks_vietnamese(text) else "en"
+        else:
+            source_code = self.lang_in
         source = LANGUAGE_NAMES.get(source_code, source_code)
         target = LANGUAGE_NAMES.get(self.lang_out, self.lang_out)
         return (
