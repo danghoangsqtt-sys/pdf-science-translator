@@ -92,10 +92,21 @@ Phase 9 trước hoặc cắt nhánh dọn từ đỉnh Phase 9.
 
 Không có pack trung gian 26 GB còn sót lại; không có thư mục cấm (`tmp/`, `output/`, `test_*`) ở gốc.
 
-## Backlog đề xuất (ID tiếp sau nhánh Phase 9)
+## Backlog và trạng thái xử lý (cập nhật 12/11/2026)
 
-- BUG-019 — test asset không skip + smoke `tkinter` (H5, H6)
-- ENH-008 — gỡ mã chết `app/errors.py` và lint nhỏ (H1, H10)
-- ENH-009 — vệ sinh repo: `.codex/`, `.agents/skills`, icon trùng, deps (H3, H4, H7, H8)
-- ENH-010 — đổi `backend/app/` → `backend/assets/` khi build lại bản cài (H2)
-- Re-detected vào BUG-018: D1–D5.
+Dọn an toàn đã làm trên nhánh `claude/sweet-bhaskara-3d1159` (cắt từ đỉnh Phase 9
+`ec9edba`), chưa merge/push:
+
+| Request | Mục | Trạng thái | Commit |
+| --- | --- | --- | --- |
+| ENH-008 | H1, H10 | technical_verified | `b3c68d6`, `0903aff` |
+| BUG-019 | H5, H6 | technical_verified | `0903aff` |
+| ENH-009 | H3, H7, H8, D5 | technical_verified | `f462aaf` |
+| BUG-018 (re-detected) | D1–D4 | in_progress — tài liệu xong; còn HANDOFF/PHASE-STATE, CHANGELOG | `b3198f4` |
+| ENH-010 | H2 | new — chờ lần build lại bản cài | — |
+
+Chưa làm theo phạm vi người dùng chọn: H4 (`.agents/skills`), H9 (bằng chứng đã
+commit), H11 (= ENH-003), H12, dọn nhánh/worktree local.
+
+Kiểm chứng sau dọn: backend 416 test, 0 lỗi, 2 skip (asset font chưa tải trong
+worktree); Ruff F401/F841/B904 sạch ngoài `pdf2zh/pdfinterp.py` (upstream) và `research/`.
