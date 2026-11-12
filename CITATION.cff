@@ -9,7 +9,8 @@ repository-code: 'https://github.com/danghoangsqtt-sys/pdf-science-translator'
 abstract: >-
   Ứng dụng desktop dịch tài liệu PDF sang tiếng Việt và 35 ngôn ngữ
   khác, giữ nguyên bố cục, công thức, bảng và hình ảnh. Phát triển và duy trì
-  bởi dhsystem, trên một nhân fork từ PDFMathTranslate và BabelDOC.
+  bởi dhsystem, tiếp nối VI-Translate của Lê Ngọc Gia Huy, trên một nhân fork
+  từ PDFMathTranslate và BabelDOC.
 keywords:
   - pdf
   - translation
@@ -17,3 +18,23 @@ keywords:
   - dịch pdf
   - dhsystem
 license: AGPL-3.0
+references:
+  - type: software
+    title: VI-Translate
+    authors:
+      - given-names: Gia Huy
+        family-names: Lê Ngọc
+    repository-code: 'https://github.com/breslee1707/VI-Translate'
+    license: AGPL-3.0
+  - type: software
+    title: PDFMathTranslate
+    authors:
+      - name: PDFMathTranslate contributors
+    repository-code: 'https://github.com/PDFMathTranslate/PDFMathTranslate'
+    license: AGPL-3.0
+  - type: software
+    title: BabelDOC
+    authors:
+      - name: BabelDOC contributors
+    repository-code: 'https://github.com/funstory-ai/BabelDOC'
+    license: AGPL-3.0

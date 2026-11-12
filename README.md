@@ -106,9 +106,10 @@ với `--ocr standard` (xem [Chạy từ mã nguồn](#chạy-từ-mã-nguồn))
 
 ## Được phát triển ở đây
 
-Phần kế thừa từ dự án gốc là nhân đọc, phân tích bố cục và render PDF. Mọi thứ
-quyết định việc một trang tiếng Việt in ra có đọc được hay không đều được viết
-cho dự án này:
+Nhân đọc, phân tích bố cục và render PDF đến từ PDFMathTranslate. Bộ quy tắc
+bảo toàn và các bản sửa lỗi trong nhân dưới đây bắt đầu từ VI-Translate của Lê
+Ngọc Gia Huy và được tiếp tục phát triển ở đây; ứng dụng desktop là phần
+dhsystem viết mới (xem [Giấy phép và ghi công](#giấy-phép-và-ghi-công)):
 
 **Ứng dụng desktop — [`frontend/`](frontend/) + [`backend/server/`](backend/server/)**
 Giao diện Electron + React với backend FastAPI cục bộ: xem bản gốc và bản dịch
@@ -259,9 +260,9 @@ Nên kiểm tra lại tài liệu đầu ra trước khi dùng cho xuất bản 
 
 PDF Translate được phát hành theo giấy phép [AGPL-3.0](LICENSE). Nếu phát hành lại ứng dụng hoặc cung cấp nó như một dịch vụ qua mạng, bạn phải kèm theo mã nguồn tương ứng theo điều khoản của giấy phép.
 
-Thư mục [`backend/pdf2zh/`](backend/pdf2zh/) là bản fork của nhân xử lý PDF từ [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate) 1.9.11, dùng model bố cục và font đã ghim của [BabelDOC](https://github.com/funstory-ai/BabelDOC). Hai dự án đó cho công việc này một điểm khởi đầu và được ghi công đầy đủ tại [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+PDF Translate do **dhsystem** phát triển và duy trì. Dự án tiếp nối [VI-Translate](https://github.com/breslee1707/VI-Translate) của **Lê Ngọc Gia Huy** (huyg.ai), từ đó kế thừa và tiếp tục sửa đổi bộ quy tắc bảo toàn, các bản sửa lỗi trong nhân, CLI, phần lớn bộ test hồi quy, chế độ Handoff, Agent Skill và ứng dụng Android (phần Android do **Lizi** đóng góp cho VI-Translate). Nhân [`backend/pdf2zh/`](backend/pdf2zh/) là bản fork từ [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate) 1.9.11, dùng model bố cục và font đã ghim của [BabelDOC](https://github.com/funstory-ai/BabelDOC). Ghi công đầy đủ tại [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Ứng dụng desktop, bộ quy tắc bảo toàn, các bản sửa lỗi trong nhân, bộ test hồi quy, chế độ Handoff và toàn bộ phần đóng gói — mọi thứ liệt kê ở [Được phát triển ở đây](#được-phát-triển-ở-đây) — do **dhsystem** phát triển và duy trì.
+Do **dhsystem** xây dựng: ứng dụng desktop Electron + React và backend FastAPI cục bộ ([`frontend/`](frontend/), [`backend/server/`](backend/server/)), bản Windows chạy hoàn toàn ngoại tuyến với worker AI riêng và hồ sơ Nhanh / Cân bằng / Chất lượng, cùng các bản sửa lỗi và tính năng từ tháng 10/2026 trở đi.
 
 ---
 
