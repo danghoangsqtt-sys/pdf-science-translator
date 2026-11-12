@@ -87,3 +87,15 @@ Nguồn: audit `audit-codebase-2026-11-09.md` + yêu cầu người dùng (máy 
 | [P8-T5](phases/08-progress-responsive/tasks/P8-T5.md): bố cục co giãn, chế độ một khung, QA 5 kích thước | ENH-004 | technical_verified |
 
 Chưa lên lịch: BUG-016 (liên kết Zalo, chờ chủ sở hữu chọn), BUG-018 (trạng thái/tài liệu), ENH-003.
+
+## Phase 9 — Không gian đọc: tự ẩn thanh trên, PDF vừa bề rộng (09/11/2026)
+
+Nguồn: `docs/brainstorm/session-2026-11-09.md` (ENH-005). Nối tiếp Phase 8; mục tiêu sản phẩm vẫn 0.4.0.
+
+| Task | Request | Trạng thái |
+| --- | --- | --- |
+| [P9-T1](phases/09-reading-space/tasks/P9-T1.md): PDF vừa bề rộng, nút Vừa khung | ENH-005 | technical_verified |
+| [P9-T2](phases/09-reading-space/tasks/P9-T2.md): thanh trên + chân trang tự ẩn khi cuộn, vạch tiến độ, ghim | ENH-005 | technical_verified |
+| [P9-T3](phases/09-reading-space/tasks/P9-T3.md): hồi quy Chromium 3 kích thước | ENH-005 | technical_verified |
+
+Để sau (Phase 2 của brainstorm): chế độ đọc toàn màn hình, "Vừa cả trang".

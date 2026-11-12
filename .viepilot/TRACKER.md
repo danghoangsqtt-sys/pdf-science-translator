@@ -1,5 +1,13 @@
 # Nhật ký audit sản phẩm
 
+## VP-AUTO — Phase 9 technical verified (11/11/2026)
+- ENH-005: PDF vừa bề rộng + thanh trên tự ẩn khi cuộn; tsc, node 17/17, Chromium 31/31, backend 404/404.
+- Chưa kiểm tay Electron; chưa commit.
+
+## Evolve — Phase 9 không gian đọc (09/11/2026)
+- Mode: Add Feature từ brainstorm 09/11 (ENH-005): tự ẩn thanh trên khi cuộn, PDF vừa bề rộng; toàn màn hình để sau.
+- 3 task P9-T1..T3; không bump (0.4.0). Next: `/vp-auto --from 9`.
+
 ## VP-AUTO — Phase 8 technical verified (09/11/2026)
 - P8-T1..T5 technical_verified: BUG-017, BUG-014, BUG-015, ENH-004.
 - 404/404 unittest, ruff, tsc, node 12/12, Chromium 24/24 ở 800×600, 1024×768, 1280×1024, 1366×768, 1920×1080.

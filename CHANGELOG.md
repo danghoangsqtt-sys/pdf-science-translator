@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased] — Chọn ngôn ngữ nguồn (11/11/2026, chưa commit)
+
+- ENH-006: ô "Dịch từ" với Tự nhận diện và 36 ngôn ngữ chữ Latin, nút đảo chiều dịch; dịch được Việt → Anh và ngôn ngữ khác → Việt. Tự nhận diện nhận ra đoạn tiếng Việt thay vì luôn coi là tiếng Anh. Cache bản dịch offline được làm mới một lần (revision 4).
+
+## [Unreleased] — Phase 9 (đã triển khai và kiểm thử kỹ thuật 11/11/2026, chưa commit)
+
+- ENH-005: nút ▲/▼ thu gọn/mở rộng thanh trên và chân trang để mở rộng chỗ đọc (nhớ lựa chọn; cuộn không làm thanh hiện lại, chỉ mở lại khi có lỗi/thông báo/kết quả); PDF mặc định vừa bề rộng khung, có nút "Vừa khung".
+
 ## [Unreleased] — Phase 8 (đã triển khai và kiểm thử kỹ thuật 09/11/2026, chưa commit)
 
 - BUG-017: job luôn về trạng thái cuối; giao diện thử lại khi kiểm tra tiến độ lỗi tạm thời và báo rõ khi bộ xử lý khởi động lại.
