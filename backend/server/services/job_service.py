@@ -277,6 +277,7 @@ class TranslationJobManager:
                 overwrite=True,
                 on_progress=on_progress,
                 cancel_event=job.cancel_event,
+                translate_figure_images=policy.translate_figure_images,
             )
             job.record(translation)
             if translation.path and translation.path.is_file():

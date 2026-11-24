@@ -64,6 +64,9 @@ class TranslationReport:
     # The user-facing message of the first TranslationServiceUnavailable, when
     # the engine stopped answering altogether.
     service_failure: str | None = None
+    figure_labels_translated: int = 0
+    figure_labels_skipped: int = 0
+    figure_skip_reasons: Counter = field(default_factory=Counter)
 
     def __len__(self) -> int:
         return len(self.failures)
@@ -257,6 +260,8 @@ def translate_patch(
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: Dict | None = None,
     domain: str | None = None,
+    translate_figure_images: bool = True,
+    figure_ocr_engine: Any = None,
     **kwarg: Any,
 ) -> None:
     rsrcmgr = PDFResourceManager()
@@ -271,6 +276,7 @@ def translate_patch(
     # the shape that holds them.
     figure_label_classes = {}
     hidden_glyphs = {}
+    figure_candidates_by_page: Dict[int, list[Any]] = {}
     scanned_pages = set()
     skip_backing_pages = skip_backing_pages or set()
     ocr_regions_by_page = ocr_regions_by_page or {}
@@ -400,8 +406,12 @@ def translate_patch(
             page_bounds = layout_bounds.setdefault(page.pageno, {})
             page_height = float(page_rect.height)
             page_words = source_page.get_text("words", sort=True)
+            unmatched_tables: list[tuple[float, float, float, float]] = []
             for table_bounds in model_table_bounds:
-                for cell in matching_table_cells(table_bounds, detected_tables):
+                matched_cells = matching_table_cells(table_bounds, detected_tables)
+                if not matched_cells:
+                    unmatched_tables.append(table_bounds)
+                for cell in matched_cells:
                     cx0 = max(float(cell[0]), table_bounds[0])
                     cy0 = max(float(cell[1]), table_bounds[1])
                     cx1 = min(float(cell[2]), table_bounds[2])
@@ -691,11 +701,65 @@ def translate_patch(
                 device.scanned_pages.add(pageno)
             if pageno in pages_with_images:
                 device.pages_with_images.add(pageno)
+            if (
+                translate_figure_images
+                and pageno not in skip_backing_pages
+                and (model_figure_bounds or unmatched_tables)
+            ):
+                # Capture embedded raster candidates while the source page
+                # content stream is still intact (before set_contents clears it).
+                from pdf2zh.figure_ocr import extract_figure_image_candidates
+
+                page_candidates = extract_figure_image_candidates(
+                    source_page,
+                    model_figure_bounds,
+                    unmatched_table_bounds=unmatched_tables,
+                )
+                if page_candidates:
+                    figure_candidates_by_page[pageno] = page_candidates
             page.page_xref = doc_zh.get_new_xref()
             doc_zh.update_object(page.page_xref, "<<>>")
             doc_zh.update_stream(page.page_xref, b"")
             doc_zh[page.pageno].set_contents(page.page_xref)
             interpreter.process_page(page)
+
+    figure_labels_translated = 0
+    figure_labels_skipped = 0
+    figure_skip_reasons: Counter = Counter()
+    if (
+        translate_figure_images
+        and figure_candidates_by_page
+        and device.translator is not None
+        and getattr(device.translator, "name", "") != "handoff"
+        and device.service_failure is None
+    ):
+        from pdf2zh.figure_ocr import translate_document_figure_images
+
+        ocr_engine = figure_ocr_engine
+        if ocr_engine is None:
+            try:
+                from pdf2zh.ocr import OcrUnavailableError, load_ocr_engine
+
+                ocr_engine = load_ocr_engine("standard")
+            except OcrUnavailableError as error:
+                logger.warning(
+                    "Skipping raster figure label translation; OCR unavailable: %s",
+                    error,
+                )
+                ocr_engine = None
+        if ocr_engine is not None:
+            fig_summary = translate_document_figure_images(
+                doc_zh,
+                {},
+                ocr_engine=ocr_engine,
+                translator=device.translator,
+                preextracted_candidates=figure_candidates_by_page,
+                skip_pages=skip_backing_pages,
+                cancellation_event=cancellation_event,
+            )
+            figure_labels_translated = fig_summary.labels_translated
+            figure_labels_skipped = fig_summary.labels_skipped
+            figure_skip_reasons = fig_summary.skipped_by_reason
 
     device.close()
     return obj_patch, TranslationReport(
@@ -705,6 +769,9 @@ def translate_patch(
         translatable_segments=device.translatable_segments,
         pages_processed=total_pages,
         service_failure=device.service_failure,
+        figure_labels_translated=figure_labels_translated,
+        figure_labels_skipped=figure_labels_skipped,
+        figure_skip_reasons=figure_skip_reasons,
     )
 
 
@@ -728,6 +795,8 @@ def translate_stream(
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: Dict | None = None,
     domain: str | None = None,
+    translate_figure_images: bool = True,
+    figure_ocr_engine: Any = None,
     **kwarg: Any,
 ):
     source_size = len(stream)
@@ -893,6 +962,8 @@ def translate(
     skip_backing_pages: set[int] | None = None,
     ocr_regions_by_page: Dict | None = None,
     domain: str | None = None,
+    translate_figure_images: bool = True,
+    figure_ocr_engine: Any = None,
     **kwarg: Any,
 ):
     if not files:

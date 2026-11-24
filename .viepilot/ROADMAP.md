@@ -113,4 +113,14 @@ Người dùng: không đụng vào công thức; thứ tự công thức → tr
 | [P10-T4](phases/10-translation-fidelity/tasks/P10-T4.md): gate trên PDF thật + hồi quy | BUG-020..022 | technical_verified |
 
 Phase 10 technical_verified 12/11 (436/436, gate PDF thật); BUG-023 technical_verified 12/11 (445/445). Mã nguồn `0.4.0` (`frontend/package.json`) đã đẩy lên `origin/main` và `origin/release/0.4.0`; BUG-018 đồng bộ sổ sách 24/11 đã commit/push (chưa tag/Release).
-Phase 11 (chưa lập task): ENH-011 — dịch nhãn sơ đồ khối, đồ thị, bảng dạng ảnh bằng OCR + phủ nhãn; giữ nguyên số liệu.
+
+## Phase 11 — Dịch nhãn trong ảnh raster: sơ đồ khối, đồ thị, bảng ảnh (24/11/2026)
+
+Nguồn: `docs/brainstorm/session-2026-11-12.md` (E3, D1, D4) và `ENH-011`. Nối tiếp Phase 10; mục tiêu sản phẩm vẫn `0.4.0` (chưa phát hành tag `v0.4.0`, không bump).
+
+| Task | Request | Trạng thái |
+| --- | --- | --- |
+| [P11-T1](phases/11-raster-figure-labels/tasks/P11-T1.md): chọn ảnh figure ≥ 150×80 px, OCR tái dùng, lọc nhãn E3/D4, ước lượng màu nền/chữ | ENH-011 | technical_verified |
+| [P11-T2](phases/11-raster-figure-labels/tasks/P11-T2.md): dịch nhãn bảo toàn số liệu và vẽ phủ Unicode bằng PyMuPDF/OpenCV không tràn khung | ENH-011 | technical_verified |
+| [P11-T3](phases/11-raster-figure-labels/tasks/P11-T3.md): tích hợp pipeline, công tắc profile/CLI (`--no-figure-ocr`) và báo cáo `TranslationReport`/`Translation` | ENH-011 | technical_verified |
+| [P11-T4](phases/11-raster-figure-labels/tasks/P11-T4.md): gate hồi quy đầy đủ, kiểm PDF thật (`2307.15299v5` + scan) và cập nhật `agent-knowledge/` | ENH-011 | technical_verified |

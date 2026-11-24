@@ -42,15 +42,16 @@ class ProcessingProfile:
     retries: int
     rescues: int
     fallback: str | None
+    translate_figure_images: bool = False
 
 
 PROFILES = {
     "fast": ProcessingProfile("fast", "Nhanh", "Ưu tiên tốc độ, ít tài nguyên.",
-                              "local-fast:latest", 1, 0, None),
+                              "local-fast:latest", 1, 0, None, False),
     "balanced": ProcessingProfile("balanced", "Cân bằng", "Cân bằng thời gian và độ đầy đủ.",
-                                  "local-balanced:latest", 2, 1, None),
+                                  "local-balanced:latest", 2, 1, None, True),
     "quality": ProcessingProfile("quality", "Chất lượng cao", "Xử lý kỹ hơn, có thể chậm hơn.",
-                                 "local-quality:latest", 3, 3, "local-rescue:latest"),
+                                 "local-quality:latest", 3, 3, "local-rescue:latest", True),
 }
 
 

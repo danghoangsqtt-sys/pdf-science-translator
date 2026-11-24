@@ -1,9 +1,9 @@
 {
   "date": "2026-11-24",
-  "objective": "Maintain PDF Translate v0.4.0 offline desktop (backend/ + frontend/) and synchronize ViePilot state with origin/main",
-  "phase": 10,
-  "task": "BUG-018",
-  "status": "v0.4.0_source_pushed_ec235f6; bug018_synced",
+  "objective": "Plan and implement Phase 11 (ENH-011): OCR and overlay Vietnamese labels on raster figures/charts/tables while preserving all numbers and scan OCR",
+  "phase": 11,
+  "task": "P11-T4",
+  "status": "phase11_technical_verified",
   "implementation_root": "D:/DataAdmin/vp-pdf",
   "branch": "release/0.4.0 (synced with main and origin/main at ec235f6)",
   "source_session": "docs/brainstorm/session-2026-11-12.md",
@@ -26,14 +26,14 @@
   "data_files": 1017,
   "app_left_open": false,
   "report": "docs/bao-cao/offline-windows-2026-10-28.md",
-  "git_persistence": "origin/main and origin/release/0.4.0 synced with BUG-018 state update (2026-11-24); no git tags or GitHub Releases yet",
+  "git_persistence": "Phase 11 (ENH-011) committed and pushed to origin/release/0.4.0 and origin/main (2026-11-24); no git tags or GitHub Releases yet",
   "pass_gate": "pending; clean-machine/laptop acceptance and release/signing scope still open; no tag/release performed",
   "remaining_acceptance": [
     "Clean Windows/VM with physical network isolation",
     "CPU/RAM/GPU compatibility and minimum configuration",
     "Distribution license review and signing/installer scope before public release"
   ],
-  "next": "Choose next step: Phase 11 (ENH-011), Phase 6-7 (ENH-002 after updating task paths to backend/), or GitHub Release scoping (v0.4.0 / android-v0.1.0)",
+  "next": "Fresh clone on target machine: follow README.md / agent-knowledge/repository.md (Python 3.12, requirements*.txt, fetch_assets.py, frontend npm install); then continue Phase 6-7 (ENH-002) or desktop/Android Release scoping",
   "user_confirmed_application_good": true,
   "latest_audit": ".viepilot/audit-codebase-2026-11-12.md",
   "last_cleanup": {

@@ -106,6 +106,26 @@ indent and merged neighbours; per-line boxes left wrapped lines in the gaps.
   diamond), and charts print each label twice, once under their white
   background; each hidden entry consumes only the first matching glyph in
   drawing order, so the visible duplicate survives.
+- Raster figures, charts, and unmatched raster tables (images `≥ 150×80 px`
+  overlapping DocLayout `figure` or unmatched `table` bounds on non-scan pages)
+  are processed separately by `backend/pdf2zh/figure_ocr.py` without modifying
+  `ocr.py`. Candidate xrefs are captured before `set_contents` clears the page
+  stream, and shared xrefs drawn outside figure areas stay untouched. RapidOCR
+  is loaded lazily only when a raster candidate exists (failing soft when
+  `rapidocr` is absent on dev machines). Only short natural-language labels
+  (`≤ 6` words, OCR confidence `≥ 0.85`, uniform background border ring) are
+  translated; pure numbers, axis ticks, units, math syntax, variables, and
+  acronyms (`MAPE`, `ReLU`) stay original pixels. Stacked chart-legend rows
+  carrying left colour swatches stay separate rather than merging, and box
+  expansion halts strictly before borders or swatches. Translations pass
+  `restore_number_notation` and `numbers_intact`, are fitted in memory using
+  PyMuPDF + bundled Unicode fonts (`BeVietnamPro-Regular.ttf` /
+  `GoNotoKurrent-Regular.ttf`, no extra dependencies), and replace only the
+  target image XObject (`_replace_image_xref`). Overflow or ambiguity fails
+  closed. Controlled by `ProcessingProfile.translate_figure_images` (`False` on
+  `fast`, `True` on `balanced`/`quality`) and CLI `--no-figure-ocr`, with
+  `figure_labels_translated`/`figure_labels_skipped` reported on
+  `TranslationReport` and `Translation`.
 - Fully protected blocks replay source glyph matrices, font size, horizontal
   scaling and rise without prose fitting. Their horizontal grid rules stay in
   the source stream. Array operands use PDF whitespace syntax, not Python list

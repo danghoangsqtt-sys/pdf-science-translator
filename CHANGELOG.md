@@ -2,6 +2,10 @@
 
 ## [Unreleased] — 0.4.0 (mã nguồn đã đẩy lên `main`/`release/0.4.0` tại `ec235f6`, chưa gắn tag/Release)
 
+### Phase 11 — dịch nhãn trong ảnh raster (đã triển khai và kiểm thử kỹ thuật 24/11/2026)
+
+- ENH-011: OCR + phủ nhãn tiếng Việt cho sơ đồ khối, đồ thị và bảng dạng ảnh raster (`backend/pdf2zh/figure_ocr.py`, ngưỡng E3/D4, bảo toàn 100% số liệu/vạch trục/vạch màu chú giải/công thức và luồng scan OCR; công tắc profile `fast=False`/`balanced,quality=True` và CLI `--no-figure-ocr`).
+
 ### Giữ nguyên số liệu (12/11/2026)
 
 - BUG-023: bản dịch giữ đúng cách viết số của bản gốc ("96,432" không còn thành "96.432", "0.1"

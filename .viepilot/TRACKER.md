@@ -1,5 +1,13 @@
 # Nhật ký audit sản phẩm
 
+## VP-AUTO — Phase 11 technical verified (24/11/2026)
+- ENH-011 (`P11-T1..T4`): thêm `backend/pdf2zh/figure_ocr.py` (tách khỏi `ocr.py`), tích hợp `high_level.py`/`offline.py`/`translate_pdf.py`/`job_service.py` (`fast=False`, `balanced`/`quality=True`, CLI `--no-figure-ocr`).
+- 462/462 `unittest`, `pip check`, Ruff hard-error đạt; gate PDF thật `2307.15299v5.pdf` (`translategemma:12b`): 114/114 đoạn, 246/246 glyph toán, **69 nhãn hình raster dịch phủ** (đã xem render trang 2–5); `04_scanned_book_page.pdf` (`--ocr standard`): 3/3 đoạn không hồi quy. Đã commit và push lên `origin/release/0.4.0` và `origin/main` (chưa tạo tag/Release).
+
+## Evolve — Phase 11 dịch nhãn trong ảnh raster (24/11/2026)
+- Mode: Add Feature từ brainstorm 12/11 (`docs/brainstorm/session-2026-11-12.md`, E3/D1/D4) và `ENH-011`: dịch nhãn ngắn trong sơ đồ khối, đồ thị, bảng dạng ảnh bằng RapidOCR sẵn có + phủ nhãn Unicode bằng PyMuPDF/OpenCV (không thêm dependency mới), giữ nguyên số liệu/vạch trục/viết tắt/công thức và luồng OCR scan.
+- 4 task `P11-T1..T4` đã lập tại `.viepilot/phases/11-raster-figure-labels/`; không bump (mục tiêu `0.4.0`, chưa gắn tag `v0.4.0`); không sửa mã nguồn trong lượt lập kế hoạch. Next: `/vp-auto --from 11`.
+
 ## Đồng bộ local `main` & sổ sách 0.4.0 — BUG-018 (24/11/2026)
 - Đã kéo nhánh local `main` (`--ff-only`) khớp `origin/main` và `origin/release/0.4.0` tại `ec235f6` (0 commit local chưa đẩy; 0 tag/Release trên GitHub).
 - Đã đồng bộ `HANDOFF.json`, `PHASE-STATE.md` (Phase 1–3, 8–10), `ROADMAP.md`, `CHANGELOG.md` và `BUG-018.md` về nguồn phiên bản duy nhất `frontend/package.json` (`0.4.0`) và bố cục `backend/` + `frontend/`.

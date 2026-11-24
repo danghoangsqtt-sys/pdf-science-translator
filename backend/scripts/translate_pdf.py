@@ -118,6 +118,8 @@ class Translation(NamedTuple):
     model: str | None = None
     # Set when the engine stopped answering altogether, in words for the user.
     service_failure: str | None = None
+    figure_labels_translated: int = 0
+    figure_labels_skipped: int = 0
 
     @property
     def translated_segments(self) -> int:
@@ -286,6 +288,11 @@ def _parser() -> argparse.ArgumentParser:
         default=None,
         choices=DOMAINS,
         help="force preferred terminology for a subject domain over the engine's own wording",
+    )
+    parser.add_argument(
+        "--no-figure-ocr",
+        action="store_true",
+        help="disable OCR and label overlay on embedded raster figures/charts",
     )
     return parser
 
@@ -482,6 +489,7 @@ def _run_engine(
     ocr_regions_by_page: dict | None = None,
     domain: str | None = None,
     cancel_event: object | None = None,
+    translate_figure_images: bool = True,
 ) -> "TranslationReport":
     """Run the core and return what it could not translate, and why."""
     from pdf2zh.high_level import translate
@@ -508,6 +516,8 @@ def _run_engine(
         callback=callback,
         ignore_cache=ignore_cache,
     )
+    if not translate_figure_images:
+        arguments["translate_figure_images"] = False
     if skip_backing_pages:
         arguments["skip_backing_pages"] = skip_backing_pages
     if ocr_regions_by_page:
@@ -541,6 +551,7 @@ def translate_pdf(
     domain: str | None = None,
     on_progress: Callable[[int, int], None] | None = None,
     cancel_event: object | None = None,
+    translate_figure_images: bool = True,
 ) -> Translation:
     """Translate one PDF, reporting any segments the engine could not translate."""
     from pdf2zh.offline import active, enforce_engine, install_network_guard
@@ -612,6 +623,8 @@ def translate_pdf(
                 if cancel_event.is_set():
                     raise TranslationCancelled("Đã hủy tác vụ dịch.")
                 engine_arguments["cancel_event"] = cancel_event
+            if not translate_figure_images:
+                engine_arguments["translate_figure_images"] = False
             report = _run_engine(
                 processing_source,
                 temp_output,
@@ -668,6 +681,8 @@ def translate_pdf(
             "engine": engine,
             "model": model,
             "service_failure": service_failure,
+            "figure_labels_translated": int(getattr(report, "figure_labels_translated", 0)),
+            "figure_labels_skipped": int(getattr(report, "figure_labels_skipped", 0)),
         }
         image_only = tuple(sorted(report.image_only_pages))
         ocr_pages = ocr_preparation.pages if ocr_preparation else ()
@@ -764,6 +779,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             emit_segments=args.emit_segments,
             ocr=args.ocr,
             domain=args.domain,
+            translate_figure_images=not args.no_figure_ocr,
         )
     except TranslationError as error:
         print(f"error: {error}", file=sys.stderr)
@@ -775,6 +791,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(
             f"Translated {result.translated_segments}/{result.total_segments} segments "
             f"({result.translated_ratio:.0%}) with {engine}"
+        )
+    if result.figure_labels_translated or result.figure_labels_skipped:
+        print(
+            f"Raster figures: {result.figure_labels_translated} labels translated, "
+            f"{result.figure_labels_skipped} skipped"
         )
     if result.service_failure:
         print(f"warning: {result.service_failure}", file=sys.stderr)

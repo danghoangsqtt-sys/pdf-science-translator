@@ -603,11 +603,16 @@ FIGURE_WORDS = frozenset(
 )
 
 
-def _figure_line_translatable(text: str) -> bool:
+def is_figure_natural_text(text: str) -> bool:
+    """Return whether a short figure label reads as natural prose."""
     value = " ".join(text.split())
     if value.strip(".:?!").lower() in FIGURE_WORDS:
         return True
     return should_translate_table_cell(value)
+
+
+def _figure_line_translatable(text: str) -> bool:
+    return is_figure_natural_text(text)
 
 
 def _contains(
