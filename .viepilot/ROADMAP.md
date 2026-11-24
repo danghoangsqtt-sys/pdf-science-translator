@@ -6,9 +6,9 @@ danh tính AI qua UI/API/lỗi/log người dùng. Giữ thay đổi người d�
 
 | Phase | Task | Trạng thái |
 | --- | --- | --- |
-| 1 | P1-T1: policy offline, profile, asset pack, worker lifecycle | locally_verified; persistence pending |
-| 2 | P2-T1: API và giao diện mức xử lý, lỗi trung tính | locally_verified; persistence pending |
-| 3 | P3-T1: gói Windows, kiểm thử thực tế, tài liệu và bàn giao | delivered_for_review; clean-machine acceptance pending |
+| 1 | P1-T1: policy offline, profile, asset pack, worker lifecycle | locally_verified; mã nguồn đã lên `origin/main` (`ec235f6`) |
+| 2 | P2-T1: API và giao diện mức xử lý, lỗi trung tính | locally_verified; mã nguồn đã lên `origin/main` (`ec235f6`) |
+| 3 | P3-T1: gói Windows, kiểm thử thực tế, tài liệu và bàn giao | delivered_for_review; clean-machine acceptance & Release pending |
 
 ## Progress Summary
 - 3/3 phần triển khai đã có nguồn và bằng chứng kiểm tra cục bộ; 0/3 PASS theo gate Git.
@@ -112,5 +112,5 @@ Người dùng: không đụng vào công thức; thứ tự công thức → tr
 | [P10-T3](phases/10-translation-fidelity/tasks/P10-T3.md): tiêu đề small-caps giữ cỡ chữ | BUG-022 | technical_verified |
 | [P10-T4](phases/10-translation-fidelity/tasks/P10-T4.md): gate trên PDF thật + hồi quy | BUG-020..022 | technical_verified |
 
-Phase 10 technical_verified 12/11 (436/436, gate PDF thật). Mới: BUG-023 (model đổi cách viết số).
+Phase 10 technical_verified 12/11 (436/436, gate PDF thật); BUG-023 technical_verified 12/11 (445/445). Mã nguồn `0.4.0` (`frontend/package.json`) đã đẩy lên `origin/main` và `origin/release/0.4.0`; BUG-018 đồng bộ sổ sách 24/11 đã commit/push (chưa tag/Release).
 Phase 11 (chưa lập task): ENH-011 — dịch nhãn sơ đồ khối, đồ thị, bảng dạng ảnh bằng OCR + phủ nhãn; giữ nguyên số liệu.

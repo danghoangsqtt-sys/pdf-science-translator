@@ -3,7 +3,7 @@
 - Status: technical_verified
 - Source requests: BUG-017, BUG-014, BUG-015, ENH-004
 - Technical gate: passed 2026-11-09 (404/404 unittest, ruff, tsc, node 12/12, Chromium 24/24)
-- Git persistence: pending_user_scope
+- Git persistence: merged and pushed to `origin/main` and `origin/release/0.4.0` (`ec235f6`); no release tag yet.
 - Version target: 0.4.0 (không đổi; Phase 8 gộp vào cùng mục tiêu MINOR).
 - Execution root: nhánh từ `release/0.4.0` (bố cục `backend/` + `frontend/`).
 

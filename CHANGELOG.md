@@ -1,26 +1,28 @@
 # Changelog
 
-## [Unreleased] — Giữ nguyên số liệu (12/11/2026)
+## [Unreleased] — 0.4.0 (mã nguồn đã đẩy lên `main`/`release/0.4.0` tại `ec235f6`, chưa gắn tag/Release)
+
+### Giữ nguyên số liệu (12/11/2026)
 
 - BUG-023: bản dịch giữ đúng cách viết số của bản gốc ("96,432" không còn thành "96.432", "0.1"
   không thành "0,1"); đoạn mà model làm mất hoặc viết số thành chữ được dịch lại, và nếu vẫn sai
   thì giữ nguyên đoạn gốc thay vì đưa ra số sai.
 
-## [Unreleased] — Phase 10 (đã triển khai và kiểm thử kỹ thuật 12/11/2026)
+### Phase 10 (đã triển khai và kiểm thử kỹ thuật 12/11/2026)
 
 - BUG-020: công thức nội dòng không còn bị viết lại (ngoặc trong `f(s)` đi cùng công thức; dòng công thức giữ nguyên).
 - BUG-021: trang có cả văn xuôi và tài liệu tham khảo được dịch phần văn xuôi thay vì giữ nguyên cả trang; danh mục vẫn giữ nguyên dạng sắp chữ.
 - BUG-022: tiêu đề chữ hoa nhỏ, tiêu đề bảng và "References" không còn bị co nhỏ: dòng đơn được dùng bề rộng trống của cột.
 
-## [Unreleased] — Chọn ngôn ngữ nguồn (11/11/2026, chưa commit)
+### Chọn ngôn ngữ nguồn (11/11/2026)
 
 - ENH-006: ô "Dịch từ" với Tự nhận diện và 36 ngôn ngữ chữ Latin, nút đảo chiều dịch; dịch được Việt → Anh và ngôn ngữ khác → Việt. Tự nhận diện nhận ra đoạn tiếng Việt thay vì luôn coi là tiếng Anh. Cache bản dịch offline được làm mới một lần (revision 4).
 
-## [Unreleased] — Phase 9 (đã triển khai và kiểm thử kỹ thuật 11/11/2026, chưa commit)
+### Phase 9 (đã triển khai và kiểm thử kỹ thuật 11/11/2026)
 
 - ENH-005: nút ▲/▼ thu gọn/mở rộng thanh trên và chân trang để mở rộng chỗ đọc (nhớ lựa chọn; cuộn không làm thanh hiện lại, chỉ mở lại khi có lỗi/thông báo/kết quả); PDF mặc định vừa bề rộng khung, có nút "Vừa khung".
 
-## [Unreleased] — Phase 8 (đã triển khai và kiểm thử kỹ thuật 09/11/2026, chưa commit)
+### Phase 8 (đã triển khai và kiểm thử kỹ thuật 09/11/2026)
 
 - BUG-017: job luôn về trạng thái cuối; giao diện thử lại khi kiểm tra tiến độ lỗi tạm thời và báo rõ khi bộ xử lý khởi động lại.
 - BUG-014: dọn tệp tải lên, kết quả và job cũ.
@@ -63,8 +65,7 @@
 - UI giữ Nhanh/Cân bằng/Chất lượng cao, lỗi trung tính và ẩn danh AI.
 - Gate laptop RTX3050 4GB/RAM24GB/i7gen12 và Windows sạch tách khỏi kiểm chứng desktop.
 
-Các dòng trên là phạm vi dự kiến. APP_VERSION vẫn 0.3.0; chỉ bump nguồn/metadata
-sang 0.4.0 trong P7-T1 khi thực thi. Chưa ký số, commit/push/tag hoặc phát hành.
+Các dòng trên là phạm vi kế hoạch ENH-002 (Phase 4–5 đã `technical_verified`; Phase 6–7 vẫn ở trạng thái `planned`). Nguồn phiên bản desktop duy nhất là `frontend/package.json` (`0.4.0`, cập nhật ở commit `f462aaf`; `APP_VERSION` của bản Tkinter cũ đã gỡ bỏ). Mã nguồn `0.4.0` đã đẩy lên `origin/main` và `origin/release/0.4.0` tại `ec235f6`; chưa ký số, chưa gắn tag `v0.4.0` và chưa tạo GitHub Release.
 
 ## Baseline cục bộ đã kiểm chứng trước kế hoạch
 

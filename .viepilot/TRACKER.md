@@ -1,5 +1,10 @@
 # Nhật ký audit sản phẩm
 
+## Đồng bộ local `main` & sổ sách 0.4.0 — BUG-018 (24/11/2026)
+- Đã kéo nhánh local `main` (`--ff-only`) khớp `origin/main` và `origin/release/0.4.0` tại `ec235f6` (0 commit local chưa đẩy; 0 tag/Release trên GitHub).
+- Đã đồng bộ `HANDOFF.json`, `PHASE-STATE.md` (Phase 1–3, 8–10), `ROADMAP.md`, `CHANGELOG.md` và `BUG-018.md` về nguồn phiên bản duy nhất `frontend/package.json` (`0.4.0`) và bố cục `backend/` + `frontend/`.
+- Đã commit và push đồng bộ sổ sách lên `release/0.4.0` và `main` theo xác nhận của người dùng (chưa tạo tag/Release).
+
 ## BUG-023 technical verified (12/11/2026)
 - Số giữ nguyên như nguồn: sửa dấu phân cách tại chỗ, mất/đổi số → thử lại → giữ đoạn gốc. 445/445; bài 2307.15299v5 mọi chuỗi số 6 trang khớp, 114/114 đoạn dịch.
 
